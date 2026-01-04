@@ -290,6 +290,11 @@ add_action('admin_enqueue_scripts', 'hs_crm_enqueue_assets');
  * Hook into Gravity Forms submission to create enquiries
  */
 function hs_crm_gravity_forms_integration($entry, $form) {
+    // Verify that required classes are available
+    if (!class_exists('HS_CRM_Database')) {
+        return;
+    }
+    
     // Check if this form should be integrated (you can customize this based on form ID or form title)
     // For example, only integrate forms with specific IDs or containing "moving" or "enquiry" in the title
     $form_title = strtolower($form['title']);
@@ -429,7 +434,13 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
             $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
             if (!empty($data['move_date'])) {
-                $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', strtotime($data['move_date']))) . '</p>';
+                // Validate and format the date safely
+                $timestamp = strtotime($data['move_date']);
+                if ($timestamp !== false) {
+                    $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', $timestamp)) . '</p>';
+                } else {
+                    $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html($data['move_date']) . '</p>';
+                }
             }
             $message .= '<p><strong>Source:</strong> Gravity Forms - ' . esc_html($form['title']) . '</p>';
             $message .= '<p><a href="' . esc_url($dashboard_link) . '" style="display: inline-block; padding: 10px 20px; background: #0073aa; color: white; text-decoration: none; border-radius: 4px;">View in Dashboard</a></p>';
@@ -437,10 +448,17 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             $message .= '</html>';
             
             $headers = array('Content-Type: text/html; charset=UTF-8');
-            wp_mail($admin_email, $subject, $message, $headers);
+            
+            // Send email and log if it fails
+            $mail_sent = wp_mail($admin_email, $subject, $message, $headers);
+            if (!$mail_sent) {
+                error_log('Marcus Furniture CRM: Failed to send admin notification email for Gravity Forms submission (Form ID: ' . $form['id'] . ')');
+            }
         }
     }
 }
 
-// Hook into Gravity Forms after submission
-add_action('gform_after_submission', 'hs_crm_gravity_forms_integration', 10, 2);
+// Hook into Gravity Forms after submission only if Gravity Forms is active
+if (class_exists('GFForms') || function_exists('gform_after_submission')) {
+    add_action('gform_after_submission', 'hs_crm_gravity_forms_integration', 10, 2);
+}
