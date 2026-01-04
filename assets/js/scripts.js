@@ -762,13 +762,23 @@ jQuery(document).ready(function($) {
                 return;
             }
             
-            // Get default duration in hours from settings
-            var durationHours = hsCrmAjax.defaultBookingDuration || 3;
+            // Validate time format
+            var timeParts = startTime.split(':');
+            if (timeParts.length !== 2) {
+                return; // Invalid format
+            }
             
             // Parse start time
-            var timeParts = startTime.split(':');
             var hours = parseInt(timeParts[0], 10);
             var minutes = parseInt(timeParts[1], 10);
+            
+            // Validate parsed values
+            if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                return; // Invalid time values
+            }
+            
+            // Get default duration in hours from settings
+            var durationHours = hsCrmAjax.defaultBookingDuration || 3;
             
             // Calculate end time - convert duration to minutes first to avoid floating-point issues
             var durationMinutes = Math.round(durationHours * 60);

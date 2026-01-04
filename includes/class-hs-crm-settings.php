@@ -80,9 +80,9 @@ class HS_CRM_Settings {
      * @return float Sanitized duration or default value
      */
     public function sanitize_booking_duration($duration) {
-        // If empty, return default value (3 hours)
+        // If empty, return default value
         if (empty($duration)) {
-            return 3;
+            return HS_CRM_DEFAULT_BOOKING_DURATION;
         }
         
         // Convert to float and validate
@@ -97,7 +97,7 @@ class HS_CRM_Settings {
                 'error'
             );
             // Return the current saved value instead of the invalid one
-            return get_option('hs_crm_default_booking_duration', 3);
+            return get_option('hs_crm_default_booking_duration', HS_CRM_DEFAULT_BOOKING_DURATION);
         }
         
         return $duration;
@@ -156,13 +156,13 @@ class HS_CRM_Settings {
                             <input type="number" 
                                    id="hs_crm_default_booking_duration" 
                                    name="hs_crm_default_booking_duration" 
-                                   value="<?php echo esc_attr(get_option('hs_crm_default_booking_duration', 3)); ?>" 
+                                   value="<?php echo esc_attr(get_option('hs_crm_default_booking_duration', HS_CRM_DEFAULT_BOOKING_DURATION)); ?>" 
                                    step="0.5" 
                                    min="0.5" 
                                    max="24" 
                                    class="small-text">
                             <p class="description">
-                                Default duration for truck bookings in hours. When a start time is entered, the end time will automatically be set to start time + this duration. Default is 3 hours.
+                                Default duration for truck bookings in hours. When a start time is entered, the end time will automatically be set to start time + this duration. Default is <?php echo HS_CRM_DEFAULT_BOOKING_DURATION; ?> hours.
                             </p>
                         </td>
                     </tr>

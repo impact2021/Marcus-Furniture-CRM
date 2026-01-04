@@ -21,6 +21,7 @@ if (!defined('ABSPATH')) {
 define('HS_CRM_VERSION', '1.3');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
 
 // Include required files
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-database.php';
@@ -381,7 +382,7 @@ function hs_crm_enqueue_assets() {
         'ajaxurl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('hs_crm_nonce'),
         'thankYouUrl' => home_url('/thank-you/'),
-        'defaultBookingDuration' => floatval(get_option('hs_crm_default_booking_duration', 3))
+        'defaultBookingDuration' => floatval(get_option('hs_crm_default_booking_duration', HS_CRM_DEFAULT_BOOKING_DURATION))
     ));
 }
 add_action('wp_enqueue_scripts', 'hs_crm_enqueue_assets');
