@@ -129,7 +129,8 @@ class HS_CRM_Admin {
                                 <th style="width: 10%;">Status</th>
                                 <th style="width: 10%;">Truck</th>
                                 <th style="width: 12%;">Status Change</th>
-                                <th style="width: 18%;">Action</th>
+                                <th style="width: 8%;">Edit</th>
+                                <th style="width: 10%;">Action</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                 <td>
@@ -155,14 +156,14 @@ class HS_CRM_Admin {
                                         , <?php echo esc_html($enquiry->suburb); ?>
                                     <?php endif; ?>
                                     </small>
-                                    <?php if (!empty($enquiry->pickup_address) || !empty($enquiry->dropoff_address)): ?>
+                                    <?php if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address)): ?>
                                         <br><small style="color: #0066cc; font-style: italic;">
-                                        <?php if (!empty($enquiry->pickup_address)): ?>
-                                            Pickup: <?php echo esc_html($enquiry->pickup_address); ?>
+                                        <?php if (!empty($enquiry->delivery_from_address)): ?>
+                                            From: <?php echo esc_html($enquiry->delivery_from_address); ?>
                                         <?php endif; ?>
-                                        <?php if (!empty($enquiry->dropoff_address)): ?>
-                                            <?php if (!empty($enquiry->pickup_address)): ?> | <?php endif; ?>
-                                            Dropoff: <?php echo esc_html($enquiry->dropoff_address); ?>
+                                        <?php if (!empty($enquiry->delivery_to_address)): ?>
+                                            <?php if (!empty($enquiry->delivery_from_address)): ?> | <?php endif; ?>
+                                            To: <?php echo esc_html($enquiry->delivery_to_address); ?>
                                         <?php endif; ?>
                                         </small>
                                     <?php endif; ?>
@@ -222,12 +223,14 @@ class HS_CRM_Admin {
                                     </select>
                                 </td>
                                 <td>
+                                    <button type="button" class="button button-small hs-crm-edit-enquiry" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">Edit</button>
+                                </td>
+                                <td>
                                     <select class="hs-crm-action-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                         <option value="">Select Action...</option>
                                         <option value="send_quote">Send Quote</option>
                                         <option value="send_invoice">Send Invoice</option>
                                         <option value="send_receipt">Send Receipt</option>
-                                        <option value="edit_details">Edit Details</option>
                                     </select>
                                 </td>
                             </tr>
@@ -235,7 +238,7 @@ class HS_CRM_Admin {
                             <!-- Notes section - collapsible -->
                             <?php if (!empty($notes)): ?>
                                 <tr class="hs-crm-notes-toggle-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                    <td colspan="7" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
+                                    <td colspan="8" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
                                         <span class="hs-crm-notes-toggle dashicons dashicons-arrow-down" style="font-size: 16px; vertical-align: middle;"></span>
                                         <strong>Notes (<?php echo count($notes); ?>)</strong> - Click to expand
                                     </td>
@@ -245,7 +248,7 @@ class HS_CRM_Admin {
                                         <td class="hs-crm-note-date">
                                             <?php echo esc_html(hs_crm_format_date($note->created_at)); ?>
                                         </td>
-                                        <td colspan="5" class="hs-crm-note-content">
+                                        <td colspan="6" class="hs-crm-note-content">
                                             <div class="hs-crm-note-text"><?php echo esc_html(stripslashes($note->note)); ?></div>
                                         </td>
                                         <td class="hs-crm-note-actions">
@@ -257,7 +260,7 @@ class HS_CRM_Admin {
                             
                             <!-- Add note row -->
                             <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo esc_attr($add_note_row_style); ?>">
-                                <td colspan="6">
+                                <td colspan="7">
                                     <textarea class="hs-crm-new-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" rows="2" placeholder="Add a new note..."></textarea>
                                 </td>
                                 <td>
@@ -298,29 +301,19 @@ class HS_CRM_Admin {
                         <input type="tel" id="enquiry-phone" name="phone" required>
                     </div>
                     
-                    <div class="hs-crm-form-group">
+                    <div class="hs-crm-form-group hs-crm-form-group-full">
                         <label for="enquiry-address">Address *</label>
                         <textarea id="enquiry-address" name="address" rows="3" required></textarea>
                     </div>
                     
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-pickup-address">Pickup Address</label>
-                        <textarea id="enquiry-pickup-address" name="pickup_address" rows="2" placeholder="Pick-up location"></textarea>
+                    <div class="hs-crm-form-group hs-crm-form-group-full">
+                        <label for="enquiry-delivery-from-address">From Address</label>
+                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="2" placeholder="Pick-up location"></textarea>
                     </div>
                     
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-dropoff-address">Dropoff Address</label>
-                        <textarea id="enquiry-dropoff-address" name="dropoff_address" rows="2" placeholder="Drop-off location"></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-delivery-from-address">Delivery From Address</label>
-                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="2" placeholder="Additional pick-up location details"></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-delivery-to-address">Delivery To Address</label>
-                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="2" placeholder="Additional drop-off location details"></textarea>
+                    <div class="hs-crm-form-group hs-crm-form-group-full">
+                        <label for="enquiry-delivery-to-address">To Address</label>
+                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="2" placeholder="Drop-off location"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -384,7 +377,7 @@ class HS_CRM_Admin {
                         </select>
                     </div>
                     
-                    <div class="hs-crm-form-group">
+                    <div class="hs-crm-form-group hs-crm-form-group-full">
                         <label for="enquiry-property-notes">Property Notes</label>
                         <textarea id="enquiry-property-notes" name="property_notes" rows="3" placeholder="Additional notes about the property"></textarea>
                     </div>
@@ -444,7 +437,7 @@ class HS_CRM_Admin {
                         </select>
                     </div>
                     
-                    <div class="hs-crm-form-group">
+                    <div class="hs-crm-form-group hs-crm-form-buttons">
                         <button type="submit" class="button button-primary">Save Enquiry</button>
                         <button type="button" class="button hs-crm-modal-close">Cancel</button>
                     </div>
@@ -562,14 +555,6 @@ class HS_CRM_Admin {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);
         }
         
-        if (!empty($_POST['pickup_address'])) {
-            $data['pickup_address'] = sanitize_textarea_field($_POST['pickup_address']);
-        }
-        
-        if (!empty($_POST['dropoff_address'])) {
-            $data['dropoff_address'] = sanitize_textarea_field($_POST['dropoff_address']);
-        }
-        
         if (!empty($_POST['delivery_from_address'])) {
             $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
         }
@@ -671,12 +656,6 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['address'])) {
             $data['address'] = sanitize_textarea_field($_POST['address']);
-        }
-        if (isset($_POST['pickup_address'])) {
-            $data['pickup_address'] = sanitize_textarea_field($_POST['pickup_address']);
-        }
-        if (isset($_POST['dropoff_address'])) {
-            $data['dropoff_address'] = sanitize_textarea_field($_POST['dropoff_address']);
         }
         if (isset($_POST['delivery_from_address'])) {
             $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);

@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.4
+Stable tag: 1.6
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,12 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 1.6 =
+* Simplified address fields to only "From Address" and "To Address" (removed separate pickup/dropoff fields)
+* Added dedicated "Edit" button to enquiry table for easier access (removed from action dropdown)
+* Improved edit details modal layout with better column organization for desktop viewing
+* Enhanced user experience with clearer field labels and better form organization
 
 = 1.4 =
 * Added separated booking time fields (booking start and finish) for admin to enter actual booking times

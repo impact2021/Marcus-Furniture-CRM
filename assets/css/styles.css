@@ -283,19 +283,27 @@
     text-transform: uppercase;
 }
 
-.status-not-actioned {
+.status-not-actioned,
+.status-first-contact {
     background: #f0f0f0;
     color: #666;
 }
 
-.status-emailed {
+.status-emailed,
+.status-quote-sent {
     background: #e3f2fd;
     color: #1976d2;
 }
 
-.status-quoted {
+.status-quoted,
+.status-booking-confirmed {
     background: #fff3e0;
     color: #f57c00;
+}
+
+.status-deposit-paid {
+    background: #e1f5fe;
+    color: #0277bd;
 }
 
 .status-completed {
@@ -340,7 +348,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     width: 90%;
-    max-width: 800px;
+    max-width: 1200px;
     max-height: 85vh;
     overflow-y: auto;
 }
@@ -388,6 +396,39 @@
 
 .hs-crm-modal input[readonly] {
     background: #f5f5f5;
+}
+
+/* Enquiry Form Multi-Column Layout for Desktop */
+#hs-crm-enquiry-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#hs-crm-enquiry-form .hs-crm-form-group {
+    margin-bottom: 0;
+}
+
+/* Full-width fields */
+#hs-crm-enquiry-form .hs-crm-form-group-full {
+    grid-column: 1 / -1;
+}
+
+/* Buttons should span full width */
+#hs-crm-enquiry-form .hs-crm-form-buttons {
+    grid-column: 1 / -1;
+}
+
+/* Responsive: Single column on mobile */
+@media (max-width: 768px) {
+    #hs-crm-enquiry-form {
+        grid-template-columns: 1fr;
+    }
+    
+    #hs-crm-enquiry-form .hs-crm-form-group-full,
+    #hs-crm-enquiry-form .hs-crm-form-buttons {
+        grid-column: 1;
+    }
 }
 
 /* Quote Table Styles */
