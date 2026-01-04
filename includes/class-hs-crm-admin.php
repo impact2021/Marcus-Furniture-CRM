@@ -315,12 +315,12 @@ class HS_CRM_Admin {
                     
                     <div class="hs-crm-form-group">
                         <label for="enquiry-delivery-from-address">Delivery From Address</label>
-                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="2" placeholder="Alternate pick-up address"></textarea>
+                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="2" placeholder="Additional pick-up location details"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
                         <label for="enquiry-delivery-to-address">Delivery To Address</label>
-                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="2" placeholder="Alternate drop-off address"></textarea>
+                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="2" placeholder="Additional drop-off location details"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
