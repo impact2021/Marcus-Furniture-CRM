@@ -270,9 +270,25 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        // Update the full name field if either first_name or last_name is being updated
         if (isset($data['first_name']) || isset($data['last_name'])) {
-            $first_name = isset($data['first_name']) ? sanitize_text_field($data['first_name']) : '';
-            $last_name = isset($data['last_name']) ? sanitize_text_field($data['last_name']) : '';
+            // If both are provided, use them directly
+            if (isset($data['first_name']) && isset($data['last_name'])) {
+                $first_name = sanitize_text_field($data['first_name']);
+                $last_name = sanitize_text_field($data['last_name']);
+            } else {
+                // Get current enquiry to fetch missing name parts
+                $current_enquiry = self::get_enquiry($id);
+                
+                if ($current_enquiry) {
+                    $first_name = isset($data['first_name']) ? sanitize_text_field($data['first_name']) : $current_enquiry->first_name;
+                    $last_name = isset($data['last_name']) ? sanitize_text_field($data['last_name']) : $current_enquiry->last_name;
+                } else {
+                    // Fallback if enquiry not found - use only the provided values
+                    $first_name = isset($data['first_name']) ? sanitize_text_field($data['first_name']) : '';
+                    $last_name = isset($data['last_name']) ? sanitize_text_field($data['last_name']) : '';
+                }
+            }
             $update_data['name'] = trim($first_name . ' ' . $last_name);
             $update_format[] = '%s';
         }
@@ -370,6 +386,11 @@ class HS_CRM_Database {
         if (isset($data['truck_id'])) {
             $update_data['truck_id'] = ($data['truck_id'] !== null && $data['truck_id'] !== '') ? intval($data['truck_id']) : null;
             $update_format[] = '%d';
+        }
+        
+        if (isset($data['contact_source'])) {
+            $update_data['contact_source'] = sanitize_text_field($data['contact_source']);
+            $update_format[] = '%s';
         }
         
         if (isset($data['status'])) {

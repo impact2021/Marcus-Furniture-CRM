@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 1.4 - 2026-01-04
+
+### Fixed
+- **Enquiry Update Error**: Fixed "Failed to update enquiry" error when editing enquiry details
+  - Added missing `contact_source` field handling in update enquiry AJAX handler
+  - Added `contact_source` field support to database update method
+  - Fixed name field concatenation logic to properly handle partial name updates
+  - Improved error handling to prevent data loss when database queries fail
+  - Changes ensure all form fields are properly saved when editing enquiries
+
+### Technical
+- Updated `HS_CRM_Admin::ajax_update_enquiry()` to process `contact_source` field
+- Updated `HS_CRM_Database::update_enquiry()` to handle `contact_source` field
+- Enhanced name field update logic to fetch existing values when only one name field is updated
+- Added proper null checks to avoid overwriting data on database query failures
+
 ## Version 1.3 - 2026-01-04
 
 ### Added
