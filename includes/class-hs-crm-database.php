@@ -359,14 +359,15 @@ class HS_CRM_Database {
                 // Update the address field with concatenated format (matching insert behavior)
                 if (!empty($from_address) && !empty($to_address)) {
                     $update_data['address'] = $from_address . ' → ' . $to_address;
-                    $update_format[] = '%s';
                 } elseif (!empty($from_address)) {
                     $update_data['address'] = $from_address;
-                    $update_format[] = '%s';
                 } elseif (!empty($to_address)) {
                     $update_data['address'] = $to_address;
-                    $update_format[] = '%s';
+                } else {
+                    // Both addresses are empty - clear the address field for consistency
+                    $update_data['address'] = '';
                 }
+                $update_format[] = '%s';
             }
         }
         
