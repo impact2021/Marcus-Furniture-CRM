@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 1.2
+ * Version: 1.3
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '1.2');
+define('HS_CRM_VERSION', '1.3');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -166,6 +166,12 @@ function hs_crm_check_db_version() {
         // Run migration for version 1.5.0 - Add truck_id, house_size, number_of_rooms, stairs columns
         hs_crm_migrate_to_1_5_0();
         update_option('hs_crm_db_version', '1.5.0');
+    }
+    
+    if (version_compare($db_version, '1.6.0', '<')) {
+        // Run migration for version 1.6.0 - Add delivery_from_address and delivery_to_address columns
+        hs_crm_migrate_to_1_6_0();
+        update_option('hs_crm_db_version', '1.6.0');
     }
 }
 
@@ -330,6 +336,29 @@ function hs_crm_migrate_to_1_5_0() {
     // Add stairs column if it doesn't exist
     if (!in_array('stairs', $column_names)) {
         $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN stairs varchar(50) DEFAULT '' NOT NULL AFTER number_of_rooms");
+    }
+}
+
+/**
+ * Migrate database to version 1.6.0
+ * Adds delivery_from_address and delivery_to_address columns
+ */
+function hs_crm_migrate_to_1_6_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add delivery_from_address column if it doesn't exist
+    if (!in_array('delivery_from_address', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN delivery_from_address text DEFAULT '' NOT NULL AFTER address");
+    }
+    
+    // Add delivery_to_address column if it doesn't exist
+    if (!in_array('delivery_to_address', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN delivery_to_address text DEFAULT '' NOT NULL AFTER delivery_from_address");
     }
 }
 
