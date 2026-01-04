@@ -283,6 +283,21 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        if (isset($data['house_size'])) {
+            $update_data['house_size'] = sanitize_text_field($data['house_size']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['number_of_rooms'])) {
+            $update_data['number_of_rooms'] = sanitize_text_field($data['number_of_rooms']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['stairs'])) {
+            $update_data['stairs'] = sanitize_text_field($data['stairs']);
+            $update_format[] = '%s';
+        }
+        
         if (isset($data['move_date'])) {
             $update_data['move_date'] = !empty($data['move_date']) ? sanitize_text_field($data['move_date']) : null;
             $update_format[] = '%s';
@@ -291,6 +306,11 @@ class HS_CRM_Database {
         if (isset($data['move_time'])) {
             $update_data['move_time'] = !empty($data['move_time']) ? sanitize_text_field($data['move_time']) : null;
             $update_format[] = '%s';
+        }
+        
+        if (isset($data['truck_id'])) {
+            $update_data['truck_id'] = ($data['truck_id'] !== null && $data['truck_id'] !== '') ? intval($data['truck_id']) : null;
+            $update_format[] = '%d';
         }
         
         if (isset($data['status'])) {
