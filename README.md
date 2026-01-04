@@ -19,8 +19,8 @@ A comprehensive WordPress plugin for managing furniture moving enquiries with co
 
 - **[Installation Guide](INSTALL.md)** - Complete installation instructions
 - **[Deployment Guide](DEPLOYMENT.md)** - Production deployment steps
-- **[Gravity Forms Integration](marcus-furniture-crm/GRAVITY_FORMS_INTEGRATION.md)** - Gravity Forms setup
-- **[User Guide](marcus-furniture-crm/README.md)** - How to use the plugin
+- **[Gravity Forms Integration](GRAVITY_FORMS_INTEGRATION.md)** - Gravity Forms setup
+- **[User Guide](USER_GUIDE.md)** - How to use the plugin
 
 ## ✨ Features
 

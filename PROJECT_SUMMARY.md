@@ -6,13 +6,15 @@ Successfully adapted the Home Shield Painters CRM WordPress plugin for Marcus Fu
 ## Deliverables
 
 ### Complete WordPress Plugin
-Location: `/marcus-furniture-crm/`
+Location: Repository root
 
 **Structure:**
 ```
-marcus-furniture-crm/
+/
 ├── marcus-furniture-crm.php        # Main plugin file
-├── README.md                        # Installation & usage documentation
+├── readme.txt                      # WordPress standard readme
+├── USER_GUIDE.md                   # Installation & usage documentation
+├── GRAVITY_FORMS_INTEGRATION.md    # Gravity Forms integration guide
 ├── assets/
 │   ├── css/styles.css              # Plugin styling
 │   └── js/scripts.js               # Interactive functionality
@@ -26,8 +28,10 @@ marcus-furniture-crm/
 ```
 
 ### Documentation
-- `marcus-furniture-crm/README.md` - User documentation
+- `USER_GUIDE.md` - User documentation
 - `CHANGES.md` - Complete list of modifications from original
+- `INSTALL.md` - Installation instructions
+- `DEPLOYMENT.md` - Deployment guide
 - `.gitignore` - Clean repository configuration
 
 ## Features Implemented
@@ -251,7 +255,7 @@ If migrating from Home Shield Painters CRM:
 
 ## Support Resources
 
-- Plugin documentation: `marcus-furniture-crm/README.md`
+- Plugin documentation: `USER_GUIDE.md`
 - Change log: `CHANGES.md`
 - WordPress Codex: https://codex.wordpress.org/
 - Google Maps API: https://developers.google.com/maps/

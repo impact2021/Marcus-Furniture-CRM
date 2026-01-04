@@ -283,9 +283,9 @@ AND created_at < DATE_SUB(NOW(), INTERVAL 1 YEAR);
 ## Support
 
 ### Documentation
-- Plugin README: `/marcus-furniture-crm/README.md`
-- Changes Log: `/CHANGES.md`
-- Project Summary: `/PROJECT_SUMMARY.md`
+- Plugin User Guide: `USER_GUIDE.md`
+- Changes Log: `CHANGES.md`
+- Project Summary: `PROJECT_SUMMARY.md`
 
 ### WordPress Resources
 - WordPress Codex: https://codex.wordpress.org/

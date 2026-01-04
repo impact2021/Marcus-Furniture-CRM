@@ -37,7 +37,7 @@ Added a properly formatted `readme.txt` file following WordPress plugin reposito
 
 Added comprehensive Gravity Forms integration in the main plugin file:
 
-**Location**: `/marcus-furniture-crm/marcus-furniture-crm.php` (lines 288-436)
+**Location**: `marcus-furniture-crm.php` (lines 288-436)
 
 **Features**:
 - Automatic detection of forms to integrate (by title keywords or CSS class)
@@ -93,10 +93,10 @@ The integration intelligently maps Gravity Forms fields to CRM fields:
 
 ### Created Files:
 1. `/marcus-furniture-crm/readme.txt` - WordPress standard readme
-2. `/marcus-furniture-crm/GRAVITY_FORMS_INTEGRATION.md` - Integration guide
+2. `/GRAVITY_FORMS_INTEGRATION.md` - Integration guide
 
 ### Modified Files:
-1. `/marcus-furniture-crm/marcus-furniture-crm.php` - Added Gravity Forms integration
+1. `marcus-furniture-crm.php` - Added Gravity Forms integration
 2. `/marcus-furniture-crm/README.md` - Added integration documentation
 3. `/DEPLOYMENT.md` - Added troubleshooting and installation updates
 

@@ -121,7 +121,7 @@ Entirely new feature set:
 
 ### New Files Created
 1. `includes/class-hs-crm-truck-scheduler.php` - Complete truck scheduling system
-2. `marcus-furniture-crm/README.md` - Documentation
+2. `USER_GUIDE.md` - Documentation
 
 ### Modified Files from Original
 
