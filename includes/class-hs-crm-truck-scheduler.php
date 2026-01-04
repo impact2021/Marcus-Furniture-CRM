@@ -149,9 +149,7 @@ class HS_CRM_Truck_Scheduler {
                         </thead>
                         <tbody>
                             <?php
-                            $month = date('m', $month_timestamp);
-                            $year = date('Y', $month_timestamp);
-                            $days_in_month = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+                            $days_in_month = date('t', $month_timestamp);
                             for ($day = 1; $day <= $days_in_month; $day++):
                                 $current_date = date('Y-m-d', strtotime($current_month . '-' . sprintf('%02d', $day)));
                                 $day_name = date('D', strtotime($current_date));
