@@ -16,6 +16,8 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
+// Note: Using HS_CRM prefix for backward compatibility with existing database tables
+// and class structure from the original Home Shield CRM plugin
 define('HS_CRM_VERSION', '1.0');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));

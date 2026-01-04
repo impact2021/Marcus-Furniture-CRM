@@ -245,7 +245,7 @@ jQuery(document).ready(function($) {
         // Quote table functionality
         function getQuoteItemRowHtml() {
             return '<tr class="quote-item-row">' +
-                '<td><input type="text" class="quote-description" placeholder="e.g., Interior wall painting"></td>' +
+                '<td><input type="text" class="quote-description" placeholder="e.g., 3-bedroom house move"></td>' +
                 '<td><input type="number" class="quote-cost" placeholder="0.00" step="0.01" min="0"></td>' +
                 '<td class="quote-gst">$0.00</td>' +
                 '<td><button type="button" class="remove-quote-item button">×</button></td>' +
