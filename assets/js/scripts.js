@@ -587,6 +587,9 @@ jQuery(document).ready(function($) {
     // Truck Scheduler page functionality
     if ($('.hs-crm-scheduler-wrap').length > 0) {
         
+        // Track if end time has been manually edited
+        var endTimeManuallyEdited = false;
+        
         // Add Truck button
         $('#hs-crm-add-truck-btn').on('click', function() {
             $('#truck-modal-title').text('Add Truck');
@@ -666,9 +669,7 @@ jQuery(document).ready(function($) {
             $('.hs-crm-delete-booking-btn').hide();
             $('#hs-crm-booking-modal').fadeIn();
             // Reset manual edit flag when opening new booking
-            if (typeof endTimeManuallyEdited !== 'undefined') {
-                endTimeManuallyEdited = false;
-            }
+            endTimeManuallyEdited = false;
         });
         
         // Click on calendar cell to add booking
@@ -689,9 +690,7 @@ jQuery(document).ready(function($) {
             $('.hs-crm-delete-booking-btn').hide();
             $('#hs-crm-booking-modal').fadeIn();
             // Reset manual edit flag when opening new booking from calendar
-            if (typeof endTimeManuallyEdited !== 'undefined') {
-                endTimeManuallyEdited = false;
-            }
+            endTimeManuallyEdited = false;
         });
         
         // Click on booking item to edit
@@ -721,9 +720,7 @@ jQuery(document).ready(function($) {
                             $('.hs-crm-delete-booking-btn').show();
                             $('#hs-crm-booking-modal').fadeIn();
                             // When editing, consider end time as manually set if it exists
-                            if (typeof endTimeManuallyEdited !== 'undefined') {
-                                endTimeManuallyEdited = booking.end_time ? true : false;
-                            }
+                            endTimeManuallyEdited = !!booking.end_time;
                         }
                     }
                 }
@@ -754,8 +751,6 @@ jQuery(document).ready(function($) {
         });
         
         // Auto-calculate end time based on start time and default duration
-        var endTimeManuallyEdited = false;
-        
         $('#booking-end-time').on('change', function() {
             // Mark end time as manually edited if user changes it
             endTimeManuallyEdited = true;
