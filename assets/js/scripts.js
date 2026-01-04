@@ -141,6 +141,57 @@ jQuery(document).ready(function($) {
             });
         });
         
+        // Handle truck assignment
+        $('.hs-crm-truck-select').on('change', function() {
+            var $select = $(this);
+            var enquiryId = $select.data('enquiry-id');
+            var truckId = $select.val();
+            
+            $.ajax({
+                url: hsCrmAjax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'hs_crm_update_truck',
+                    nonce: hsCrmAjax.nonce,
+                    enquiry_id: enquiryId,
+                    truck_id: truckId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $select.data('current-truck', truckId);
+                        // Optional: Show success message
+                        // alert(response.data.message);
+                    } else {
+                        alert('Error: ' + response.data.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating truck assignment.');
+                }
+            });
+        });
+        
+        // Handle notes toggle
+        $('.hs-crm-notes-toggle-row').on('click', function() {
+            var $row = $(this);
+            var enquiryId = $row.data('enquiry-id');
+            var $icon = $row.find('.hs-crm-notes-toggle');
+            var $noteRows = $row.closest('tbody').find('.hs-crm-note-row[data-enquiry-id="' + enquiryId + '"]');
+            var $addNoteRow = $row.closest('tbody').find('.hs-crm-add-note-row[data-enquiry-id="' + enquiryId + '"]');
+            
+            if ($noteRows.is(':visible')) {
+                $noteRows.slideUp(200);
+                $addNoteRow.slideUp(200);
+                $icon.removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
+                $row.find('strong').next().text(' - Click to expand');
+            } else {
+                $noteRows.slideDown(200);
+                $addNoteRow.slideDown(200);
+                $icon.removeClass('dashicons-arrow-down').addClass('dashicons-arrow-up');
+                $row.find('strong').next().text(' - Click to collapse');
+            }
+        });
+        
         // Handle action dropdown (send quote/invoice/receipt)
         $('.hs-crm-action-select').on('change', function() {
             var $select = $(this);

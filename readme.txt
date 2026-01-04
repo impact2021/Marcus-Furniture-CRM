@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.1
+Stable tag: 1.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -140,6 +140,15 @@ The plugin creates four tables:
 
 == Changelog ==
 
+= 1.2 =
+* Added documentation page explaining Gravity Forms integration
+* Added truck assignment functionality to enquiries
+* Added house details fields: house size, number of rooms, stairs
+* Reorganized enquiries table columns for better space management
+* Combined source, contact date, and move date into one column
+* Combined contact info and address into another column
+* Made notes collapsible with toggle icon for better UI
+
 = 1.0 =
 * Initial release
 * Customer enquiry management system
@@ -154,6 +163,9 @@ The plugin creates four tables:
 * Timezone support
 
 == Upgrade Notice ==
+
+= 1.2 =
+Enhanced enquiries management with truck assignments, house details, and improved UI layout.
 
 = 1.0 =
 Initial release of Marcus Furniture CRM.
