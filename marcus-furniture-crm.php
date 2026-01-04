@@ -151,6 +151,12 @@ function hs_crm_check_db_version() {
         hs_crm_migrate_to_1_3_0();
         update_option('hs_crm_db_version', '1.3.0');
     }
+    
+    if (version_compare($db_version, '1.4.0', '<')) {
+        // Run migration for version 1.4.0 - Add suburb and move_time columns
+        hs_crm_migrate_to_1_4_0();
+        update_option('hs_crm_db_version', '1.4.0');
+    }
 }
 
 /**
@@ -262,6 +268,29 @@ function hs_crm_migrate_to_1_3_0() {
 }
 
 /**
+ * Migrate database to version 1.4.0
+ * Adds suburb and move_time columns
+ */
+function hs_crm_migrate_to_1_4_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add suburb column if it doesn't exist
+    if (!in_array('suburb', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN suburb varchar(255) DEFAULT '' NOT NULL AFTER address");
+    }
+    
+    // Add move_time column if it doesn't exist
+    if (!in_array('move_time', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN move_time time DEFAULT NULL AFTER move_date");
+    }
+}
+
+/**
  * Enqueue styles and scripts
  */
 function hs_crm_enqueue_assets() {
@@ -327,7 +356,9 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         'email' => array('email', 'e-mail', 'email address'),
         'phone' => array('phone', 'telephone', 'mobile', 'phone number'),
         'address' => array('address', 'street address', 'location'),
-        'move_date' => array('move date', 'moving date', 'preferred date', 'date')
+        'suburb' => array('suburb', 'city', 'town'),
+        'move_date' => array('move date', 'moving date', 'preferred date', 'date'),
+        'move_time' => array('move time', 'moving time', 'preferred time', 'time')
     );
     
     $data = array(
@@ -362,16 +393,33 @@ function hs_crm_gravity_forms_integration($entry, $form) {
                             $data['last_name'] = sanitize_text_field($field_value[6]);
                         }
                     } elseif ($field->type === 'address' && is_array($field_value)) {
-                        // Combine address parts
-                        $address_parts = array();
-                        foreach ($field_value as $part) {
-                            if (!empty($part)) {
-                                $address_parts[] = $part;
-                            }
+                        // Gravity Forms address field has specific indices:
+                        // - field_value[1] = Street Address
+                        // - field_value[2] = Address Line 2
+                        // - field_value[3] = City/Suburb
+                        // - field_value[4] = State/Province
+                        // - field_value[5] = ZIP/Postal Code
+                        // - field_value[6] = Country
+                        
+                        // Extract suburb/city if available
+                        if (!empty($field_value[3])) {
+                            $data['suburb'] = sanitize_text_field($field_value[3]);
                         }
+                        
+                        // Combine address parts for address field
+                        $address_parts = array();
+                        if (!empty($field_value[1])) $address_parts[] = $field_value[1]; // Street
+                        if (!empty($field_value[2])) $address_parts[] = $field_value[2]; // Address Line 2
+                        if (!empty($field_value[3])) $address_parts[] = $field_value[3]; // City
+                        if (!empty($field_value[4])) $address_parts[] = $field_value[4]; // State
+                        if (!empty($field_value[5])) $address_parts[] = $field_value[5]; // ZIP
+                        
                         $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
                     } elseif ($field->type === 'date') {
                         // Format date properly
+                        $data[$crm_field] = sanitize_text_field($field_value);
+                    } elseif ($field->type === 'time') {
+                        // Format time properly
                         $data[$crm_field] = sanitize_text_field($field_value);
                     } else {
                         // Standard text field
@@ -433,11 +481,21 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             $message .= '<p><strong>Email:</strong> ' . esc_html($data['email']) . '</p>';
             $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
             $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
+            if (!empty($data['suburb'])) {
+                $message .= '<p><strong>Suburb:</strong> ' . esc_html($data['suburb']) . '</p>';
+            }
             if (!empty($data['move_date'])) {
                 // Validate and format the date safely
                 $timestamp = strtotime($data['move_date']);
                 if ($timestamp !== false) {
-                    $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', $timestamp)) . '</p>';
+                    $move_date_display = date('d/m/Y', $timestamp);
+                    if (!empty($data['move_time'])) {
+                        $time_timestamp = strtotime($data['move_time']);
+                        if ($time_timestamp !== false) {
+                            $move_date_display .= ' at ' . date('g:i A', $time_timestamp);
+                        }
+                    }
+                    $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html($move_date_display) . '</p>';
                 } else {
                     $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html($data['move_date']) . '</p>';
                 }

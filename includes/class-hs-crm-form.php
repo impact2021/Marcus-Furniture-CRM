@@ -55,8 +55,19 @@ class HS_CRM_Form {
                 </div>
                 
                 <div class="hs-crm-form-group">
-                    <input type="date" id="hs_move_date" name="move_date" placeholder="Requested Move Date">
-                    <small>When would you like to move?</small>
+                    <input type="text" id="hs_suburb" name="suburb" placeholder="Suburb">
+                </div>
+                
+                <div class="hs-crm-form-row">
+                    <div class="hs-crm-form-group hs-crm-form-half">
+                        <input type="date" id="hs_move_date" name="move_date" placeholder="Requested Move Date">
+                        <small>When would you like to move?</small>
+                    </div>
+                    
+                    <div class="hs-crm-form-group hs-crm-form-half">
+                        <input type="time" id="hs_move_time" name="move_time" placeholder="Preferred Time">
+                        <small>Preferred time for the move</small>
+                    </div>
                 </div>
                 
                 <div class="hs-crm-form-group">
@@ -102,9 +113,19 @@ class HS_CRM_Form {
             'contact_source' => 'form'
         );
         
+        // Add suburb if provided
+        if (!empty($_POST['suburb'])) {
+            $data['suburb'] = sanitize_text_field($_POST['suburb']);
+        }
+        
         // Add move_date if provided
         if (!empty($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
+        }
+        
+        // Add move_time if provided
+        if (!empty($_POST['move_time'])) {
+            $data['move_time'] = sanitize_text_field($_POST['move_time']);
         }
         
         // Insert into database
@@ -142,8 +163,15 @@ class HS_CRM_Form {
         $message .= '<p><strong>Email:</strong> ' . esc_html($data['email']) . '</p>';
         $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
         $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
+        if (!empty($data['suburb'])) {
+            $message .= '<p><strong>Suburb:</strong> ' . esc_html($data['suburb']) . '</p>';
+        }
         if (!empty($data['move_date'])) {
-            $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', strtotime($data['move_date']))) . '</p>';
+            $move_date_display = date('d/m/Y', strtotime($data['move_date']));
+            if (!empty($data['move_time'])) {
+                $move_date_display .= ' at ' . date('g:i A', strtotime($data['move_time']));
+            }
+            $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html($move_date_display) . '</p>';
         }
         $message .= '<p style="font-size: 12px; color: #666;">We look forward to helping you with your move.</p>';
         $message .= '<p style="font-size: 12px; color: #666;">Marcus Furniture</p>';
@@ -175,8 +203,15 @@ class HS_CRM_Form {
         $message .= '<p><strong>Email:</strong> ' . esc_html($data['email']) . '</p>';
         $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
         $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
+        if (!empty($data['suburb'])) {
+            $message .= '<p><strong>Suburb:</strong> ' . esc_html($data['suburb']) . '</p>';
+        }
         if (!empty($data['move_date'])) {
-            $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', strtotime($data['move_date']))) . '</p>';
+            $move_date_display = date('d/m/Y', strtotime($data['move_date']));
+            if (!empty($data['move_time'])) {
+                $move_date_display .= ' at ' . date('g:i A', strtotime($data['move_time']));
+            }
+            $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html($move_date_display) . '</p>';
         }
         $message .= '<p><a href="' . esc_url($dashboard_link) . '" style="display: inline-block; padding: 10px 20px; background: #0073aa; color: white; text-decoration: none; border-radius: 4px;">View in Dashboard</a></p>';
         $message .= '</body>';
