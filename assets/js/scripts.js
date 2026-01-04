@@ -587,6 +587,9 @@ jQuery(document).ready(function($) {
     // Truck Scheduler page functionality
     if ($('.hs-crm-scheduler-wrap').length > 0) {
         
+        // Track if end time has been manually edited
+        var endTimeManuallyEdited = false;
+        
         // Add Truck button
         $('#hs-crm-add-truck-btn').on('click', function() {
             $('#truck-modal-title').text('Add Truck');
@@ -665,6 +668,8 @@ jQuery(document).ready(function($) {
             $('#booking-id').val('');
             $('.hs-crm-delete-booking-btn').hide();
             $('#hs-crm-booking-modal').fadeIn();
+            // Reset manual edit flag when opening new booking
+            endTimeManuallyEdited = false;
         });
         
         // Click on calendar cell to add booking
@@ -684,6 +689,8 @@ jQuery(document).ready(function($) {
             $('#booking-truck').val(truckId);
             $('.hs-crm-delete-booking-btn').hide();
             $('#hs-crm-booking-modal').fadeIn();
+            // Reset manual edit flag when opening new booking from calendar
+            endTimeManuallyEdited = false;
         });
         
         // Click on booking item to edit
@@ -712,6 +719,8 @@ jQuery(document).ready(function($) {
                             $('#booking-notes').val(booking.notes);
                             $('.hs-crm-delete-booking-btn').show();
                             $('#hs-crm-booking-modal').fadeIn();
+                            // When editing, consider end time as manually set if it exists
+                            endTimeManuallyEdited = !!booking.end_time;
                         }
                     }
                 }
@@ -739,6 +748,51 @@ jQuery(document).ready(function($) {
                     }
                 }
             });
+        });
+        
+        // Auto-calculate end time based on start time and default duration
+        $('#booking-end-time').on('change', function() {
+            // Mark end time as manually edited if user changes it
+            endTimeManuallyEdited = true;
+        });
+        
+        $('#booking-start-time').on('change', function() {
+            var startTime = $(this).val();
+            if (!startTime) {
+                return;
+            }
+            
+            // Validate time format
+            var timeParts = startTime.split(':');
+            if (timeParts.length !== 2) {
+                return; // Invalid format
+            }
+            
+            // Parse start time
+            var hours = parseInt(timeParts[0], 10);
+            var minutes = parseInt(timeParts[1], 10);
+            
+            // Validate parsed values
+            if (isNaN(hours) || isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+                return; // Invalid time values
+            }
+            
+            // Get default duration in hours from settings
+            var durationHours = hsCrmAjax.defaultBookingDuration || 3;
+            
+            // Calculate end time - convert duration to minutes first to avoid floating-point issues
+            var durationMinutes = Math.round(durationHours * 60);
+            var totalMinutes = hours * 60 + minutes + durationMinutes;
+            var endHours = Math.floor(totalMinutes / 60) % 24;
+            var endMinutes = totalMinutes % 60;
+            
+            // Format as HH:MM
+            var endTime = String(endHours).padStart(2, '0') + ':' + String(endMinutes).padStart(2, '0');
+            
+            // Set end time only if it hasn't been manually edited
+            if (!endTimeManuallyEdited) {
+                $('#booking-end-time').val(endTime);
+            }
         });
         
         // Delete booking button

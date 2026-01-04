@@ -40,6 +40,9 @@ class HS_CRM_Settings {
         register_setting('hs_crm_settings', 'hs_crm_admin_email', array(
             'sanitize_callback' => array($this, 'sanitize_admin_email')
         ));
+        register_setting('hs_crm_settings', 'hs_crm_default_booking_duration', array(
+            'sanitize_callback' => array($this, 'sanitize_booking_duration')
+        ));
     }
     
     /**
@@ -68,6 +71,36 @@ class HS_CRM_Settings {
         }
         
         return $email;
+    }
+    
+    /**
+     * Sanitize booking duration setting
+     * 
+     * @param string $duration Duration in hours
+     * @return float Sanitized duration or default value
+     */
+    public function sanitize_booking_duration($duration) {
+        // If empty, return default value
+        if (empty($duration)) {
+            return HS_CRM_DEFAULT_BOOKING_DURATION;
+        }
+        
+        // Convert to float and validate
+        $duration = floatval($duration);
+        
+        // Ensure it's a positive number between 0.5 and 24 hours
+        if ($duration < 0.5 || $duration > 24) {
+            add_settings_error(
+                'hs_crm_default_booking_duration',
+                'invalid_duration',
+                'Default booking duration must be between 0.5 and 24 hours.',
+                'error'
+            );
+            // Return the current saved value instead of the invalid one
+            return get_option('hs_crm_default_booking_duration', HS_CRM_DEFAULT_BOOKING_DURATION);
+        }
+        
+        return $duration;
     }
     
     /**
@@ -112,6 +145,24 @@ class HS_CRM_Settings {
                                    class="regular-text">
                             <p class="description">
                                 Email address to receive form submissions. Defaults to WordPress admin email if not set.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="hs_crm_default_booking_duration">Default Booking Duration (Hours)</label>
+                        </th>
+                        <td>
+                            <input type="number" 
+                                   id="hs_crm_default_booking_duration" 
+                                   name="hs_crm_default_booking_duration" 
+                                   value="<?php echo esc_attr(get_option('hs_crm_default_booking_duration', HS_CRM_DEFAULT_BOOKING_DURATION)); ?>" 
+                                   step="0.5" 
+                                   min="0.5" 
+                                   max="24" 
+                                   class="small-text">
+                            <p class="description">
+                                Default duration for truck bookings in hours. When a start time is entered, the end time will automatically be set to start time + this duration. Default is <?php echo HS_CRM_DEFAULT_BOOKING_DURATION; ?> hours.
                             </p>
                         </td>
                     </tr>
