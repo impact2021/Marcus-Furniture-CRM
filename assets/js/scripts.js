@@ -665,6 +665,10 @@ jQuery(document).ready(function($) {
             $('#booking-id').val('');
             $('.hs-crm-delete-booking-btn').hide();
             $('#hs-crm-booking-modal').fadeIn();
+            // Reset manual edit flag when opening new booking
+            if (typeof endTimeManuallyEdited !== 'undefined') {
+                endTimeManuallyEdited = false;
+            }
         });
         
         // Click on calendar cell to add booking
@@ -684,6 +688,10 @@ jQuery(document).ready(function($) {
             $('#booking-truck').val(truckId);
             $('.hs-crm-delete-booking-btn').hide();
             $('#hs-crm-booking-modal').fadeIn();
+            // Reset manual edit flag when opening new booking from calendar
+            if (typeof endTimeManuallyEdited !== 'undefined') {
+                endTimeManuallyEdited = false;
+            }
         });
         
         // Click on booking item to edit
@@ -712,6 +720,10 @@ jQuery(document).ready(function($) {
                             $('#booking-notes').val(booking.notes);
                             $('.hs-crm-delete-booking-btn').show();
                             $('#hs-crm-booking-modal').fadeIn();
+                            // When editing, consider end time as manually set if it exists
+                            if (typeof endTimeManuallyEdited !== 'undefined') {
+                                endTimeManuallyEdited = booking.end_time ? true : false;
+                            }
                         }
                     }
                 }
@@ -742,6 +754,13 @@ jQuery(document).ready(function($) {
         });
         
         // Auto-calculate end time based on start time and default duration
+        var endTimeManuallyEdited = false;
+        
+        $('#booking-end-time').on('change', function() {
+            // Mark end time as manually edited if user changes it
+            endTimeManuallyEdited = true;
+        });
+        
         $('#booking-start-time').on('change', function() {
             var startTime = $(this).val();
             if (!startTime) {
@@ -764,8 +783,8 @@ jQuery(document).ready(function($) {
             // Format as HH:MM
             var endTime = String(endHours).padStart(2, '0') + ':' + String(endMinutes).padStart(2, '0');
             
-            // Set end time only if it's empty (don't override manual changes)
-            if (!$('#booking-end-time').val()) {
+            // Set end time only if it hasn't been manually edited
+            if (!endTimeManuallyEdited) {
                 $('#booking-end-time').val(endTime);
             }
         });
