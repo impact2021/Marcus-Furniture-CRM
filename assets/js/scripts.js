@@ -151,7 +151,7 @@ jQuery(document).ready(function($) {
                 url: hsCrmAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'hs_crm_update_truck',
+                    action: 'hs_crm_update_truck_assignment',
                     nonce: hsCrmAjax.nonce,
                     enquiry_id: enquiryId,
                     truck_id: truckId
@@ -193,7 +193,7 @@ jQuery(document).ready(function($) {
             }
         });
         
-        // Handle action dropdown (send quote/invoice/receipt)
+        // Handle action dropdown (send quote/invoice/receipt/edit)
         $('.hs-crm-action-select').on('change', function() {
             var $select = $(this);
             var enquiryId = $select.data('enquiry-id');
@@ -203,6 +203,48 @@ jQuery(document).ready(function($) {
                 return;
             }
             
+            // Handle edit_details action
+            if (actionType === 'edit_details') {
+                // Get enquiry data
+                $.ajax({
+                    url: hsCrmAjax.ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'hs_crm_get_enquiry',
+                        nonce: hsCrmAjax.nonce,
+                        enquiry_id: enquiryId
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            var enquiry = response.data.enquiry;
+                            $('#enquiry-modal-title').text('Edit Enquiry Details');
+                            $('#enquiry-id').val(enquiry.id);
+                            $('#enquiry-first-name').val(enquiry.first_name);
+                            $('#enquiry-last-name').val(enquiry.last_name);
+                            $('#enquiry-email').val(enquiry.email);
+                            $('#enquiry-phone').val(enquiry.phone);
+                            $('#enquiry-address').val(enquiry.address);
+                            $('#enquiry-suburb').val(enquiry.suburb || '');
+                            $('#enquiry-house-size').val(enquiry.house_size || '');
+                            $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
+                            $('#enquiry-stairs').val(enquiry.stairs || '');
+                            $('#enquiry-move-date').val(enquiry.move_date || '');
+                            $('#enquiry-move-time').val(enquiry.move_time || '');
+                            $('#enquiry-contact-source').val(enquiry.contact_source);
+                            $('#enquiry-status').val(enquiry.status);
+                            $('#hs-crm-enquiry-modal').fadeIn();
+                        }
+                        $select.val('');
+                    },
+                    error: function() {
+                        alert('An error occurred while loading enquiry data.');
+                        $select.val('');
+                    }
+                });
+                return;
+            }
+            
+            // Handle email actions (send quote/invoice/receipt)
             // Get enquiry data from the row
             var $row = $select.closest('tr');
             
@@ -511,48 +553,6 @@ jQuery(document).ready(function($) {
             $('#hs-crm-enquiry-form')[0].reset();
             $('#enquiry-id').val('');
             $('#hs-crm-enquiry-modal').fadeIn();
-        });
-        
-        // Handle "Edit Details" action
-        $(document).on('change', '.hs-crm-action-select', function() {
-            var $select = $(this);
-            var action = $select.val();
-            var enquiryId = $select.data('enquiry-id');
-            
-            if (action === 'edit_details') {
-                // Get enquiry data
-                $.ajax({
-                    url: hsCrmAjax.ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'hs_crm_get_enquiry',
-                        nonce: hsCrmAjax.nonce,
-                        enquiry_id: enquiryId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            var enquiry = response.data.enquiry;
-                            $('#enquiry-modal-title').text('Edit Enquiry Details');
-                            $('#enquiry-id').val(enquiry.id);
-                            $('#enquiry-first-name').val(enquiry.first_name);
-                            $('#enquiry-last-name').val(enquiry.last_name);
-                            $('#enquiry-email').val(enquiry.email);
-                            $('#enquiry-phone').val(enquiry.phone);
-                            $('#enquiry-address').val(enquiry.address);
-                            $('#enquiry-suburb').val(enquiry.suburb || '');
-                            $('#enquiry-house-size').val(enquiry.house_size || '');
-                            $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
-                            $('#enquiry-stairs').val(enquiry.stairs || '');
-                            $('#enquiry-move-date').val(enquiry.move_date || '');
-                            $('#enquiry-move-time').val(enquiry.move_time || '');
-                            $('#enquiry-contact-source').val(enquiry.contact_source);
-                            $('#enquiry-status').val(enquiry.status);
-                            $('#hs-crm-enquiry-modal').fadeIn();
-                        }
-                    }
-                });
-                $select.val('');
-            }
         });
         
         // Handle enquiry form submission (add/edit)

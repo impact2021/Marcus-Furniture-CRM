@@ -21,7 +21,7 @@ class HS_CRM_Admin {
         add_action('wp_ajax_hs_crm_delete_note', array($this, 'ajax_delete_note'));
         add_action('wp_ajax_hs_crm_create_enquiry', array($this, 'ajax_create_enquiry'));
         add_action('wp_ajax_hs_crm_update_enquiry', array($this, 'ajax_update_enquiry'));
-        add_action('wp_ajax_hs_crm_update_truck', array($this, 'ajax_update_truck_assignment'));
+        add_action('wp_ajax_hs_crm_update_truck_assignment', array($this, 'ajax_update_truck_assignment'));
     }
     
     /**
