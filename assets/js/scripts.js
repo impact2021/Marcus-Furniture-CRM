@@ -226,8 +226,12 @@ jQuery(document).ready(function($) {
                             $('#enquiry-address').val(enquiry.address);
                             $('#enquiry-pickup-address').val(enquiry.pickup_address || '');
                             $('#enquiry-dropoff-address').val(enquiry.dropoff_address || '');
+                            $('#enquiry-delivery-from-address').val(enquiry.delivery_from_address || '');
+                            $('#enquiry-delivery-to-address').val(enquiry.delivery_to_address || '');
                             $('#enquiry-suburb').val(enquiry.suburb || '');
+                            $('#enquiry-house-size').val(enquiry.house_size || '');
                             $('#enquiry-number-of-bedrooms').val(enquiry.number_of_bedrooms || '');
+                            $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
                             $('#enquiry-total-rooms').val(enquiry.total_rooms || '');
                             $('#enquiry-property-notes').val(enquiry.property_notes || '');
                             $('#enquiry-stairs').val(enquiry.stairs || '');

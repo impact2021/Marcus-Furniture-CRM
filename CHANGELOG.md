@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 3.5 - 2026-01-04
+
+### Fixed
+- **Enquiry Edit Fields**: Fixed missing fields when editing enquiries
+  - Added `house_size` field to enquiry modal form
+  - Added `number_of_rooms` field to enquiry modal form  
+  - Added `delivery_from_address` field to enquiry modal form
+  - Added `delivery_to_address` field to enquiry modal form
+  - Updated JavaScript to populate all missing fields when loading edit modal
+  - Updated AJAX handlers to process all fields on create and update operations
+  - Ensures all enquiry data is properly displayed and saved during editing
+
+### Enhanced
+- Updated plugin version to 3.5
+- Improved data completeness for enquiry management
+
 ## Version 1.4 - 2026-01-04
 
 ### Fixed

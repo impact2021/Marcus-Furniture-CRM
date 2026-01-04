@@ -314,8 +314,23 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
+                        <label for="enquiry-delivery-from-address">Delivery From Address</label>
+                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="2" placeholder="Additional pick-up location details"></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-delivery-to-address">Delivery To Address</label>
+                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="2" placeholder="Additional drop-off location details"></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
                         <label for="enquiry-suburb">Suburb</label>
                         <input type="text" id="enquiry-suburb" name="suburb">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-house-size">House Size</label>
+                        <input type="text" id="enquiry-house-size" name="house_size" placeholder="e.g., 3 bedroom, 2 story">
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -328,6 +343,25 @@ class HS_CRM_Admin {
                             <option value="4">4</option>
                             <option value="5">5</option>
                             <option value="6">6</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-number-of-rooms">Number of Rooms</label>
+                        <select id="enquiry-number-of-rooms" name="number_of_rooms">
+                            <option value="">Select...</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
                         </select>
                     </div>
                     
@@ -536,6 +570,14 @@ class HS_CRM_Admin {
             $data['dropoff_address'] = sanitize_textarea_field($_POST['dropoff_address']);
         }
         
+        if (!empty($_POST['delivery_from_address'])) {
+            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
+        }
+        
+        if (!empty($_POST['delivery_to_address'])) {
+            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
+        }
+        
         if (!empty($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
         }
@@ -554,6 +596,14 @@ class HS_CRM_Admin {
         
         if (!empty($_POST['number_of_bedrooms'])) {
             $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+        }
+        
+        if (!empty($_POST['number_of_rooms'])) {
+            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        }
+        
+        if (!empty($_POST['house_size'])) {
+            $data['house_size'] = sanitize_text_field($_POST['house_size']);
         }
         
         if (!empty($_POST['total_rooms'])) {
@@ -628,8 +678,17 @@ class HS_CRM_Admin {
         if (isset($_POST['dropoff_address'])) {
             $data['dropoff_address'] = sanitize_textarea_field($_POST['dropoff_address']);
         }
+        if (isset($_POST['delivery_from_address'])) {
+            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
+        }
+        if (isset($_POST['delivery_to_address'])) {
+            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
+        }
         if (isset($_POST['suburb'])) {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);
+        }
+        if (isset($_POST['house_size'])) {
+            $data['house_size'] = sanitize_text_field($_POST['house_size']);
         }
         if (isset($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
@@ -645,6 +704,9 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['number_of_bedrooms'])) {
             $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+        }
+        if (isset($_POST['number_of_rooms'])) {
+            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
         }
         if (isset($_POST['total_rooms'])) {
             $data['total_rooms'] = sanitize_text_field($_POST['total_rooms']);
