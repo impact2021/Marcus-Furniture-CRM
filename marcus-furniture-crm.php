@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 1.4.0
+ * Version: 1.1
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '1.4.0');
+define('HS_CRM_VERSION', '1.1');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -140,6 +140,8 @@ function hs_crm_check_db_version() {
         update_option('hs_crm_db_version', '1.1.0');
     }
     
+    // Note: Migrations 1.2.0 through 1.4.0 are included in version 1.1 release
+    // These migrations are kept for backward compatibility with existing installations
     if (version_compare($db_version, '1.2.0', '<')) {
         // Run migration for version 1.2.0 - Create notes table
         hs_crm_migrate_to_1_2_0();
