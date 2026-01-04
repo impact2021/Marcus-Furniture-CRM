@@ -219,12 +219,13 @@ jQuery(document).ready(function($) {
                         $('#enquiry-delivery-from-address').val(enquiry.delivery_from_address || '');
                         $('#enquiry-delivery-to-address').val(enquiry.delivery_to_address || '');
                         $('#enquiry-suburb').val(enquiry.suburb || '');
-                        $('#enquiry-house-size').val(enquiry.house_size || '');
                         $('#enquiry-number-of-bedrooms').val(enquiry.number_of_bedrooms || '');
                         $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
                         $('#enquiry-total-rooms').val(enquiry.total_rooms || '');
                         $('#enquiry-property-notes').val(enquiry.property_notes || '');
                         $('#enquiry-stairs').val(enquiry.stairs || '');
+                        $('#enquiry-stairs-from').val(enquiry.stairs_from || '');
+                        $('#enquiry-stairs-to').val(enquiry.stairs_to || '');
                         $('#enquiry-move-date').val(enquiry.move_date || '');
                         $('#enquiry-move-time').val(enquiry.move_time || '');
                         $('#enquiry-booking-start-time').val(enquiry.booking_start_time || '');
