@@ -193,63 +193,60 @@ jQuery(document).ready(function($) {
             }
         });
         
-        // Handle action dropdown (send quote/invoice/receipt/edit)
+        // Handle "Edit Enquiry" button
+        $(document).on('click', '.hs-crm-edit-enquiry', function() {
+            var enquiryId = $(this).data('enquiry-id');
+            
+            // Get enquiry data
+            $.ajax({
+                url: hsCrmAjax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'hs_crm_get_enquiry',
+                    nonce: hsCrmAjax.nonce,
+                    enquiry_id: enquiryId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var enquiry = response.data.enquiry;
+                        $('#enquiry-modal-title').text('Edit Enquiry Details');
+                        $('#enquiry-id').val(enquiry.id);
+                        $('#enquiry-first-name').val(enquiry.first_name);
+                        $('#enquiry-last-name').val(enquiry.last_name);
+                        $('#enquiry-email').val(enquiry.email);
+                        $('#enquiry-phone').val(enquiry.phone);
+                        $('#enquiry-address').val(enquiry.address);
+                        $('#enquiry-delivery-from-address').val(enquiry.delivery_from_address || '');
+                        $('#enquiry-delivery-to-address').val(enquiry.delivery_to_address || '');
+                        $('#enquiry-suburb').val(enquiry.suburb || '');
+                        $('#enquiry-house-size').val(enquiry.house_size || '');
+                        $('#enquiry-number-of-bedrooms').val(enquiry.number_of_bedrooms || '');
+                        $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
+                        $('#enquiry-total-rooms').val(enquiry.total_rooms || '');
+                        $('#enquiry-property-notes').val(enquiry.property_notes || '');
+                        $('#enquiry-stairs').val(enquiry.stairs || '');
+                        $('#enquiry-move-date').val(enquiry.move_date || '');
+                        $('#enquiry-move-time').val(enquiry.move_time || '');
+                        $('#enquiry-booking-start-time').val(enquiry.booking_start_time || '');
+                        $('#enquiry-booking-end-time').val(enquiry.booking_end_time || '');
+                        $('#enquiry-contact-source').val(enquiry.contact_source);
+                        $('#enquiry-status').val(enquiry.status);
+                        $('#hs-crm-enquiry-modal').fadeIn();
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while loading enquiry data.');
+                }
+            });
+        });
+        
+        // Handle action dropdown (send quote/invoice/receipt)
         $('.hs-crm-action-select').on('change', function() {
             var $select = $(this);
             var enquiryId = $select.data('enquiry-id');
             var actionType = $select.val();
             
             if (!actionType) {
-                return;
-            }
-            
-            // Handle edit_details action
-            if (actionType === 'edit_details') {
-                // Get enquiry data
-                $.ajax({
-                    url: hsCrmAjax.ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'hs_crm_get_enquiry',
-                        nonce: hsCrmAjax.nonce,
-                        enquiry_id: enquiryId
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            var enquiry = response.data.enquiry;
-                            $('#enquiry-modal-title').text('Edit Enquiry Details');
-                            $('#enquiry-id').val(enquiry.id);
-                            $('#enquiry-first-name').val(enquiry.first_name);
-                            $('#enquiry-last-name').val(enquiry.last_name);
-                            $('#enquiry-email').val(enquiry.email);
-                            $('#enquiry-phone').val(enquiry.phone);
-                            $('#enquiry-address').val(enquiry.address);
-                            $('#enquiry-pickup-address').val(enquiry.pickup_address || '');
-                            $('#enquiry-dropoff-address').val(enquiry.dropoff_address || '');
-                            $('#enquiry-delivery-from-address').val(enquiry.delivery_from_address || '');
-                            $('#enquiry-delivery-to-address').val(enquiry.delivery_to_address || '');
-                            $('#enquiry-suburb').val(enquiry.suburb || '');
-                            $('#enquiry-house-size').val(enquiry.house_size || '');
-                            $('#enquiry-number-of-bedrooms').val(enquiry.number_of_bedrooms || '');
-                            $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
-                            $('#enquiry-total-rooms').val(enquiry.total_rooms || '');
-                            $('#enquiry-property-notes').val(enquiry.property_notes || '');
-                            $('#enquiry-stairs').val(enquiry.stairs || '');
-                            $('#enquiry-move-date').val(enquiry.move_date || '');
-                            $('#enquiry-move-time').val(enquiry.move_time || '');
-                            $('#enquiry-booking-start-time').val(enquiry.booking_start_time || '');
-                            $('#enquiry-booking-end-time').val(enquiry.booking_end_time || '');
-                            $('#enquiry-contact-source').val(enquiry.contact_source);
-                            $('#enquiry-status').val(enquiry.status);
-                            $('#hs-crm-enquiry-modal').fadeIn();
-                        }
-                        $select.val('');
-                    },
-                    error: function() {
-                        alert('An error occurred while loading enquiry data.');
-                        $select.val('');
-                    }
-                });
                 return;
             }
             
