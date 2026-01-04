@@ -26,14 +26,21 @@ class HS_CRM_Database {
             email varchar(255) NOT NULL,
             phone varchar(50) NOT NULL,
             address text NOT NULL,
+            pickup_address text DEFAULT '' NOT NULL,
+            dropoff_address text DEFAULT '' NOT NULL,
             delivery_from_address text DEFAULT '' NOT NULL,
             delivery_to_address text DEFAULT '' NOT NULL,
             suburb varchar(255) DEFAULT '' NOT NULL,
             house_size varchar(100) DEFAULT '' NOT NULL,
+            number_of_bedrooms varchar(50) DEFAULT '' NOT NULL,
             number_of_rooms varchar(50) DEFAULT '' NOT NULL,
+            total_rooms varchar(50) DEFAULT '' NOT NULL,
+            property_notes text DEFAULT '' NOT NULL,
             stairs varchar(50) DEFAULT '' NOT NULL,
             move_date date DEFAULT NULL,
             move_time time DEFAULT NULL,
+            booking_start_time time DEFAULT NULL,
+            booking_end_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
             job_type varchar(100) NOT NULL,
             status varchar(50) DEFAULT 'First Contact' NOT NULL,
@@ -119,9 +126,14 @@ class HS_CRM_Database {
             'email' => sanitize_email($data['email']),
             'phone' => sanitize_text_field($data['phone']),
             'address' => sanitize_textarea_field($data['address']),
+            'pickup_address' => isset($data['pickup_address']) ? sanitize_textarea_field($data['pickup_address']) : '',
+            'dropoff_address' => isset($data['dropoff_address']) ? sanitize_textarea_field($data['dropoff_address']) : '',
             'delivery_from_address' => isset($data['delivery_from_address']) ? sanitize_textarea_field($data['delivery_from_address']) : '',
             'delivery_to_address' => isset($data['delivery_to_address']) ? sanitize_textarea_field($data['delivery_to_address']) : '',
             'suburb' => isset($data['suburb']) ? sanitize_text_field($data['suburb']) : '',
+            'number_of_bedrooms' => isset($data['number_of_bedrooms']) ? sanitize_text_field($data['number_of_bedrooms']) : '',
+            'total_rooms' => isset($data['total_rooms']) ? sanitize_text_field($data['total_rooms']) : '',
+            'property_notes' => isset($data['property_notes']) ? sanitize_textarea_field($data['property_notes']) : '',
             'job_type' => '',
             'status' => 'First Contact',
             'email_sent' => 0,
@@ -137,6 +149,15 @@ class HS_CRM_Database {
         // Add move_time if provided
         if (isset($data['move_time']) && !empty($data['move_time'])) {
             $insert_data['move_time'] = sanitize_text_field($data['move_time']);
+        }
+        
+        // Add booking times if provided
+        if (isset($data['booking_start_time']) && !empty($data['booking_start_time'])) {
+            $insert_data['booking_start_time'] = sanitize_text_field($data['booking_start_time']);
+        }
+        
+        if (isset($data['booking_end_time']) && !empty($data['booking_end_time'])) {
+            $insert_data['booking_end_time'] = sanitize_text_field($data['booking_end_time']);
         }
         
         $result = $wpdb->insert(
@@ -268,6 +289,16 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        if (isset($data['pickup_address'])) {
+            $update_data['pickup_address'] = sanitize_textarea_field($data['pickup_address']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['dropoff_address'])) {
+            $update_data['dropoff_address'] = sanitize_textarea_field($data['dropoff_address']);
+            $update_format[] = '%s';
+        }
+        
         if (isset($data['delivery_from_address'])) {
             $update_data['delivery_from_address'] = sanitize_textarea_field($data['delivery_from_address']);
             $update_format[] = '%s';
@@ -288,8 +319,23 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        if (isset($data['number_of_bedrooms'])) {
+            $update_data['number_of_bedrooms'] = sanitize_text_field($data['number_of_bedrooms']);
+            $update_format[] = '%s';
+        }
+        
         if (isset($data['number_of_rooms'])) {
             $update_data['number_of_rooms'] = sanitize_text_field($data['number_of_rooms']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['total_rooms'])) {
+            $update_data['total_rooms'] = sanitize_text_field($data['total_rooms']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['property_notes'])) {
+            $update_data['property_notes'] = sanitize_textarea_field($data['property_notes']);
             $update_format[] = '%s';
         }
         
@@ -305,6 +351,16 @@ class HS_CRM_Database {
         
         if (isset($data['move_time'])) {
             $update_data['move_time'] = !empty($data['move_time']) ? sanitize_text_field($data['move_time']) : null;
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['booking_start_time'])) {
+            $update_data['booking_start_time'] = !empty($data['booking_start_time']) ? sanitize_text_field($data['booking_start_time']) : null;
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['booking_end_time'])) {
+            $update_data['booking_end_time'] = !empty($data['booking_end_time']) ? sanitize_text_field($data['booking_end_time']) : null;
             $update_format[] = '%s';
         }
         
