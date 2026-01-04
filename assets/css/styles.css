@@ -415,7 +415,7 @@
 }
 
 /* Buttons should span full width */
-#hs-crm-enquiry-form .hs-crm-form-group:has(button) {
+#hs-crm-enquiry-form .hs-crm-form-buttons {
     grid-column: 1 / -1;
 }
 
@@ -425,7 +425,8 @@
         grid-template-columns: 1fr;
     }
     
-    #hs-crm-enquiry-form .hs-crm-form-group-full {
+    #hs-crm-enquiry-form .hs-crm-form-group-full,
+    #hs-crm-enquiry-form .hs-crm-form-buttons {
         grid-column: 1;
     }
 }

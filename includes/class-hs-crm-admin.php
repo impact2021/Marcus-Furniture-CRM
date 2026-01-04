@@ -437,7 +437,7 @@ class HS_CRM_Admin {
                         </select>
                     </div>
                     
-                    <div class="hs-crm-form-group">
+                    <div class="hs-crm-form-group hs-crm-form-buttons">
                         <button type="submit" class="button button-primary">Save Enquiry</button>
                         <button type="button" class="button hs-crm-modal-close">Cancel</button>
                     </div>
