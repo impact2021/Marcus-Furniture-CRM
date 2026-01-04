@@ -140,6 +140,8 @@ function hs_crm_check_db_version() {
         update_option('hs_crm_db_version', '1.1.0');
     }
     
+    // Note: Migrations 1.2.0 through 1.4.0 are included in version 1.1 release
+    // These migrations are kept for backward compatibility with existing installations
     if (version_compare($db_version, '1.2.0', '<')) {
         // Run migration for version 1.2.0 - Create notes table
         hs_crm_migrate_to_1_2_0();
