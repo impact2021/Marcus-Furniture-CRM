@@ -539,6 +539,9 @@ jQuery(document).ready(function($) {
                             $('#enquiry-phone').val(enquiry.phone);
                             $('#enquiry-address').val(enquiry.address);
                             $('#enquiry-suburb').val(enquiry.suburb || '');
+                            $('#enquiry-house-size').val(enquiry.house_size || '');
+                            $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
+                            $('#enquiry-stairs').val(enquiry.stairs || '');
                             $('#enquiry-move-date').val(enquiry.move_date || '');
                             $('#enquiry-move-time').val(enquiry.move_time || '');
                             $('#enquiry-contact-source').val(enquiry.contact_source);

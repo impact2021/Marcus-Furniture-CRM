@@ -71,6 +71,24 @@ class HS_CRM_Truck_Scheduler {
             $bookings = array();
         }
         
+        // Get enquiries with assigned trucks and move dates in this month
+        global $wpdb;
+        $enquiries_table = $wpdb->prefix . 'hs_enquiries';
+        $enquiries_with_trucks = $wpdb->get_results($wpdb->prepare(
+            "SELECT e.*, t.name as truck_name 
+             FROM {$enquiries_table} e
+             LEFT JOIN {$wpdb->prefix}hs_trucks t ON e.truck_id = t.id
+             WHERE e.truck_id IS NOT NULL 
+             AND e.move_date BETWEEN %s AND %s
+             ORDER BY e.move_date ASC",
+            $first_day,
+            $last_day
+        ));
+        
+        if (!is_array($enquiries_with_trucks)) {
+            $enquiries_with_trucks = array();
+        }
+        
         // Organize bookings by date and truck
         $bookings_by_date = array();
         foreach ($bookings as $booking) {
@@ -81,6 +99,35 @@ class HS_CRM_Truck_Scheduler {
                 $bookings_by_date[$booking->booking_date][$booking->truck_id] = array();
             }
             $bookings_by_date[$booking->booking_date][$booking->truck_id][] = $booking;
+        }
+        
+        // Add enquiries to the bookings array
+        foreach ($enquiries_with_trucks as $enquiry) {
+            $date = $enquiry->move_date;
+            $truck_id = $enquiry->truck_id;
+            
+            if (!isset($bookings_by_date[$date])) {
+                $bookings_by_date[$date] = array();
+            }
+            if (!isset($bookings_by_date[$date][$truck_id])) {
+                $bookings_by_date[$date][$truck_id] = array();
+            }
+            
+            // Create a booking-like object from enquiry
+            $pseudo_booking = (object) array(
+                'id' => 'enquiry_' . $enquiry->id,
+                'booking_date' => $enquiry->move_date,
+                'truck_id' => $enquiry->truck_id,
+                'enquiry_id' => $enquiry->id,
+                'first_name' => $enquiry->first_name,
+                'last_name' => $enquiry->last_name,
+                'start_time' => $enquiry->move_time,
+                'end_time' => null,
+                'notes' => '',
+                'is_enquiry' => true // Flag to differentiate
+            );
+            
+            $bookings_by_date[$date][$truck_id][] = $pseudo_booking;
         }
         
         ?>
@@ -175,8 +222,16 @@ class HS_CRM_Truck_Scheduler {
                                                             $time_display .= '-' . date('g:ia', strtotime($booking->end_time));
                                                         }
                                                     }
+                                                    
+                                                    // Check if this is from an enquiry
+                                                    $is_enquiry = isset($booking->is_enquiry) && $booking->is_enquiry;
+                                                    $bg_color = $is_enquiry ? '#d4edda' : '#e8f4f8'; // Green for enquiries, blue for bookings
+                                                    $item_class = $is_enquiry ? 'hs-crm-enquiry-item' : 'hs-crm-booking-item';
                                                     ?>
-                                                    <div class="hs-crm-booking-item" data-booking-id="<?php echo esc_attr($booking->id); ?>" style="background: #e8f4f8; padding: 5px; margin-bottom: 5px; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                                                    <div class="<?php echo $item_class; ?>" data-booking-id="<?php echo esc_attr($booking->id); ?>" style="background: <?php echo $bg_color; ?>; padding: 5px; margin-bottom: 5px; border-radius: 3px; cursor: pointer; font-size: 12px;">
+                                                        <?php if ($is_enquiry): ?>
+                                                            <div style="font-size: 10px; color: #155724; font-weight: bold;">ENQUIRY</div>
+                                                        <?php endif; ?>
                                                         <?php if ($time_display): ?>
                                                             <div style="font-weight: bold;"><?php echo esc_html($time_display); ?></div>
                                                         <?php endif; ?>
