@@ -741,6 +741,35 @@ jQuery(document).ready(function($) {
             });
         });
         
+        // Auto-calculate end time based on start time and default duration
+        $('#booking-start-time').on('change', function() {
+            var startTime = $(this).val();
+            if (!startTime) {
+                return;
+            }
+            
+            // Get default duration in hours from settings
+            var durationHours = hsCrmAjax.defaultBookingDuration || 3;
+            
+            // Parse start time
+            var timeParts = startTime.split(':');
+            var hours = parseInt(timeParts[0], 10);
+            var minutes = parseInt(timeParts[1], 10);
+            
+            // Calculate end time
+            var totalMinutes = hours * 60 + minutes + (durationHours * 60);
+            var endHours = Math.floor(totalMinutes / 60) % 24;
+            var endMinutes = totalMinutes % 60;
+            
+            // Format as HH:MM
+            var endTime = String(endHours).padStart(2, '0') + ':' + String(endMinutes).padStart(2, '0');
+            
+            // Set end time only if it's empty (don't override manual changes)
+            if (!$('#booking-end-time').val()) {
+                $('#booking-end-time').val(endTime);
+            }
+        });
+        
         // Delete booking button
         $('.hs-crm-delete-booking-btn').on('click', function() {
             if (!confirm('Are you sure you want to delete this booking?')) {

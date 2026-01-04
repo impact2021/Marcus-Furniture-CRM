@@ -380,7 +380,8 @@ function hs_crm_enqueue_assets() {
     wp_localize_script('hs-crm-scripts', 'hsCrmAjax', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
         'nonce' => wp_create_nonce('hs_crm_nonce'),
-        'thankYouUrl' => home_url('/thank-you/')
+        'thankYouUrl' => home_url('/thank-you/'),
+        'defaultBookingDuration' => floatval(get_option('hs_crm_default_booking_duration', 3))
     ));
 }
 add_action('wp_enqueue_scripts', 'hs_crm_enqueue_assets');
