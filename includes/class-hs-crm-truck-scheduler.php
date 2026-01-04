@@ -66,6 +66,11 @@ class HS_CRM_Truck_Scheduler {
         // Get all bookings for this month
         $bookings = HS_CRM_Database::get_truck_bookings($first_day, $last_day);
         
+        // Ensure bookings is always an array, even if null is returned
+        if (!is_array($bookings)) {
+            $bookings = array();
+        }
+        
         // Organize bookings by date and truck
         $bookings_by_date = array();
         foreach ($bookings as $booking) {
@@ -270,6 +275,10 @@ class HS_CRM_Truck_Scheduler {
                             <?php
                             // Get all active enquiries with move dates
                             $enquiries = HS_CRM_Database::get_enquiries('active', 'move_date', 'ASC');
+                            // Ensure enquiries is always an array, even if null is returned
+                            if (!is_array($enquiries)) {
+                                $enquiries = array();
+                            }
                             foreach ($enquiries as $enq):
                                 if ($enq->move_date):
                             ?>
