@@ -60,6 +60,25 @@ Add the following shortcode to any page or post:
 [hs_contact_form]
 ```
 
+### Gravity Forms Integration
+
+The plugin automatically integrates with Gravity Forms if you have it installed. Enquiries submitted through Gravity Forms will automatically be added to the CRM.
+
+**Automatic Integration:**
+- Forms with titles containing "moving", "enquiry", "contact", "furniture", or "quote" are automatically integrated
+- Add the CSS class `crm-integration` to any Gravity Form to enable integration
+
+**Field Mapping:**
+The plugin intelligently maps Gravity Forms fields to CRM fields based on field labels:
+- First Name: "first name", "first", "fname"
+- Last Name: "last name", "last", "surname", "lname"
+- Email: "email", "e-mail", "email address"
+- Phone: "phone", "telephone", "mobile", "phone number"
+- Address: "address", "street address", "location"
+- Move Date: "move date", "moving date", "preferred date", "date"
+
+**Note:** The built-in contact form and Gravity Forms can be used side-by-side. Use whichever suits your needs best.
+
 ### Managing Enquiries
 
 1. Go to **MF Enquiries** in the WordPress admin menu
