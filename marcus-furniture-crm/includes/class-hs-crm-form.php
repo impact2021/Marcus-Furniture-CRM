@@ -1,0 +1,189 @@
+<?php
+/**
+ * Contact form class
+ */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+class HS_CRM_Form {
+    
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        add_shortcode('hs_contact_form', array($this, 'render_form'));
+        add_action('wp_ajax_hs_crm_submit_form', array($this, 'handle_submission'));
+        add_action('wp_ajax_nopriv_hs_crm_submit_form', array($this, 'handle_submission'));
+    }
+    
+
+    
+    /**
+     * Render contact form
+     */
+    public function render_form($atts) {
+        ob_start();
+        ?>
+        <div class="hs-crm-form-container">
+            <form id="hs-crm-contact-form" class="hs-crm-form" method="post">
+                <div class="hs-crm-form-messages"></div>
+                
+                <div class="hs-crm-form-row">
+                    <div class="hs-crm-form-group hs-crm-form-half">
+                        <input type="text" id="hs_first_name" name="first_name" placeholder="First Name *" required>
+                    </div>
+                    
+                    <div class="hs-crm-form-group hs-crm-form-half">
+                        <input type="text" id="hs_last_name" name="last_name" placeholder="Last Name *" required>
+                    </div>
+                </div>
+                
+                <div class="hs-crm-form-row">
+                    <div class="hs-crm-form-group hs-crm-form-half">
+                        <input type="email" id="hs_email" name="email" placeholder="Email *" required>
+                    </div>
+                    
+                    <div class="hs-crm-form-group hs-crm-form-half">
+                        <input type="tel" id="hs_phone" name="phone" placeholder="Phone Number *" required>
+                    </div>
+                </div>
+                
+                <div class="hs-crm-form-group">
+                    <input type="text" id="hs_address" name="address" placeholder="Address *" required>
+                </div>
+                
+                <div class="hs-crm-form-group">
+                    <input type="date" id="hs_move_date" name="move_date" placeholder="Requested Move Date">
+                    <small>When would you like to move?</small>
+                </div>
+                
+                <div class="hs-crm-form-group">
+                    <button type="submit" class="hs-crm-submit-btn">Submit Enquiry</button>
+                </div>
+                
+                <?php wp_nonce_field('hs_crm_form_submit', 'hs_crm_nonce'); ?>
+            </form>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
+     * Handle form submission via AJAX
+     */
+    public function handle_submission() {
+        // Verify nonce
+        if (!isset($_POST['hs_crm_nonce']) || !wp_verify_nonce($_POST['hs_crm_nonce'], 'hs_crm_form_submit')) {
+            wp_send_json_error(array('message' => 'Security verification failed.'));
+        }
+        
+        // Validate required fields
+        $required_fields = array('first_name', 'last_name', 'email', 'phone', 'address');
+        foreach ($required_fields as $field) {
+            if (empty($_POST[$field])) {
+                wp_send_json_error(array('message' => 'Please fill in all required fields.'));
+            }
+        }
+        
+        // Validate email format
+        if (!is_email($_POST['email'])) {
+            wp_send_json_error(array('message' => 'Please enter a valid email address.'));
+        }
+        
+        // Prepare data
+        $data = array(
+            'first_name' => sanitize_text_field($_POST['first_name']),
+            'last_name' => sanitize_text_field($_POST['last_name']),
+            'email' => sanitize_email($_POST['email']),
+            'phone' => sanitize_text_field($_POST['phone']),
+            'address' => sanitize_textarea_field($_POST['address']),
+            'contact_source' => 'form'
+        );
+        
+        // Add move_date if provided
+        if (!empty($_POST['move_date'])) {
+            $data['move_date'] = sanitize_text_field($_POST['move_date']);
+        }
+        
+        // Insert into database
+        $result = HS_CRM_Database::insert_enquiry($data);
+        
+        if ($result) {
+            // Send customer thank you email
+            $this->send_customer_email($data);
+            
+            // Send admin notification email
+            $this->send_admin_notification($data, $result);
+            
+            wp_send_json_success(array('message' => 'Thank you! Your enquiry has been submitted successfully.'));
+        } else {
+            wp_send_json_error(array('message' => 'There was an error submitting your enquiry. Please try again.'));
+        }
+    }
+    
+    /**
+     * Send thank you email to customer
+     */
+    private function send_customer_email($data) {
+        $to = $data['email'];
+        $subject = 'Thank you for your enquiry - Marcus Furniture';
+        
+        $message = '<!DOCTYPE html>';
+        $message .= '<html>';
+        $message .= '<head><meta charset="UTF-8"></head>';
+        $message .= '<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<h1>Thank you for your enquiry</h1>';
+        $message .= '<p>Dear ' . esc_html($data['first_name']) . ',</p>';
+        $message .= '<p>Thank you for contacting Marcus Furniture. We have received your moving enquiry and will get back to you as soon as possible.</p>';
+        $message .= '<h3>Your Details</h3>';
+        $message .= '<p><strong>Name:</strong> ' . esc_html($data['first_name'] . ' ' . $data['last_name']) . '</p>';
+        $message .= '<p><strong>Email:</strong> ' . esc_html($data['email']) . '</p>';
+        $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
+        $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
+        if (!empty($data['move_date'])) {
+            $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', strtotime($data['move_date']))) . '</p>';
+        }
+        $message .= '<p style="font-size: 12px; color: #666;">We look forward to helping you with your move.</p>';
+        $message .= '<p style="font-size: 12px; color: #666;">Marcus Furniture</p>';
+        $message .= '</body>';
+        $message .= '</html>';
+        
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+        
+        wp_mail($to, $subject, $message, $headers);
+    }
+    
+    /**
+     * Send notification email to admin
+     */
+    private function send_admin_notification($data, $enquiry_id) {
+        $admin_email = get_option('hs_crm_admin_email', get_option('admin_email'));
+        $subject = 'New Moving Enquiry - Marcus Furniture';
+        
+        $dashboard_link = admin_url('admin.php?page=hs-crm-enquiries');
+        
+        $message = '<!DOCTYPE html>';
+        $message .= '<html>';
+        $message .= '<head><meta charset="UTF-8"></head>';
+        $message .= '<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+        $message .= '<h1>New Moving Enquiry Received</h1>';
+        $message .= '<p>A new moving enquiry has been submitted via the contact form.</p>';
+        $message .= '<h3>Customer Details</h3>';
+        $message .= '<p><strong>Name:</strong> ' . esc_html($data['first_name'] . ' ' . $data['last_name']) . '</p>';
+        $message .= '<p><strong>Email:</strong> ' . esc_html($data['email']) . '</p>';
+        $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
+        $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
+        if (!empty($data['move_date'])) {
+            $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', strtotime($data['move_date']))) . '</p>';
+        }
+        $message .= '<p><a href="' . esc_url($dashboard_link) . '" style="display: inline-block; padding: 10px 20px; background: #0073aa; color: white; text-decoration: none; border-radius: 4px;">View in Dashboard</a></p>';
+        $message .= '</body>';
+        $message .= '</html>';
+        
+        $headers = array('Content-Type: text/html; charset=UTF-8');
+        
+        wp_mail($admin_email, $subject, $message, $headers);
+    }
+}
