@@ -165,15 +165,12 @@ class HS_CRM_Docs {
         // Links
         $html = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="$2" target="_blank">$1</a>', $html);
         
-        // Unordered lists
-        $html = preg_replace('/^\* (.+)$/m', '<li>$1</li>', $html);
-        $html = preg_replace('/^\- (.+)$/m', '<li>$1</li>', $html);
+        // Unordered lists - convert to li but don't wrap yet
+        $html = preg_replace('/^\* (.+)$/m', ':::UL_ITEM:::$1', $html);
+        $html = preg_replace('/^\- (.+)$/m', ':::UL_ITEM:::$1', $html);
         
-        // Wrap consecutive <li> in <ul>
-        $html = preg_replace('/(<li>.+<\/li>\n?)+/s', '<ul>$0</ul>', $html);
-        
-        // Ordered lists
-        $html = preg_replace('/^\d+\. (.+)$/m', '<li>$1</li>', $html);
+        // Ordered lists - convert to li but don't wrap yet
+        $html = preg_replace('/^\d+\. (.+)$/m', ':::OL_ITEM:::$1', $html);
         
         // Horizontal rule
         $html = preg_replace('/^---$/m', '<hr>', $html);
@@ -181,15 +178,62 @@ class HS_CRM_Docs {
         // Tables (basic support)
         $html = preg_replace_callback('/(\|.+\|\n)+/m', array($this, 'convert_table'), $html);
         
-        // Paragraphs (double line breaks)
-        $html = preg_replace('/\n\n+/', '</p><p>', $html);
-        $html = '<p>' . $html . '</p>';
+        // Now wrap consecutive list items in proper tags
+        $html = preg_replace('/(:::UL_ITEM:::.+\n?)+/m', function($matches) {
+            $items = preg_replace('/:::UL_ITEM:::(.+)/', '<li>$1</li>', $matches[0]);
+            return '<ul>' . $items . '</ul>';
+        }, $html);
         
-        // Clean up empty paragraphs
+        $html = preg_replace('/(:::OL_ITEM:::.+\n?)+/m', function($matches) {
+            $items = preg_replace('/:::OL_ITEM:::(.+)/', '<li>$1</li>', $matches[0]);
+            return '<ol>' . $items . '</ol>';
+        }, $html);
+        
+        // Split into lines for paragraph processing
+        $lines = explode("\n", $html);
+        $in_paragraph = false;
+        $result = array();
+        
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            
+            // Skip wrapping for special elements
+            $is_special = preg_match('/^<(h[1-6]|ul|ol|pre|table|hr|\/ul|\/ol|\/pre|\/table)/', $trimmed);
+            
+            if (empty($trimmed)) {
+                // Empty line closes paragraph
+                if ($in_paragraph) {
+                    $result[] = '</p>';
+                    $in_paragraph = false;
+                }
+                $result[] = '';
+            } elseif ($is_special) {
+                // Close paragraph if open
+                if ($in_paragraph) {
+                    $result[] = '</p>';
+                    $in_paragraph = false;
+                }
+                $result[] = $line;
+            } else {
+                // Regular text line
+                if (!$in_paragraph) {
+                    $result[] = '<p>';
+                    $in_paragraph = true;
+                }
+                $result[] = $line . '<br>';
+            }
+        }
+        
+        // Close final paragraph if open
+        if ($in_paragraph) {
+            $result[] = '</p>';
+        }
+        
+        $html = implode("\n", $result);
+        
+        // Clean up
         $html = preg_replace('/<p>\s*<\/p>/', '', $html);
-        
-        // Single line breaks
-        $html = preg_replace('/\n/', '<br>', $html);
+        $html = preg_replace('/<br>\s*<\/p>/', '</p>', $html);
         
         return $html;
     }

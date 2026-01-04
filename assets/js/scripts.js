@@ -178,17 +178,18 @@ jQuery(document).ready(function($) {
             var $icon = $row.find('.hs-crm-notes-toggle');
             var $noteRows = $row.closest('tbody').find('.hs-crm-note-row[data-enquiry-id="' + enquiryId + '"]');
             var $addNoteRow = $row.closest('tbody').find('.hs-crm-add-note-row[data-enquiry-id="' + enquiryId + '"]');
+            var $toggleText = $row.find('td');
             
             if ($noteRows.is(':visible')) {
                 $noteRows.slideUp(200);
                 $addNoteRow.slideUp(200);
                 $icon.removeClass('dashicons-arrow-up').addClass('dashicons-arrow-down');
-                $row.find('strong').next().text(' - Click to expand');
+                $toggleText.html('<span class="hs-crm-notes-toggle dashicons dashicons-arrow-down" style="font-size: 16px; vertical-align: middle;"></span><strong>Notes (' + $noteRows.length + ')</strong> - Click to expand');
             } else {
                 $noteRows.slideDown(200);
                 $addNoteRow.slideDown(200);
                 $icon.removeClass('dashicons-arrow-down').addClass('dashicons-arrow-up');
-                $row.find('strong').next().text(' - Click to collapse');
+                $toggleText.html('<span class="hs-crm-notes-toggle dashicons dashicons-arrow-up" style="font-size: 16px; vertical-align: middle;"></span><strong>Notes (' + $noteRows.length + ')</strong> - Click to collapse');
             }
         });
         

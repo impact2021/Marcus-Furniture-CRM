@@ -112,6 +112,8 @@ class HS_CRM_Admin {
                 foreach ($enquiries as $enquiry): 
                     $notes = HS_CRM_Database::get_notes($enquiry->id);
                     $row_class = ($row_index % 2 === 0) ? 'hs-crm-even-row' : 'hs-crm-odd-row';
+                    $has_notes = !empty($notes);
+                    $add_note_row_style = $has_notes ? 'display: none;' : '';
                     $row_index++;
                 ?>
                     <!-- Individual table for each enquiry -->
@@ -240,7 +242,7 @@ class HS_CRM_Admin {
                             <?php endif; ?>
                             
                             <!-- Add note row -->
-                            <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo !empty($notes) ? 'display: none;' : ''; ?>">
+                            <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo esc_attr($add_note_row_style); ?>">
                                 <td colspan="6">
                                     <textarea class="hs-crm-new-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" rows="2" placeholder="Add a new note..."></textarea>
                                 </td>
