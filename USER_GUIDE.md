@@ -8,6 +8,8 @@ A WordPress CRM plugin for managing furniture moving enquiries with contact form
 - **Contact Form**: Public-facing form with move date field
 - **Automatic Entries**: Auto-create enquiries from website form submissions
 - **Manual Entry Creation**: Add enquiries from WhatsApp, phone calls, direct emails, etc.
+- **Delivery Address Tracking**: Track separate pick-up (delivery from) and drop-off (delivery to) addresses
+- **Edit Enquiries**: Update any enquiry details including phone numbers, addresses, and delivery locations
 - **Sortable Lists**: Sort by contact date or requested move date (defaults to move date)
 - **Status Workflow**: Track enquiries through stages:
   - First Contact
@@ -85,8 +87,27 @@ The plugin intelligently maps Gravity Forms fields to CRM fields based on field 
 2. View enquiries filtered by status (Active leads, All, First Contact, etc.)
 3. Click **+ Add New Enquiry** to manually create entries
 4. Use the **Status Change** dropdown to update workflow stage
-5. Use the **Action** dropdown to send quotes/invoices or edit details
+5. Use the **Action** dropdown to:
+   - **Edit Details**: Update any enquiry information including phone numbers, addresses, and delivery locations
+   - **Send Quote**: Create and send itemized quotes with GST calculations
+   - **Send Invoice**: Send invoices to customers
+   - **Send Receipt**: Send payment receipts
 6. Add notes to track communication and progress
+
+#### Editing Enquiries
+
+To edit an existing enquiry:
+1. Locate the enquiry in the list
+2. Select **Edit Details** from the **Action** dropdown
+3. Update any fields including:
+   - Customer name, email, phone number
+   - Main address and suburb
+   - **Delivery From Address**: Pick-up location (if different from main address)
+   - **Delivery To Address**: Drop-off location (if different from main address)
+   - House details, move date/time, and status
+4. Click **Save Enquiry** to update
+
+**Note:** Delivery addresses are optional and will only display when populated. They appear in blue italic text below the main address in the enquiry list.
 
 ### Truck Scheduling
 
