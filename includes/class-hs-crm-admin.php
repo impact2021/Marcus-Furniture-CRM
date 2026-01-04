@@ -155,14 +155,14 @@ class HS_CRM_Admin {
                                         , <?php echo esc_html($enquiry->suburb); ?>
                                     <?php endif; ?>
                                     </small>
-                                    <?php if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address)): ?>
+                                    <?php if (!empty($enquiry->pickup_address) || !empty($enquiry->dropoff_address)): ?>
                                         <br><small style="color: #0066cc; font-style: italic;">
-                                        <?php if (!empty($enquiry->delivery_from_address)): ?>
-                                            From: <?php echo esc_html($enquiry->delivery_from_address); ?>
+                                        <?php if (!empty($enquiry->pickup_address)): ?>
+                                            Pickup: <?php echo esc_html($enquiry->pickup_address); ?>
                                         <?php endif; ?>
-                                        <?php if (!empty($enquiry->delivery_to_address)): ?>
-                                            <?php if (!empty($enquiry->delivery_from_address)): ?> | <?php endif; ?>
-                                            To: <?php echo esc_html($enquiry->delivery_to_address); ?>
+                                        <?php if (!empty($enquiry->dropoff_address)): ?>
+                                            <?php if (!empty($enquiry->pickup_address)): ?> | <?php endif; ?>
+                                            Dropoff: <?php echo esc_html($enquiry->dropoff_address); ?>
                                         <?php endif; ?>
                                         </small>
                                     <?php endif; ?>
@@ -170,14 +170,17 @@ class HS_CRM_Admin {
                                 <td>
                                     <?php 
                                     $house_details = array();
-                                    if (!empty($enquiry->house_size)) {
-                                        $house_details[] = esc_html($enquiry->house_size);
+                                    if (!empty($enquiry->number_of_bedrooms)) {
+                                        $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
                                     }
-                                    if (!empty($enquiry->number_of_rooms)) {
-                                        $house_details[] = esc_html($enquiry->number_of_rooms) . ' rooms';
+                                    if (!empty($enquiry->total_rooms)) {
+                                        $house_details[] = esc_html($enquiry->total_rooms) . ' total rooms';
                                     }
                                     if (!empty($enquiry->stairs)) {
                                         $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
+                                    }
+                                    if (!empty($enquiry->property_notes)) {
+                                        $house_details[] = 'Notes: ' . esc_html($enquiry->property_notes);
                                     }
                                     if (empty($house_details)) {
                                         echo '<em style="color: #999;">Not set</em>';
@@ -301,13 +304,13 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-delivery-from">Delivery From Address</label>
-                        <textarea id="enquiry-delivery-from" name="delivery_from_address" rows="2" placeholder="Pick-up location (if different from main address)"></textarea>
+                        <label for="enquiry-pickup-address">Pickup Address</label>
+                        <textarea id="enquiry-pickup-address" name="pickup_address" rows="2" placeholder="Pick-up location"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-delivery-to">Delivery To Address</label>
-                        <textarea id="enquiry-delivery-to" name="delivery_to_address" rows="2" placeholder="Drop-off location (if different from main address)"></textarea>
+                        <label for="enquiry-dropoff-address">Dropoff Address</label>
+                        <textarea id="enquiry-dropoff-address" name="dropoff_address" rows="2" placeholder="Drop-off location"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -316,13 +319,40 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-house-size">House Size</label>
-                        <input type="text" id="enquiry-house-size" name="house_size" placeholder="e.g., 3 bedroom, 2 bedroom">
+                        <label for="enquiry-number-of-bedrooms">Number of Bedrooms</label>
+                        <select id="enquiry-number-of-bedrooms" name="number_of_bedrooms">
+                            <option value="">Select...</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-number-of-rooms">Number of Rooms</label>
-                        <input type="text" id="enquiry-number-of-rooms" name="number_of_rooms" placeholder="e.g., 5, 6">
+                        <label for="enquiry-total-rooms">Total Number of Rooms</label>
+                        <select id="enquiry-total-rooms" name="total_rooms">
+                            <option value="">Select...</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-property-notes">Property Notes</label>
+                        <textarea id="enquiry-property-notes" name="property_notes" rows="3" placeholder="Additional notes about the property"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -343,6 +373,18 @@ class HS_CRM_Admin {
                     <div class="hs-crm-form-group">
                         <label for="enquiry-move-time">Requested Move Time</label>
                         <input type="time" id="enquiry-move-time" name="move_time">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-booking-start-time">Booking Start Time</label>
+                        <input type="time" id="enquiry-booking-start-time" name="booking_start_time">
+                        <small>Actual start time of the booking (admin use)</small>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-booking-end-time">Booking End Time</label>
+                        <input type="time" id="enquiry-booking-end-time" name="booking_end_time">
+                        <small>Actual finish time of the booking (admin use)</small>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -486,6 +528,14 @@ class HS_CRM_Admin {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);
         }
         
+        if (!empty($_POST['pickup_address'])) {
+            $data['pickup_address'] = sanitize_textarea_field($_POST['pickup_address']);
+        }
+        
+        if (!empty($_POST['dropoff_address'])) {
+            $data['dropoff_address'] = sanitize_textarea_field($_POST['dropoff_address']);
+        }
+        
         if (!empty($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
         }
@@ -494,12 +544,24 @@ class HS_CRM_Admin {
             $data['move_time'] = sanitize_text_field($_POST['move_time']);
         }
         
-        if (!empty($_POST['house_size'])) {
-            $data['house_size'] = sanitize_text_field($_POST['house_size']);
+        if (!empty($_POST['booking_start_time'])) {
+            $data['booking_start_time'] = sanitize_text_field($_POST['booking_start_time']);
         }
         
-        if (!empty($_POST['number_of_rooms'])) {
-            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        if (!empty($_POST['booking_end_time'])) {
+            $data['booking_end_time'] = sanitize_text_field($_POST['booking_end_time']);
+        }
+        
+        if (!empty($_POST['number_of_bedrooms'])) {
+            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+        }
+        
+        if (!empty($_POST['total_rooms'])) {
+            $data['total_rooms'] = sanitize_text_field($_POST['total_rooms']);
+        }
+        
+        if (!empty($_POST['property_notes'])) {
+            $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
         }
         
         if (!empty($_POST['stairs'])) {
@@ -560,11 +622,11 @@ class HS_CRM_Admin {
         if (isset($_POST['address'])) {
             $data['address'] = sanitize_textarea_field($_POST['address']);
         }
-        if (isset($_POST['delivery_from_address'])) {
-            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
+        if (isset($_POST['pickup_address'])) {
+            $data['pickup_address'] = sanitize_textarea_field($_POST['pickup_address']);
         }
-        if (isset($_POST['delivery_to_address'])) {
-            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
+        if (isset($_POST['dropoff_address'])) {
+            $data['dropoff_address'] = sanitize_textarea_field($_POST['dropoff_address']);
         }
         if (isset($_POST['suburb'])) {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);
@@ -575,11 +637,20 @@ class HS_CRM_Admin {
         if (isset($_POST['move_time'])) {
             $data['move_time'] = sanitize_text_field($_POST['move_time']);
         }
-        if (isset($_POST['house_size'])) {
-            $data['house_size'] = sanitize_text_field($_POST['house_size']);
+        if (isset($_POST['booking_start_time'])) {
+            $data['booking_start_time'] = sanitize_text_field($_POST['booking_start_time']);
         }
-        if (isset($_POST['number_of_rooms'])) {
-            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        if (isset($_POST['booking_end_time'])) {
+            $data['booking_end_time'] = sanitize_text_field($_POST['booking_end_time']);
+        }
+        if (isset($_POST['number_of_bedrooms'])) {
+            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+        }
+        if (isset($_POST['total_rooms'])) {
+            $data['total_rooms'] = sanitize_text_field($_POST['total_rooms']);
+        }
+        if (isset($_POST['property_notes'])) {
+            $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
         }
         if (isset($_POST['stairs'])) {
             $data['stairs'] = sanitize_text_field($_POST['stairs']);
