@@ -1,5 +1,38 @@
 # Changelog
 
+## Version 1.7 - 2026-01-04
+
+### Changed
+- **Address Fields Simplified**: Removed generic "Address" field from enquiry forms
+  - Now only uses "From Address" and "To Address" fields
+  - Both from/to addresses are now required fields when creating enquiries
+  - Updated admin table display to show from/to addresses prominently
+  - Improved visual clarity with better formatting for address information
+
+- **Removed House Size Field**: Removed "House size" field from UI
+  - Field removed from enquiry modal form
+  - Database column retained for backward compatibility
+  - No longer displayed or editable in the admin interface
+
+- **Stairs Fields Cleanup**: Removed legacy "stairs" field
+  - Now only uses "Stairs Involved (From Address)" and "Stairs Involved (To Address)"
+  - Legacy stairs field removed from all forms and handlers
+  - Database column retained for backward compatibility
+
+### Fixed
+- **Enquiry Creation Error**: Fixed "Failed to create enquiry" error
+  - Updated validation to require from/to addresses
+  - Removed references to deprecated address field
+  - Improved error handling in AJAX handlers
+  - Fixed field population in edit modal
+
+### Technical
+- Updated plugin version to 1.7
+- Updated database version to 1.7.0
+- Cleaned up AJAX handlers to remove deprecated field processing
+- Updated JavaScript to remove address and stairs field handling
+- Improved data validation for required fields
+
 ## Version 3.5 - 2026-01-04
 
 ### Fixed

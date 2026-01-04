@@ -127,18 +127,20 @@ class HS_CRM_Database {
             'name' => $full_name,
             'email' => sanitize_email($data['email']),
             'phone' => sanitize_text_field($data['phone']),
-            'address' => sanitize_textarea_field($data['address']),
+            'address' => isset($data['delivery_from_address']) && isset($data['delivery_to_address']) 
+                ? sanitize_textarea_field($data['delivery_from_address']) . ' → ' . sanitize_textarea_field($data['delivery_to_address'])
+                : '',
             'pickup_address' => isset($data['pickup_address']) ? sanitize_textarea_field($data['pickup_address']) : '',
             'dropoff_address' => isset($data['dropoff_address']) ? sanitize_textarea_field($data['dropoff_address']) : '',
             'delivery_from_address' => isset($data['delivery_from_address']) ? sanitize_textarea_field($data['delivery_from_address']) : '',
             'delivery_to_address' => isset($data['delivery_to_address']) ? sanitize_textarea_field($data['delivery_to_address']) : '',
             'suburb' => isset($data['suburb']) ? sanitize_text_field($data['suburb']) : '',
-            'house_size' => isset($data['house_size']) ? sanitize_text_field($data['house_size']) : '',
+            'house_size' => '',
             'number_of_bedrooms' => isset($data['number_of_bedrooms']) ? sanitize_text_field($data['number_of_bedrooms']) : '',
             'number_of_rooms' => isset($data['number_of_rooms']) ? sanitize_text_field($data['number_of_rooms']) : '',
             'total_rooms' => isset($data['total_rooms']) ? sanitize_text_field($data['total_rooms']) : '',
             'property_notes' => isset($data['property_notes']) ? sanitize_textarea_field($data['property_notes']) : '',
-            'stairs' => isset($data['stairs']) ? sanitize_text_field($data['stairs']) : '',
+            'stairs' => '',
             'stairs_from' => isset($data['stairs_from']) ? sanitize_text_field($data['stairs_from']) : '',
             'stairs_to' => isset($data['stairs_to']) ? sanitize_text_field($data['stairs_to']) : '',
             'job_type' => '',
@@ -337,11 +339,6 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
-        if (isset($data['house_size'])) {
-            $update_data['house_size'] = sanitize_text_field($data['house_size']);
-            $update_format[] = '%s';
-        }
-        
         if (isset($data['number_of_bedrooms'])) {
             $update_data['number_of_bedrooms'] = sanitize_text_field($data['number_of_bedrooms']);
             $update_format[] = '%s';
@@ -359,11 +356,6 @@ class HS_CRM_Database {
         
         if (isset($data['property_notes'])) {
             $update_data['property_notes'] = sanitize_textarea_field($data['property_notes']);
-            $update_format[] = '%s';
-        }
-        
-        if (isset($data['stairs'])) {
-            $update_data['stairs'] = sanitize_text_field($data['stairs']);
             $update_format[] = '%s';
         }
         

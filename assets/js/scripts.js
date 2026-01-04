@@ -215,7 +215,6 @@ jQuery(document).ready(function($) {
                         $('#enquiry-last-name').val(enquiry.last_name);
                         $('#enquiry-email').val(enquiry.email);
                         $('#enquiry-phone').val(enquiry.phone);
-                        $('#enquiry-address').val(enquiry.address);
                         $('#enquiry-delivery-from-address').val(enquiry.delivery_from_address || '');
                         $('#enquiry-delivery-to-address').val(enquiry.delivery_to_address || '');
                         $('#enquiry-suburb').val(enquiry.suburb || '');
@@ -223,7 +222,6 @@ jQuery(document).ready(function($) {
                         $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
                         $('#enquiry-total-rooms').val(enquiry.total_rooms || '');
                         $('#enquiry-property-notes').val(enquiry.property_notes || '');
-                        $('#enquiry-stairs').val(enquiry.stairs || '');
                         $('#enquiry-stairs-from').val(enquiry.stairs_from || '');
                         $('#enquiry-stairs-to').val(enquiry.stairs_to || '');
                         $('#enquiry-move-date').val(enquiry.move_date || '');
