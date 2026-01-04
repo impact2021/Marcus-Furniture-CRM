@@ -150,22 +150,19 @@ class HS_CRM_Admin {
                                     <strong class="hs-crm-editable-name" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                         <?php echo esc_html($enquiry->first_name . ' ' . $enquiry->last_name); ?>
                                     </strong><br>
-                                    <small style="color: #666;"><?php echo esc_html($enquiry->phone); ?> | <?php echo esc_html($enquiry->email); ?></small><br>
-                                    <small style="color: #666;"><?php echo esc_html($enquiry->address); ?>
-                                    <?php if (!empty($enquiry->suburb)): ?>
-                                        , <?php echo esc_html($enquiry->suburb); ?>
-                                    <?php endif; ?>
-                                    </small>
+                                    <small style="color: #666;"><?php echo esc_html($enquiry->phone); ?> | <?php echo esc_html($enquiry->email); ?></small>
                                     <?php if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address)): ?>
-                                        <br><small style="color: #0066cc; font-style: italic;">
+                                        <br><small style="color: #0066cc;">
                                         <?php if (!empty($enquiry->delivery_from_address)): ?>
-                                            From: <?php echo esc_html($enquiry->delivery_from_address); ?>
+                                            <strong>From:</strong> <?php echo esc_html($enquiry->delivery_from_address); ?>
                                         <?php endif; ?>
                                         <?php if (!empty($enquiry->delivery_to_address)): ?>
-                                            <?php if (!empty($enquiry->delivery_from_address)): ?> | <?php endif; ?>
-                                            To: <?php echo esc_html($enquiry->delivery_to_address); ?>
+                                            <br><strong>To:</strong> <?php echo esc_html($enquiry->delivery_to_address); ?>
                                         <?php endif; ?>
                                         </small>
+                                    <?php endif; ?>
+                                    <?php if (!empty($enquiry->suburb)): ?>
+                                        <br><small style="color: #666;">Suburb: <?php echo esc_html($enquiry->suburb); ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -176,9 +173,6 @@ class HS_CRM_Admin {
                                     }
                                     if (!empty($enquiry->total_rooms)) {
                                         $house_details[] = esc_html($enquiry->total_rooms) . ' total rooms';
-                                    }
-                                    if (!empty($enquiry->stairs)) {
-                                        $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
                                     }
                                     if (!empty($enquiry->stairs_from)) {
                                         $house_details[] = 'Stairs (From): ' . esc_html($enquiry->stairs_from);
@@ -308,18 +302,13 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-address">Address</label>
-                        <textarea id="enquiry-address" name="address" rows="3"></textarea>
+                        <label for="enquiry-delivery-from-address">From Address *</label>
+                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="3" placeholder="Pick-up location" required></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-delivery-from-address">From Address</label>
-                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="2" placeholder="Pick-up location"></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-delivery-to-address">To Address</label>
-                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="2" placeholder="Drop-off location"></textarea>
+                        <label for="enquiry-delivery-to-address">To Address *</label>
+                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="3" placeholder="Drop-off location" required></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -558,20 +547,13 @@ class HS_CRM_Admin {
             'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
             'email' => isset($_POST['email']) ? sanitize_email($_POST['email']) : '',
             'phone' => isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '',
-            'address' => isset($_POST['address']) ? sanitize_textarea_field($_POST['address']) : '',
+            'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : '',
+            'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : '',
             'contact_source' => isset($_POST['contact_source']) ? sanitize_text_field($_POST['contact_source']) : 'form',
         );
         
         if (!empty($_POST['suburb'])) {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);
-        }
-        
-        if (!empty($_POST['delivery_from_address'])) {
-            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
-        }
-        
-        if (!empty($_POST['delivery_to_address'])) {
-            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
         
         if (!empty($_POST['move_date'])) {
@@ -606,10 +588,6 @@ class HS_CRM_Admin {
             $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
         }
         
-        if (!empty($_POST['stairs'])) {
-            $data['stairs'] = sanitize_text_field($_POST['stairs']);
-        }
-        
         if (!empty($_POST['stairs_from'])) {
             $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);
         }
@@ -619,7 +597,7 @@ class HS_CRM_Admin {
         }
         
         // Validate required fields
-        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone'])) {
+        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone']) || empty($data['delivery_from_address']) || empty($data['delivery_to_address'])) {
             wp_send_json_error(array('message' => 'Please fill in all required fields.'));
         }
         
@@ -669,9 +647,6 @@ class HS_CRM_Admin {
         if (isset($_POST['phone'])) {
             $data['phone'] = sanitize_text_field($_POST['phone']);
         }
-        if (isset($_POST['address'])) {
-            $data['address'] = sanitize_textarea_field($_POST['address']);
-        }
         if (isset($_POST['delivery_from_address'])) {
             $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
         }
@@ -704,9 +679,6 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['property_notes'])) {
             $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
-        }
-        if (isset($_POST['stairs'])) {
-            $data['stairs'] = sanitize_text_field($_POST['stairs']);
         }
         if (isset($_POST['stairs_from'])) {
             $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);

@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.6
+Stable tag: 1.7
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,15 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 1.7 =
+* Removed generic "Address" field - now only uses "From Address" and "To Address"
+* Made from/to address fields required when creating enquiries
+* Removed "House size" field from the user interface
+* Cleaned up stairs fields - now only "Stairs Involved (From Address)" and "Stairs Involved (To Address)"
+* Fixed "Failed to create enquiry" error that occurred when editing or creating enquiries
+* Improved admin table display to show from/to addresses more prominently
+* Updated field validation and error handling for better user experience
 
 = 1.6 =
 * Simplified address fields to only "From Address" and "To Address" (removed separate pickup/dropoff fields)
