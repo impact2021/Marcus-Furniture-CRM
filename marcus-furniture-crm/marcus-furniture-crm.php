@@ -26,6 +26,7 @@ require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-form.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-admin.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-email.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-settings.php';
+require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-truck-scheduler.php';
 
 /**
  * Activation hook - Create database tables
@@ -61,6 +62,7 @@ function hs_crm_init() {
     if (is_admin()) {
         $admin = new HS_CRM_Admin();
         $settings = new HS_CRM_Settings();
+        $truck_scheduler = new HS_CRM_Truck_Scheduler();
     }
     
     // Initialize email handler

@@ -56,6 +56,39 @@ class HS_CRM_Database {
         ) $charset_collate;";
         
         dbDelta($sql_notes);
+        
+        // Create trucks table
+        $trucks_table = $wpdb->prefix . 'hs_trucks';
+        $sql_trucks = "CREATE TABLE IF NOT EXISTS $trucks_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            registration varchar(100) DEFAULT '' NOT NULL,
+            capacity varchar(100) DEFAULT '' NOT NULL,
+            status varchar(50) DEFAULT 'active' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+        
+        dbDelta($sql_trucks);
+        
+        // Create truck bookings table
+        $bookings_table = $wpdb->prefix . 'hs_truck_bookings';
+        $sql_bookings = "CREATE TABLE IF NOT EXISTS $bookings_table (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            truck_id mediumint(9) NOT NULL,
+            enquiry_id mediumint(9) DEFAULT NULL,
+            booking_date date NOT NULL,
+            start_time time DEFAULT NULL,
+            end_time time DEFAULT NULL,
+            notes text DEFAULT '' NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
+            PRIMARY KEY  (id),
+            KEY truck_id (truck_id),
+            KEY enquiry_id (enquiry_id),
+            KEY booking_date (booking_date)
+        ) $charset_collate;";
+        
+        dbDelta($sql_bookings);
     }
     
     /**
@@ -382,6 +415,269 @@ class HS_CRM_Database {
         $result = $wpdb->delete(
             $table_name,
             array('id' => $note_id),
+            array('%d')
+        );
+        
+        return $result !== false;
+    }
+    
+    /**
+     * ========================================
+     * TRUCK MANAGEMENT METHODS
+     * ========================================
+     */
+    
+    /**
+     * Get all trucks
+     */
+    public static function get_trucks($status = 'active') {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_trucks';
+        
+        if ($status === 'all') {
+            return $wpdb->get_results("SELECT * FROM $table_name ORDER BY name ASC");
+        }
+        
+        return $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM $table_name WHERE status = %s ORDER BY name ASC",
+            $status
+        ));
+    }
+    
+    /**
+     * Get single truck by ID
+     */
+    public static function get_truck($id) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_trucks';
+        
+        return $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table_name WHERE id = %d",
+            $id
+        ));
+    }
+    
+    /**
+     * Insert new truck
+     */
+    public static function insert_truck($data) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_trucks';
+        
+        $result = $wpdb->insert(
+            $table_name,
+            array(
+                'name' => sanitize_text_field($data['name']),
+                'registration' => isset($data['registration']) ? sanitize_text_field($data['registration']) : '',
+                'capacity' => isset($data['capacity']) ? sanitize_text_field($data['capacity']) : '',
+                'status' => 'active'
+            ),
+            array('%s', '%s', '%s', '%s')
+        );
+        
+        return $result !== false ? $wpdb->insert_id : false;
+    }
+    
+    /**
+     * Update truck
+     */
+    public static function update_truck($id, $data) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_trucks';
+        
+        $update_data = array();
+        $update_format = array();
+        
+        if (isset($data['name'])) {
+            $update_data['name'] = sanitize_text_field($data['name']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['registration'])) {
+            $update_data['registration'] = sanitize_text_field($data['registration']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['capacity'])) {
+            $update_data['capacity'] = sanitize_text_field($data['capacity']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['status'])) {
+            $update_data['status'] = sanitize_text_field($data['status']);
+            $update_format[] = '%s';
+        }
+        
+        if (empty($update_data)) {
+            return false;
+        }
+        
+        $result = $wpdb->update(
+            $table_name,
+            $update_data,
+            array('id' => $id),
+            $update_format,
+            array('%d')
+        );
+        
+        return $result !== false;
+    }
+    
+    /**
+     * Delete truck (soft delete by setting status to inactive)
+     */
+    public static function delete_truck($id) {
+        return self::update_truck($id, array('status' => 'inactive'));
+    }
+    
+    /**
+     * Get truck bookings for a date range
+     */
+    public static function get_truck_bookings($start_date = null, $end_date = null, $truck_id = null) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_truck_bookings';
+        
+        $where = array();
+        $params = array();
+        
+        if ($start_date && $end_date) {
+            $where[] = 'booking_date BETWEEN %s AND %s';
+            $params[] = $start_date;
+            $params[] = $end_date;
+        } elseif ($start_date) {
+            $where[] = 'booking_date >= %s';
+            $params[] = $start_date;
+        }
+        
+        if ($truck_id) {
+            $where[] = 'truck_id = %d';
+            $params[] = $truck_id;
+        }
+        
+        $where_clause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+        
+        $sql = "SELECT b.*, t.name as truck_name, e.first_name, e.last_name, e.address 
+                FROM $table_name b
+                LEFT JOIN {$wpdb->prefix}hs_trucks t ON b.truck_id = t.id
+                LEFT JOIN {$wpdb->prefix}hs_enquiries e ON b.enquiry_id = e.id
+                $where_clause
+                ORDER BY booking_date ASC, start_time ASC";
+        
+        if (!empty($params)) {
+            return $wpdb->get_results($wpdb->prepare($sql, $params));
+        }
+        
+        return $wpdb->get_results($sql);
+    }
+    
+    /**
+     * Get single booking by ID
+     */
+    public static function get_booking($id) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_truck_bookings';
+        
+        return $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table_name WHERE id = %d",
+            $id
+        ));
+    }
+    
+    /**
+     * Insert new booking
+     */
+    public static function insert_booking($data) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_truck_bookings';
+        
+        $insert_data = array(
+            'truck_id' => intval($data['truck_id']),
+            'booking_date' => sanitize_text_field($data['booking_date']),
+            'notes' => isset($data['notes']) ? sanitize_textarea_field($data['notes']) : ''
+        );
+        
+        if (isset($data['enquiry_id']) && !empty($data['enquiry_id'])) {
+            $insert_data['enquiry_id'] = intval($data['enquiry_id']);
+        }
+        
+        if (isset($data['start_time']) && !empty($data['start_time'])) {
+            $insert_data['start_time'] = sanitize_text_field($data['start_time']);
+        }
+        
+        if (isset($data['end_time']) && !empty($data['end_time'])) {
+            $insert_data['end_time'] = sanitize_text_field($data['end_time']);
+        }
+        
+        $result = $wpdb->insert($table_name, $insert_data);
+        
+        return $result !== false ? $wpdb->insert_id : false;
+    }
+    
+    /**
+     * Update booking
+     */
+    public static function update_booking($id, $data) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_truck_bookings';
+        
+        $update_data = array();
+        
+        if (isset($data['truck_id'])) {
+            $update_data['truck_id'] = intval($data['truck_id']);
+        }
+        
+        if (isset($data['enquiry_id'])) {
+            $update_data['enquiry_id'] = !empty($data['enquiry_id']) ? intval($data['enquiry_id']) : null;
+        }
+        
+        if (isset($data['booking_date'])) {
+            $update_data['booking_date'] = sanitize_text_field($data['booking_date']);
+        }
+        
+        if (isset($data['start_time'])) {
+            $update_data['start_time'] = !empty($data['start_time']) ? sanitize_text_field($data['start_time']) : null;
+        }
+        
+        if (isset($data['end_time'])) {
+            $update_data['end_time'] = !empty($data['end_time']) ? sanitize_text_field($data['end_time']) : null;
+        }
+        
+        if (isset($data['notes'])) {
+            $update_data['notes'] = sanitize_textarea_field($data['notes']);
+        }
+        
+        if (empty($update_data)) {
+            return false;
+        }
+        
+        $result = $wpdb->update(
+            $table_name,
+            $update_data,
+            array('id' => $id)
+        );
+        
+        return $result !== false;
+    }
+    
+    /**
+     * Delete booking
+     */
+    public static function delete_booking($id) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'hs_truck_bookings';
+        
+        $result = $wpdb->delete(
+            $table_name,
+            array('id' => $id),
             array('%d')
         );
         
