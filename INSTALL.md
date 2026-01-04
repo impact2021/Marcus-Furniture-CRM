@@ -10,28 +10,28 @@ The error "An error occurred: The package could not be installed" has been resol
 
 1. **Download the Plugin**
    - Download or clone this repository
-   - Navigate to the `marcus-furniture-crm` folder
+   - Use the pre-built `marcus-furniture-crm.zip` file from the repository root
+   - **OR** create your own ZIP file:
+     ```bash
+     # From the repository root:
+     zip -r marcus-furniture-crm.zip marcus-furniture-crm/
+     ```
+   - ⚠️ **Important**: The ZIP must contain the `marcus-furniture-crm` folder, not just the files inside it
 
-2. **Create a ZIP file**
-   ```bash
-   # From the repository root:
-   zip -r marcus-furniture-crm.zip marcus-furniture-crm/
-   ```
-
-3. **Upload to WordPress**
+2. **Upload to WordPress**
    - Log into WordPress Admin
    - Go to **Plugins** > **Add New** > **Upload Plugin**
    - Click **Choose File** and select `marcus-furniture-crm.zip`
    - Click **Install Now**
    - Click **Activate Plugin**
 
-4. **Configure Settings**
+3. **Configure Settings**
    - Go to **MF Enquiries** > **Settings**
    - Set your admin email address
    - Configure timezone (defaults to Pacific/Auckland)
    - (Optional) Add Google Maps API key
 
-5. **Add Contact Form**
+4. **Add Contact Form**
    - Edit any page or post
    - Add the shortcode: `[hs_contact_form]`
    - Publish the page
@@ -85,7 +85,10 @@ For detailed instructions, see [GRAVITY_FORMS_INTEGRATION.md](marcus-furniture-c
 **Before**: "The package could not be installed."
 **After**: Plugin installs successfully via WordPress admin
 
-**Solution**: Added proper `readme.txt` file in WordPress standard format
+**Solution**: 
+1. Added proper `readme.txt` file in WordPress standard format
+2. Included pre-built, tested `marcus-furniture-crm.zip` in the repository
+3. Updated .gitignore to allow distribution zip file
 
 ### Problem 2: No Gravity Forms Support ✅
 **Before**: No integration with Gravity Forms
