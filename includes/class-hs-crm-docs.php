@@ -179,12 +179,12 @@ class HS_CRM_Docs {
         $html = preg_replace_callback('/(\|.+\|\n)+/m', array($this, 'convert_table'), $html);
         
         // Now wrap consecutive list items in proper tags
-        $html = preg_replace('/(:::UL_ITEM:::.+\n?)+/m', function($matches) {
+        $html = preg_replace_callback('/(:::UL_ITEM:::.+\n?)+/m', function($matches) {
             $items = preg_replace('/:::UL_ITEM:::(.+)/', '<li>$1</li>', $matches[0]);
             return '<ul>' . $items . '</ul>';
         }, $html);
         
-        $html = preg_replace('/(:::OL_ITEM:::.+\n?)+/m', function($matches) {
+        $html = preg_replace_callback('/(:::OL_ITEM:::.+\n?)+/m', function($matches) {
             $items = preg_replace('/:::OL_ITEM:::(.+)/', '<li>$1</li>', $matches[0]);
             return '<ol>' . $items . '</ol>';
         }, $html);

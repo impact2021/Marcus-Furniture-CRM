@@ -151,7 +151,7 @@ jQuery(document).ready(function($) {
                 url: hsCrmAjax.ajaxurl,
                 type: 'POST',
                 data: {
-                    action: 'hs_crm_update_truck',
+                    action: 'hs_crm_update_truck_assignment',
                     nonce: hsCrmAjax.nonce,
                     enquiry_id: enquiryId,
                     truck_id: truckId
