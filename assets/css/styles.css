@@ -283,19 +283,27 @@
     text-transform: uppercase;
 }
 
-.status-not-actioned {
+.status-not-actioned,
+.status-first-contact {
     background: #f0f0f0;
     color: #666;
 }
 
-.status-emailed {
+.status-emailed,
+.status-quote-sent {
     background: #e3f2fd;
     color: #1976d2;
 }
 
-.status-quoted {
+.status-quoted,
+.status-booking-confirmed {
     background: #fff3e0;
     color: #f57c00;
+}
+
+.status-deposit-paid {
+    background: #e1f5fe;
+    color: #0277bd;
 }
 
 .status-completed {

@@ -238,7 +238,7 @@ class HS_CRM_Admin {
                             <!-- Notes section - collapsible -->
                             <?php if (!empty($notes)): ?>
                                 <tr class="hs-crm-notes-toggle-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                    <td colspan="7" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
+                                    <td colspan="8" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
                                         <span class="hs-crm-notes-toggle dashicons dashicons-arrow-down" style="font-size: 16px; vertical-align: middle;"></span>
                                         <strong>Notes (<?php echo count($notes); ?>)</strong> - Click to expand
                                     </td>
@@ -248,7 +248,7 @@ class HS_CRM_Admin {
                                         <td class="hs-crm-note-date">
                                             <?php echo esc_html(hs_crm_format_date($note->created_at)); ?>
                                         </td>
-                                        <td colspan="5" class="hs-crm-note-content">
+                                        <td colspan="6" class="hs-crm-note-content">
                                             <div class="hs-crm-note-text"><?php echo esc_html(stripslashes($note->note)); ?></div>
                                         </td>
                                         <td class="hs-crm-note-actions">
@@ -260,7 +260,7 @@ class HS_CRM_Admin {
                             
                             <!-- Add note row -->
                             <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo esc_attr($add_note_row_style); ?>">
-                                <td colspan="6">
+                                <td colspan="7">
                                     <textarea class="hs-crm-new-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" rows="2" placeholder="Add a new note..."></textarea>
                                 </td>
                                 <td>
