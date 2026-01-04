@@ -17,6 +17,7 @@ A comprehensive WordPress plugin for managing furniture moving enquiries with co
 
 ## 📚 Documentation
 
+- **[Repository Structure](REPOSITORY_STRUCTURE.md)** - Understand the repository layout
 - **[Installation Guide](INSTALL.md)** - Complete installation instructions
 - **[Deployment Guide](DEPLOYMENT.md)** - Production deployment steps
 - **[Gravity Forms Integration](GRAVITY_FORMS_INTEGRATION.md)** - Gravity Forms setup
