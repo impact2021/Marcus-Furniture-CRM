@@ -37,12 +37,14 @@ class HS_CRM_Database {
             total_rooms varchar(50) DEFAULT '' NOT NULL,
             property_notes text DEFAULT '' NOT NULL,
             stairs varchar(50) DEFAULT '' NOT NULL,
+            stairs_from varchar(50) DEFAULT '' NOT NULL,
+            stairs_to varchar(50) DEFAULT '' NOT NULL,
             move_date date DEFAULT NULL,
             move_time time DEFAULT NULL,
             booking_start_time time DEFAULT NULL,
             booking_end_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
-            job_type varchar(100) NOT NULL,
+            job_type varchar(100) DEFAULT '' NOT NULL,
             status varchar(50) DEFAULT 'First Contact' NOT NULL,
             truck_id mediumint(9) DEFAULT NULL,
             email_sent tinyint(1) DEFAULT 0 NOT NULL,
@@ -137,6 +139,8 @@ class HS_CRM_Database {
             'total_rooms' => isset($data['total_rooms']) ? sanitize_text_field($data['total_rooms']) : '',
             'property_notes' => isset($data['property_notes']) ? sanitize_textarea_field($data['property_notes']) : '',
             'stairs' => isset($data['stairs']) ? sanitize_text_field($data['stairs']) : '',
+            'stairs_from' => isset($data['stairs_from']) ? sanitize_text_field($data['stairs_from']) : '',
+            'stairs_to' => isset($data['stairs_to']) ? sanitize_text_field($data['stairs_to']) : '',
             'job_type' => '',
             'status' => 'First Contact',
             'email_sent' => 0,
@@ -360,6 +364,16 @@ class HS_CRM_Database {
         
         if (isset($data['stairs'])) {
             $update_data['stairs'] = sanitize_text_field($data['stairs']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['stairs_from'])) {
+            $update_data['stairs_from'] = sanitize_text_field($data['stairs_from']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['stairs_to'])) {
+            $update_data['stairs_to'] = sanitize_text_field($data['stairs_to']);
             $update_format[] = '%s';
         }
         

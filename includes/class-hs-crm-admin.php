@@ -180,6 +180,12 @@ class HS_CRM_Admin {
                                     if (!empty($enquiry->stairs)) {
                                         $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
                                     }
+                                    if (!empty($enquiry->stairs_from)) {
+                                        $house_details[] = 'Stairs (From): ' . esc_html($enquiry->stairs_from);
+                                    }
+                                    if (!empty($enquiry->stairs_to)) {
+                                        $house_details[] = 'Stairs (To): ' . esc_html($enquiry->stairs_to);
+                                    }
                                     if (!empty($enquiry->property_notes)) {
                                         $house_details[] = 'Notes: ' . esc_html($enquiry->property_notes);
                                     }
@@ -302,8 +308,8 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-address">Address *</label>
-                        <textarea id="enquiry-address" name="address" rows="3" required></textarea>
+                        <label for="enquiry-address">Address</label>
+                        <textarea id="enquiry-address" name="address" rows="3"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-group-full">
@@ -319,11 +325,6 @@ class HS_CRM_Admin {
                     <div class="hs-crm-form-group">
                         <label for="enquiry-suburb">Suburb</label>
                         <input type="text" id="enquiry-suburb" name="suburb">
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-house-size">House Size</label>
-                        <input type="text" id="enquiry-house-size" name="house_size" placeholder="e.g., 3 bedroom, 2 story">
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -383,8 +384,18 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-stairs">Stairs Involved</label>
-                        <select id="enquiry-stairs" name="stairs">
+                        <label for="enquiry-stairs-from">Stairs Involved (From Address)</label>
+                        <select id="enquiry-stairs-from" name="stairs_from">
+                            <option value="">Select...</option>
+                            <option value="No">No</option>
+                            <option value="Yes - 1 floor">Yes - 1 floor</option>
+                            <option value="Yes - 2+ floors">Yes - 2+ floors</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-stairs-to">Stairs Involved (To Address)</label>
+                        <select id="enquiry-stairs-to" name="stairs_to">
                             <option value="">Select...</option>
                             <option value="No">No</option>
                             <option value="Yes - 1 floor">Yes - 1 floor</option>
@@ -587,10 +598,6 @@ class HS_CRM_Admin {
             $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
         }
         
-        if (!empty($_POST['house_size'])) {
-            $data['house_size'] = sanitize_text_field($_POST['house_size']);
-        }
-        
         if (!empty($_POST['total_rooms'])) {
             $data['total_rooms'] = sanitize_text_field($_POST['total_rooms']);
         }
@@ -603,8 +610,16 @@ class HS_CRM_Admin {
             $data['stairs'] = sanitize_text_field($_POST['stairs']);
         }
         
+        if (!empty($_POST['stairs_from'])) {
+            $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);
+        }
+        
+        if (!empty($_POST['stairs_to'])) {
+            $data['stairs_to'] = sanitize_text_field($_POST['stairs_to']);
+        }
+        
         // Validate required fields
-        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone']) || empty($data['address'])) {
+        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone'])) {
             wp_send_json_error(array('message' => 'Please fill in all required fields.'));
         }
         
@@ -666,9 +681,6 @@ class HS_CRM_Admin {
         if (isset($_POST['suburb'])) {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);
         }
-        if (isset($_POST['house_size'])) {
-            $data['house_size'] = sanitize_text_field($_POST['house_size']);
-        }
         if (isset($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
         }
@@ -695,6 +707,12 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['stairs'])) {
             $data['stairs'] = sanitize_text_field($_POST['stairs']);
+        }
+        if (isset($_POST['stairs_from'])) {
+            $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);
+        }
+        if (isset($_POST['stairs_to'])) {
+            $data['stairs_to'] = sanitize_text_field($_POST['stairs_to']);
         }
         if (isset($_POST['contact_source'])) {
             $data['contact_source'] = sanitize_text_field($_POST['contact_source']);
