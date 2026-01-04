@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.7
+Stable tag: 1.8
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,12 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 1.8 =
+* Fixed critical enquiry update bug where delivery address changes weren't syncing to the legacy address field
+* Improved data consistency when editing enquiries to ensure all related fields update correctly
+* Enhanced update_enquiry() method to auto-update the address field when delivery addresses change
+* This fix resolves the "Failed to update registry" issue reported when editing enquiries
 
 = 1.7 =
 * Removed generic "Address" field - now only uses "From Address" and "To Address"

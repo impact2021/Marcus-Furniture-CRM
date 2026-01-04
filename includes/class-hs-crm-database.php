@@ -334,6 +334,35 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        // Auto-update the legacy address field when delivery addresses change
+        // This ensures data consistency with the concatenated address format used on insert
+        if (isset($data['delivery_from_address']) || isset($data['delivery_to_address'])) {
+            // Get current enquiry to fetch any missing address parts
+            $current_enquiry = self::get_enquiry($id);
+            
+            if ($current_enquiry) {
+                $from_address = isset($data['delivery_from_address']) 
+                    ? sanitize_textarea_field($data['delivery_from_address']) 
+                    : $current_enquiry->delivery_from_address;
+                    
+                $to_address = isset($data['delivery_to_address']) 
+                    ? sanitize_textarea_field($data['delivery_to_address']) 
+                    : $current_enquiry->delivery_to_address;
+                
+                // Update the address field with concatenated format (matching insert behavior)
+                if (!empty($from_address) && !empty($to_address)) {
+                    $update_data['address'] = $from_address . ' → ' . $to_address;
+                    $update_format[] = '%s';
+                } elseif (!empty($from_address)) {
+                    $update_data['address'] = $from_address;
+                    $update_format[] = '%s';
+                } elseif (!empty($to_address)) {
+                    $update_data['address'] = $to_address;
+                    $update_format[] = '%s';
+                }
+            }
+        }
+        
         if (isset($data['suburb'])) {
             $update_data['suburb'] = sanitize_text_field($data['suburb']);
             $update_format[] = '%s';

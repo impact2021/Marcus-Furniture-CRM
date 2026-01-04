@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 1.8 - 2026-01-04
+
+### Fixed
+- **Critical Enquiry Update Bug**: Fixed data inconsistency issue when editing enquiries
+  - The legacy `address` field now auto-syncs when `delivery_from_address` or `delivery_to_address` are updated
+  - This ensures data consistency between the old and new address field formats
+  - Resolves the "Failed to update registry" issue that occurred when editing enquiry delivery addresses
+  - The `address` field is automatically populated as a concatenation of from/to addresses (matching insert behavior)
+  - Handles cases where only one delivery address is provided
+
+### Technical
+- Updated plugin version to 1.8
+- Enhanced `HS_CRM_Database::update_enquiry()` method with automatic address field synchronization
+- Added logic to fetch current enquiry data when partial delivery address updates are made
+- Improved data integrity for enquiry records
+
 ## Version 1.7 - 2026-01-04
 
 ### Changed
