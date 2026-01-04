@@ -487,7 +487,9 @@ jQuery(document).ready(function($) {
                             $('#enquiry-email').val(enquiry.email);
                             $('#enquiry-phone').val(enquiry.phone);
                             $('#enquiry-address').val(enquiry.address);
-                            $('#enquiry-move-date').val(enquiry.move_date);
+                            $('#enquiry-suburb').val(enquiry.suburb || '');
+                            $('#enquiry-move-date').val(enquiry.move_date || '');
+                            $('#enquiry-move-time').val(enquiry.move_time || '');
                             $('#enquiry-contact-source').val(enquiry.contact_source);
                             $('#enquiry-status').val(enquiry.status);
                             $('#hs-crm-enquiry-modal').fadeIn();

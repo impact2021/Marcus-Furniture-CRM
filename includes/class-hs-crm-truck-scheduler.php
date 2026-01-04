@@ -48,6 +48,11 @@ class HS_CRM_Truck_Scheduler {
         
         $trucks = HS_CRM_Database::get_trucks('active');
         
+        // Ensure trucks is always an array, even if null is returned
+        if (!is_array($trucks)) {
+            $trucks = array();
+        }
+        
         // Get current month or requested month
         $current_month = isset($_GET['month']) ? sanitize_text_field($_GET['month']) : date('Y-m');
         $month_timestamp = strtotime($current_month . '-01');

@@ -26,7 +26,9 @@ class HS_CRM_Database {
             email varchar(255) NOT NULL,
             phone varchar(50) NOT NULL,
             address text NOT NULL,
+            suburb varchar(255) DEFAULT '' NOT NULL,
             move_date date DEFAULT NULL,
+            move_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
             job_type varchar(100) NOT NULL,
             status varchar(50) DEFAULT 'First Contact' NOT NULL,
@@ -110,6 +112,7 @@ class HS_CRM_Database {
             'email' => sanitize_email($data['email']),
             'phone' => sanitize_text_field($data['phone']),
             'address' => sanitize_textarea_field($data['address']),
+            'suburb' => isset($data['suburb']) ? sanitize_text_field($data['suburb']) : '',
             'job_type' => '',
             'status' => 'First Contact',
             'email_sent' => 0,
@@ -122,10 +125,14 @@ class HS_CRM_Database {
             $insert_data['move_date'] = sanitize_text_field($data['move_date']);
         }
         
+        // Add move_time if provided
+        if (isset($data['move_time']) && !empty($data['move_time'])) {
+            $insert_data['move_time'] = sanitize_text_field($data['move_time']);
+        }
+        
         $result = $wpdb->insert(
             $table_name,
-            $insert_data,
-            array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s')
+            $insert_data
         );
         
         return $result !== false ? $wpdb->insert_id : false;
@@ -252,8 +259,18 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        if (isset($data['suburb'])) {
+            $update_data['suburb'] = sanitize_text_field($data['suburb']);
+            $update_format[] = '%s';
+        }
+        
         if (isset($data['move_date'])) {
             $update_data['move_date'] = !empty($data['move_date']) ? sanitize_text_field($data['move_date']) : null;
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['move_time'])) {
+            $update_data['move_time'] = !empty($data['move_time']) ? sanitize_text_field($data['move_time']) : null;
             $update_format[] = '%s';
         }
         

@@ -136,6 +136,9 @@ class HS_CRM_Admin {
                                 <td>
                                     <?php if (!empty($enquiry->move_date)): ?>
                                         <strong><?php echo esc_html(date('d/m/Y', strtotime($enquiry->move_date))); ?></strong>
+                                        <?php if (!empty($enquiry->move_time)): ?>
+                                            <br><small style="color: #666;"><?php echo esc_html(date('g:i A', strtotime($enquiry->move_time))); ?></small>
+                                        <?php endif; ?>
                                     <?php else: ?>
                                         <em style="color: #999;">Not set</em>
                                     <?php endif; ?>
@@ -147,7 +150,12 @@ class HS_CRM_Admin {
                                     <small style="color: #666;"><?php echo esc_html($enquiry->email); ?></small><br>
                                     <small style="color: #666;"><?php echo esc_html($enquiry->phone); ?></small>
                                 </td>
-                                <td><?php echo esc_html($enquiry->address); ?></td>
+                                <td>
+                                    <?php echo esc_html($enquiry->address); ?>
+                                    <?php if (!empty($enquiry->suburb)): ?>
+                                        <br><small style="color: #666;"><strong>Suburb:</strong> <?php echo esc_html($enquiry->suburb); ?></small>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span>
                                 </td>
@@ -244,8 +252,18 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
+                        <label for="enquiry-suburb">Suburb</label>
+                        <input type="text" id="enquiry-suburb" name="suburb">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
                         <label for="enquiry-move-date">Requested Move Date</label>
                         <input type="date" id="enquiry-move-date" name="move_date">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-move-time">Requested Move Time</label>
+                        <input type="time" id="enquiry-move-time" name="move_time">
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -385,8 +403,16 @@ class HS_CRM_Admin {
             'contact_source' => isset($_POST['contact_source']) ? sanitize_text_field($_POST['contact_source']) : 'form',
         );
         
+        if (!empty($_POST['suburb'])) {
+            $data['suburb'] = sanitize_text_field($_POST['suburb']);
+        }
+        
         if (!empty($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
+        }
+        
+        if (!empty($_POST['move_time'])) {
+            $data['move_time'] = sanitize_text_field($_POST['move_time']);
         }
         
         // Validate required fields
@@ -443,8 +469,14 @@ class HS_CRM_Admin {
         if (isset($_POST['address'])) {
             $data['address'] = sanitize_textarea_field($_POST['address']);
         }
+        if (isset($_POST['suburb'])) {
+            $data['suburb'] = sanitize_text_field($_POST['suburb']);
+        }
         if (isset($_POST['move_date'])) {
             $data['move_date'] = sanitize_text_field($_POST['move_date']);
+        }
+        if (isset($_POST['move_time'])) {
+            $data['move_time'] = sanitize_text_field($_POST['move_time']);
         }
         if (isset($_POST['status'])) {
             $data['status'] = sanitize_text_field($_POST['status']);

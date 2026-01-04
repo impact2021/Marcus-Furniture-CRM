@@ -61,6 +61,8 @@ These fields must be present for an enquiry to be created:
 | CRM Field | Gravity Forms Field Labels |
 |-----------|----------------------------|
 | Move Date | "move date", "moving date", "preferred date", "date" |
+| Move Time | "move time", "moving time", "preferred time", "time" |
+| Suburb | "suburb", "city", "town" |
 
 ## Supported Field Types
 
@@ -72,12 +74,18 @@ If you use Gravity Forms' **Name** field (Advanced Fields):
 ### Address Field  
 If you use Gravity Forms' **Address** field (Advanced Fields):
 - All address components are combined into a single address string
+- The suburb/city field is automatically extracted to the separate "Suburb" field
 - Format: Street, City, State, ZIP, Country
 
 ### Date Field
 If you use a **Date Picker** field for the move date:
 - Date is automatically formatted and stored in the CRM
 - Works with all Gravity Forms date formats
+
+### Time Field
+If you use a **Time** field for the move time:
+- Time is automatically formatted and stored in the CRM
+- Works with all Gravity Forms time formats
 
 ### Standard Text Fields
 For simple text input fields, just ensure the field label matches one of the expected labels listed above.
@@ -114,7 +122,12 @@ Here's a recommended setup for a moving enquiry form:
    - Required: No
    - Date Format: dd/mm/yyyy
 
-6. **Paragraph Text** (Standard Field)
+6. **Time** (Advanced Field)
+   - Label: "Preferred Move Time"
+   - Required: No
+   - Time Format: 12-hour or 24-hour
+
+7. **Paragraph Text** (Standard Field)
    - Label: "Additional Details"
    - Required: No
    - Note: This won't be captured in CRM but will be in Gravity Forms entry
@@ -194,7 +207,9 @@ $field_mapping = array(
     'email' => array('email', 'e-mail', 'email address'),
     'phone' => array('phone', 'telephone', 'mobile', 'phone number'),
     'address' => array('address', 'street address', 'location'),
-    'move_date' => array('move date', 'moving date', 'preferred date', 'date')
+    'suburb' => array('suburb', 'city', 'town'),
+    'move_date' => array('move date', 'moving date', 'preferred date', 'date'),
+    'move_time' => array('move time', 'moving time', 'preferred time', 'time')
 );
 ```
 
@@ -267,6 +282,7 @@ If you need help with Gravity Forms integration:
 - Current Address
 - Moving To Address (won't be captured, but useful for quote)
 - Preferred Move Date
+- Preferred Move Time
 - Property Size (dropdown)
 - Special Requirements (paragraph)
 
