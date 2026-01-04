@@ -19,9 +19,17 @@
 
 ### 2. Upload to WordPress
 ```bash
+# Method 1: FTP/SFTP Upload
 # Upload to: /wp-content/plugins/marcus-furniture-crm/
-# OR use WordPress admin: Plugins > Add New > Upload Plugin
+
+# Method 2: WordPress Admin Upload
+# 1. Create a zip file of the marcus-furniture-crm folder
+# 2. Go to WordPress Admin > Plugins > Add New > Upload Plugin
+# 3. Choose the zip file and click "Install Now"
+# 4. Click "Activate Plugin"
 ```
+
+**Note:** The plugin now includes a `readme.txt` file which allows installation via the WordPress admin uploader without errors.
 
 ### 3. Activate Plugin
 - Go to WordPress Admin > Plugins
@@ -48,6 +56,29 @@ Add this shortcode to any page or post:
 ```
 
 Recommended pages:
+- Contact Us
+- Get a Quote
+- Request Moving Service
+
+**Alternative: Using Gravity Forms**
+
+If you have Gravity Forms installed, the plugin will automatically integrate with it:
+
+1. Create a new Gravity Form with fields for customer information
+2. Include fields with labels like:
+   - "First Name" or "First"
+   - "Last Name" or "Last"
+   - "Email" or "Email Address"
+   - "Phone" or "Phone Number"
+   - "Address" or "Street Address"
+   - "Move Date" or "Moving Date" (optional)
+3. Either:
+   - Include one of these keywords in the form title: "moving", "enquiry", "contact", "furniture", or "quote"
+   - OR add the CSS class `crm-integration` to the form settings
+
+When a Gravity Form is submitted, an enquiry will automatically be created in the CRM.
+
+### 6. Set Up Trucks
 - Contact Us
 - Get a Quote
 - Request Moving Service
@@ -147,6 +178,16 @@ If migrating from Home Shield Painters CRM:
 
 ## Troubleshooting
 
+### Plugin Upload Error: "The package could not be installed"
+
+**Solution:** This error occurred in earlier versions. The plugin now includes a `readme.txt` file which is required by WordPress for proper plugin installation.
+
+If you still see this error:
+1. Verify the `readme.txt` file exists in the plugin folder
+2. Ensure the plugin folder is named `marcus-furniture-crm` (not `marcus-furniture-crm-main` or similar)
+3. Make sure all plugin files are present in the correct structure
+4. Try uploading via FTP instead of the WordPress admin interface
+
 ### Contact Form Not Appearing
 - Verify shortcode is `[hs_contact_form]` exactly
 - Check that plugin is activated
@@ -173,6 +214,29 @@ If migrating from Home Shield Painters CRM:
 - Check browser console for JavaScript errors
 - Verify nonce is being generated
 - Clear browser cache
+
+### Gravity Forms Not Creating Enquiries
+
+If Gravity Forms submissions are not creating enquiries in the CRM:
+1. **Check Form Title or CSS Class:**
+   - Form title must contain: "moving", "enquiry", "contact", "furniture", or "quote"
+   - OR add CSS class `crm-integration` to the form settings (Form Settings > Advanced)
+
+2. **Verify Field Labels:**
+   - Field labels must match expected names (see Gravity Forms Integration section)
+   - The plugin looks for field labels like "First Name", "Email", "Phone", etc.
+
+3. **Check Required Fields:**
+   - Gravity Form must have all required fields: First Name, Last Name, Email, Phone, Address
+   - If any required field is missing, the enquiry won't be created
+
+4. **Review Admin Email:**
+   - Check if admin notification emails are being sent from CRM
+   - If emails arrive, integration is working
+
+5. **Check WordPress Debug Log:**
+   - Enable WP_DEBUG to see if there are any errors during form submission
+   - Look for database insertion errors
 
 ## Security Recommendations
 
