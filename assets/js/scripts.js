@@ -775,8 +775,9 @@ jQuery(document).ready(function($) {
             var hours = parseInt(timeParts[0], 10);
             var minutes = parseInt(timeParts[1], 10);
             
-            // Calculate end time
-            var totalMinutes = hours * 60 + minutes + (durationHours * 60);
+            // Calculate end time - convert duration to minutes first to avoid floating-point issues
+            var durationMinutes = Math.round(durationHours * 60);
+            var totalMinutes = hours * 60 + minutes + durationMinutes;
             var endHours = Math.floor(totalMinutes / 60) % 24;
             var endMinutes = totalMinutes % 60;
             
