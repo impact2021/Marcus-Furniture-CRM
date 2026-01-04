@@ -585,6 +585,18 @@ jQuery(document).ready(function($) {
                 }
             });
         });
+        
+        // Handle enquiry modal close
+        $('#hs-crm-enquiry-modal .hs-crm-modal-close').on('click', function() {
+            $('#hs-crm-enquiry-modal').fadeOut();
+        });
+        
+        // Close enquiry modal when clicking outside
+        $(window).on('click', function(e) {
+            if ($(e.target).is('#hs-crm-enquiry-modal')) {
+                $('#hs-crm-enquiry-modal').fadeOut();
+            }
+        });
     }
     
     // Truck Scheduler page functionality
