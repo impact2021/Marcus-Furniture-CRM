@@ -1,5 +1,20 @@
 # Changelog
 
+## Version 1.9 - 2026-01-04
+
+### Fixed
+- **Critical Format Specifier Bug**: Fixed "Failed to update enquiry" error in `update_enquiry()` method
+  - The auto-sync logic for the `address` field was adding duplicate format specifiers to `$update_format`
+  - When `$data['address']` was explicitly set AND delivery addresses were being updated, two `%s` entries were added for the same field
+  - This caused a mismatch between the number of fields and format specifiers, causing `$wpdb->update()` to fail
+  - Added conditional check to only add format specifier if `address` wasn't already in the update data
+  - This completes the fix started in version 1.8 for enquiry update issues
+
+### Technical
+- Updated plugin version to 1.9
+- Modified `HS_CRM_Database::update_enquiry()` at line 372 to check `!isset($data['address'])` before adding format specifier
+- Prevents duplicate format strings when both explicit address and delivery address updates occur
+
 ## Version 1.8 - 2026-01-04
 
 ### Fixed

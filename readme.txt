@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.8
+Stable tag: 1.9
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,12 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 1.9 =
+* Fixed critical bug in update_enquiry() that caused "Failed to update enquiry" errors
+* Resolved duplicate format specifier issue when updating delivery addresses
+* The bug occurred when the address field auto-sync logic added duplicate format strings
+* This fix ensures enquiry updates work correctly in all scenarios
 
 = 1.8 =
 * Fixed critical enquiry update bug where delivery address changes weren't syncing to the legacy address field
