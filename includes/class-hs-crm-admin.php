@@ -655,6 +655,9 @@ class HS_CRM_Admin {
         if (isset($_POST['stairs'])) {
             $data['stairs'] = sanitize_text_field($_POST['stairs']);
         }
+        if (isset($_POST['contact_source'])) {
+            $data['contact_source'] = sanitize_text_field($_POST['contact_source']);
+        }
         if (isset($_POST['status'])) {
             $data['status'] = sanitize_text_field($_POST['status']);
         }
