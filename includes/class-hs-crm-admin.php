@@ -21,6 +21,7 @@ class HS_CRM_Admin {
         add_action('wp_ajax_hs_crm_delete_note', array($this, 'ajax_delete_note'));
         add_action('wp_ajax_hs_crm_create_enquiry', array($this, 'ajax_create_enquiry'));
         add_action('wp_ajax_hs_crm_update_enquiry', array($this, 'ajax_update_enquiry'));
+        add_action('wp_ajax_hs_crm_update_truck', array($this, 'ajax_update_truck_assignment'));
     }
     
     /**
@@ -111,6 +112,8 @@ class HS_CRM_Admin {
                 foreach ($enquiries as $enquiry): 
                     $notes = HS_CRM_Database::get_notes($enquiry->id);
                     $row_class = ($row_index % 2 === 0) ? 'hs-crm-even-row' : 'hs-crm-odd-row';
+                    $has_notes = !empty($notes);
+                    $add_note_row_style = $has_notes ? 'display: none;' : '';
                     $row_index++;
                 ?>
                     <!-- Individual table for each enquiry -->
@@ -118,51 +121,80 @@ class HS_CRM_Admin {
                         <tbody>
                             <!-- Customer Header Row -->
                             <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>">
-                                <th style="width: 10%;">
-                                    <a href="<?php echo esc_url($created_at_url); ?>">Contact Date</a>
+                                <th style="width: 16%;">
+                                    Source & Dates
                                 </th>
-                                <th style="width: 10%;">
-                                    <a href="<?php echo esc_url($move_date_url); ?>">Move Date</a>
-                                </th>
-                                <th style="width: 15%;">Contact Info</th>
-                                <th style="width: 15%;">Address</th>
-                                <th style="width: 8%;">Source</th>
+                                <th style="width: 20%;">Contact & Address</th>
+                                <th style="width: 14%;">House Details</th>
                                 <th style="width: 10%;">Status</th>
-                                <th style="width: 15%;">Status Change</th>
-                                <th style="width: 17%;">Action</th>
+                                <th style="width: 10%;">Truck</th>
+                                <th style="width: 12%;">Status Change</th>
+                                <th style="width: 18%;">Action</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                <td><?php echo esc_html(hs_crm_format_date($enquiry->created_at)); ?></td>
                                 <td>
+                                    <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span><br>
+                                    <small style="color: #666;">Contact: <?php echo esc_html(hs_crm_format_date($enquiry->created_at, 'd/m/Y')); ?></small><br>
                                     <?php if (!empty($enquiry->move_date)): ?>
-                                        <strong><?php echo esc_html(date('d/m/Y', strtotime($enquiry->move_date))); ?></strong>
+                                        <small style="color: #666;">Move: <strong><?php echo esc_html(date('d/m/Y', strtotime($enquiry->move_date))); ?></strong>
                                         <?php if (!empty($enquiry->move_time)): ?>
-                                            <br><small style="color: #666;"><?php echo esc_html(date('g:i A', strtotime($enquiry->move_time))); ?></small>
+                                            <?php echo esc_html(date('g:iA', strtotime($enquiry->move_time))); ?>
                                         <?php endif; ?>
+                                        </small>
                                     <?php else: ?>
-                                        <em style="color: #999;">Not set</em>
+                                        <small style="color: #999;">Move: Not set</small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <strong class="hs-crm-editable-name" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                         <?php echo esc_html($enquiry->first_name . ' ' . $enquiry->last_name); ?>
                                     </strong><br>
-                                    <small style="color: #666;"><?php echo esc_html($enquiry->email); ?></small><br>
-                                    <small style="color: #666;"><?php echo esc_html($enquiry->phone); ?></small>
-                                </td>
-                                <td>
-                                    <?php echo esc_html($enquiry->address); ?>
+                                    <small style="color: #666;"><?php echo esc_html($enquiry->phone); ?> | <?php echo esc_html($enquiry->email); ?></small><br>
+                                    <small style="color: #666;"><?php echo esc_html($enquiry->address); ?>
                                     <?php if (!empty($enquiry->suburb)): ?>
-                                        <br><small style="color: #666;"><strong>Suburb:</strong> <?php echo esc_html($enquiry->suburb); ?></small>
+                                        , <?php echo esc_html($enquiry->suburb); ?>
                                     <?php endif; ?>
+                                    </small>
                                 </td>
                                 <td>
-                                    <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span>
+                                    <?php 
+                                    $house_details = array();
+                                    if (!empty($enquiry->house_size)) {
+                                        $house_details[] = esc_html($enquiry->house_size);
+                                    }
+                                    if (!empty($enquiry->number_of_rooms)) {
+                                        $house_details[] = esc_html($enquiry->number_of_rooms) . ' rooms';
+                                    }
+                                    if (!empty($enquiry->stairs)) {
+                                        $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
+                                    }
+                                    if (empty($house_details)) {
+                                        echo '<em style="color: #999;">Not set</em>';
+                                    } else {
+                                        echo '<small>' . implode('<br>', $house_details) . '</small>';
+                                    }
+                                    ?>
                                 </td>
                                 <td>
                                     <span class="hs-crm-status-badge status-<?php echo esc_attr(strtolower(str_replace(' ', '-', $enquiry->status))); ?>">
                                         <?php echo esc_html($enquiry->status); ?>
                                     </span>
+                                </td>
+                                <td>
+                                    <?php 
+                                    $trucks = HS_CRM_Database::get_trucks('active');
+                                    if (!is_array($trucks)) {
+                                        $trucks = array();
+                                    }
+                                    ?>
+                                    <select class="hs-crm-truck-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-truck="<?php echo esc_attr($enquiry->truck_id ?? ''); ?>">
+                                        <option value="">No Truck</option>
+                                        <?php foreach ($trucks as $truck): ?>
+                                            <option value="<?php echo esc_attr($truck->id); ?>" <?php selected($enquiry->truck_id, $truck->id); ?>>
+                                                <?php echo esc_html($truck->name); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
                                 </td>
                                 <td>
                                     <select class="hs-crm-status-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-status="<?php echo esc_attr($enquiry->status); ?>">
@@ -186,17 +218,23 @@ class HS_CRM_Admin {
                                 </td>
                             </tr>
                             
-                            <!-- Notes rows -->
+                            <!-- Notes section - collapsible -->
                             <?php if (!empty($notes)): ?>
+                                <tr class="hs-crm-notes-toggle-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
+                                    <td colspan="7" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
+                                        <span class="hs-crm-notes-toggle dashicons dashicons-arrow-down" style="font-size: 16px; vertical-align: middle;"></span>
+                                        <strong>Notes (<?php echo count($notes); ?>)</strong> - Click to expand
+                                    </td>
+                                </tr>
                                 <?php foreach ($notes as $note): ?>
-                                    <tr class="hs-crm-note-row <?php echo $row_class; ?>" data-note-id="<?php echo esc_attr($note->id); ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
+                                    <tr class="hs-crm-note-row <?php echo $row_class; ?>" style="display: none;" data-note-id="<?php echo esc_attr($note->id); ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                         <td class="hs-crm-note-date">
                                             <?php echo esc_html(hs_crm_format_date($note->created_at)); ?>
                                         </td>
                                         <td colspan="5" class="hs-crm-note-content">
                                             <div class="hs-crm-note-text"><?php echo esc_html(stripslashes($note->note)); ?></div>
                                         </td>
-                                        <td colspan="2" class="hs-crm-note-actions">
+                                        <td class="hs-crm-note-actions">
                                             <button type="button" class="button button-small hs-crm-delete-note" data-note-id="<?php echo esc_attr($note->id); ?>">Delete</button>
                                         </td>
                                     </tr>
@@ -204,11 +242,11 @@ class HS_CRM_Admin {
                             <?php endif; ?>
                             
                             <!-- Add note row -->
-                            <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
+                            <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo esc_attr($add_note_row_style); ?>">
                                 <td colspan="6">
                                     <textarea class="hs-crm-new-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" rows="2" placeholder="Add a new note..."></textarea>
                                 </td>
-                                <td colspan="2">
+                                <td>
                                     <button type="button" class="button button-small hs-crm-add-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">Add Note</button>
                                 </td>
                             </tr>
@@ -254,6 +292,26 @@ class HS_CRM_Admin {
                     <div class="hs-crm-form-group">
                         <label for="enquiry-suburb">Suburb</label>
                         <input type="text" id="enquiry-suburb" name="suburb">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-house-size">House Size</label>
+                        <input type="text" id="enquiry-house-size" name="house_size" placeholder="e.g., 3 bedroom, 2 bedroom">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-number-of-rooms">Number of Rooms</label>
+                        <input type="text" id="enquiry-number-of-rooms" name="number_of_rooms" placeholder="e.g., 5, 6">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-stairs">Stairs Involved</label>
+                        <select id="enquiry-stairs" name="stairs">
+                            <option value="">Select...</option>
+                            <option value="No">No</option>
+                            <option value="Yes - 1 floor">Yes - 1 floor</option>
+                            <option value="Yes - 2+ floors">Yes - 2+ floors</option>
+                        </select>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -415,6 +473,18 @@ class HS_CRM_Admin {
             $data['move_time'] = sanitize_text_field($_POST['move_time']);
         }
         
+        if (!empty($_POST['house_size'])) {
+            $data['house_size'] = sanitize_text_field($_POST['house_size']);
+        }
+        
+        if (!empty($_POST['number_of_rooms'])) {
+            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        }
+        
+        if (!empty($_POST['stairs'])) {
+            $data['stairs'] = sanitize_text_field($_POST['stairs']);
+        }
+        
         // Validate required fields
         if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone']) || empty($data['address'])) {
             wp_send_json_error(array('message' => 'Please fill in all required fields.'));
@@ -477,6 +547,15 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['move_time'])) {
             $data['move_time'] = sanitize_text_field($_POST['move_time']);
+        }
+        if (isset($_POST['house_size'])) {
+            $data['house_size'] = sanitize_text_field($_POST['house_size']);
+        }
+        if (isset($_POST['number_of_rooms'])) {
+            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        }
+        if (isset($_POST['stairs'])) {
+            $data['stairs'] = sanitize_text_field($_POST['stairs']);
         }
         if (isset($_POST['status'])) {
             $data['status'] = sanitize_text_field($_POST['status']);
@@ -654,6 +733,48 @@ class HS_CRM_Admin {
             wp_send_json_success(array('message' => 'Note deleted successfully.'));
         } else {
             wp_send_json_error(array('message' => 'Failed to delete note.'));
+        }
+    }
+    
+    /**
+     * AJAX handler for updating truck assignment
+     */
+    public function ajax_update_truck_assignment() {
+        check_ajax_referer('hs_crm_nonce', 'nonce');
+        
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Permission denied.'));
+        }
+        
+        $enquiry_id = isset($_POST['enquiry_id']) ? intval($_POST['enquiry_id']) : 0;
+        $truck_id = isset($_POST['truck_id']) ? intval($_POST['truck_id']) : null;
+        
+        if (!$enquiry_id) {
+            wp_send_json_error(array('message' => 'Invalid enquiry ID.'));
+        }
+        
+        // Allow null truck_id to unassign truck
+        if ($truck_id === 0) {
+            $truck_id = null;
+        }
+        
+        // Update truck assignment
+        $result = HS_CRM_Database::update_enquiry($enquiry_id, array('truck_id' => $truck_id));
+        
+        if ($result !== false) {
+            // Add note about truck assignment
+            if ($truck_id) {
+                $truck = HS_CRM_Database::get_truck($truck_id);
+                if ($truck) {
+                    HS_CRM_Database::add_note($enquiry_id, 'Truck assigned: ' . $truck->name);
+                }
+            } else {
+                HS_CRM_Database::add_note($enquiry_id, 'Truck unassigned');
+            }
+            
+            wp_send_json_success(array('message' => 'Truck assignment updated successfully.'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to update truck assignment.'));
         }
     }
 }

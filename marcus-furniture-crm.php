@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 1.1
+ * Version: 1.2
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '1.1');
+define('HS_CRM_VERSION', '1.2');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -29,6 +29,7 @@ require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-admin.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-email.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-settings.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-truck-scheduler.php';
+require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-docs.php';
 
 /**
  * Activation hook - Create database tables
@@ -65,6 +66,7 @@ function hs_crm_init() {
         $admin = new HS_CRM_Admin();
         $settings = new HS_CRM_Settings();
         $truck_scheduler = new HS_CRM_Truck_Scheduler();
+        $docs = new HS_CRM_Docs();
     }
     
     // Initialize email handler
@@ -158,6 +160,12 @@ function hs_crm_check_db_version() {
         // Run migration for version 1.4.0 - Add suburb and move_time columns
         hs_crm_migrate_to_1_4_0();
         update_option('hs_crm_db_version', '1.4.0');
+    }
+    
+    if (version_compare($db_version, '1.5.0', '<')) {
+        // Run migration for version 1.5.0 - Add truck_id, house_size, number_of_rooms, stairs columns
+        hs_crm_migrate_to_1_5_0();
+        update_option('hs_crm_db_version', '1.5.0');
     }
 }
 
@@ -289,6 +297,39 @@ function hs_crm_migrate_to_1_4_0() {
     // Add move_time column if it doesn't exist
     if (!in_array('move_time', $column_names)) {
         $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN move_time time DEFAULT NULL AFTER move_date");
+    }
+}
+
+/**
+ * Migrate database to version 1.5.0
+ * Adds truck_id, house_size, number_of_rooms, and stairs columns
+ */
+function hs_crm_migrate_to_1_5_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add truck_id column if it doesn't exist
+    if (!in_array('truck_id', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN truck_id mediumint(9) DEFAULT NULL AFTER status");
+    }
+    
+    // Add house_size column if it doesn't exist
+    if (!in_array('house_size', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN house_size varchar(100) DEFAULT '' NOT NULL AFTER suburb");
+    }
+    
+    // Add number_of_rooms column if it doesn't exist
+    if (!in_array('number_of_rooms', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN number_of_rooms varchar(50) DEFAULT '' NOT NULL AFTER house_size");
+    }
+    
+    // Add stairs column if it doesn't exist
+    if (!in_array('stairs', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN stairs varchar(50) DEFAULT '' NOT NULL AFTER number_of_rooms");
     }
 }
 

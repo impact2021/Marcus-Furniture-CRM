@@ -27,11 +27,15 @@ class HS_CRM_Database {
             phone varchar(50) NOT NULL,
             address text NOT NULL,
             suburb varchar(255) DEFAULT '' NOT NULL,
+            house_size varchar(100) DEFAULT '' NOT NULL,
+            number_of_rooms varchar(50) DEFAULT '' NOT NULL,
+            stairs varchar(50) DEFAULT '' NOT NULL,
             move_date date DEFAULT NULL,
             move_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
             job_type varchar(100) NOT NULL,
             status varchar(50) DEFAULT 'First Contact' NOT NULL,
+            truck_id mediumint(9) DEFAULT NULL,
             email_sent tinyint(1) DEFAULT 0 NOT NULL,
             first_email_sent_at datetime DEFAULT NULL,
             admin_notes text DEFAULT '' NOT NULL,
@@ -40,7 +44,8 @@ class HS_CRM_Database {
             PRIMARY KEY  (id),
             KEY status (status),
             KEY created_at (created_at),
-            KEY move_date (move_date)
+            KEY move_date (move_date),
+            KEY truck_id (truck_id)
         ) $charset_collate;";
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
