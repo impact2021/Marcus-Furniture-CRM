@@ -266,6 +266,9 @@ class HS_CRM_Database {
         $update_data = array();
         $update_format = array();
         
+        // Cache for current enquiry data (to avoid multiple DB queries)
+        $current_enquiry = null;
+        
         if (isset($data['first_name'])) {
             $update_data['first_name'] = sanitize_text_field($data['first_name']);
             $update_format[] = '%s';
@@ -283,8 +286,10 @@ class HS_CRM_Database {
                 $first_name = sanitize_text_field($data['first_name']);
                 $last_name = sanitize_text_field($data['last_name']);
             } else {
-                // Get current enquiry to fetch missing name parts
-                $current_enquiry = self::get_enquiry($id);
+                // Get current enquiry to fetch missing name parts (fetch once and cache)
+                if ($current_enquiry === null) {
+                    $current_enquiry = self::get_enquiry($id);
+                }
                 
                 if ($current_enquiry) {
                     $first_name = isset($data['first_name']) ? sanitize_text_field($data['first_name']) : $current_enquiry->first_name;
@@ -332,6 +337,38 @@ class HS_CRM_Database {
         if (isset($data['delivery_to_address'])) {
             $update_data['delivery_to_address'] = sanitize_textarea_field($data['delivery_to_address']);
             $update_format[] = '%s';
+        }
+        
+        // Auto-update the legacy address field when delivery addresses change
+        // This ensures data consistency with the concatenated address format used on insert
+        if (isset($data['delivery_from_address']) || isset($data['delivery_to_address'])) {
+            // Get current enquiry to fetch any missing address parts (reuse cached value if available)
+            if ($current_enquiry === null) {
+                $current_enquiry = self::get_enquiry($id);
+            }
+            
+            if ($current_enquiry) {
+                $from_address = isset($data['delivery_from_address']) 
+                    ? sanitize_textarea_field($data['delivery_from_address']) 
+                    : $current_enquiry->delivery_from_address;
+                    
+                $to_address = isset($data['delivery_to_address']) 
+                    ? sanitize_textarea_field($data['delivery_to_address']) 
+                    : $current_enquiry->delivery_to_address;
+                
+                // Update the address field with concatenated format (matching insert behavior)
+                if (!empty($from_address) && !empty($to_address)) {
+                    $update_data['address'] = $from_address . ' → ' . $to_address;
+                } elseif (!empty($from_address)) {
+                    $update_data['address'] = $from_address;
+                } elseif (!empty($to_address)) {
+                    $update_data['address'] = $to_address;
+                } else {
+                    // Both addresses are empty - clear the address field for consistency
+                    $update_data['address'] = '';
+                }
+                $update_format[] = '%s';
+            }
         }
         
         if (isset($data['suburb'])) {
