@@ -26,6 +26,8 @@ class HS_CRM_Database {
             email varchar(255) NOT NULL,
             phone varchar(50) NOT NULL,
             address text NOT NULL,
+            delivery_from_address text DEFAULT '' NOT NULL,
+            delivery_to_address text DEFAULT '' NOT NULL,
             suburb varchar(255) DEFAULT '' NOT NULL,
             house_size varchar(100) DEFAULT '' NOT NULL,
             number_of_rooms varchar(50) DEFAULT '' NOT NULL,
@@ -117,6 +119,8 @@ class HS_CRM_Database {
             'email' => sanitize_email($data['email']),
             'phone' => sanitize_text_field($data['phone']),
             'address' => sanitize_textarea_field($data['address']),
+            'delivery_from_address' => isset($data['delivery_from_address']) ? sanitize_textarea_field($data['delivery_from_address']) : '',
+            'delivery_to_address' => isset($data['delivery_to_address']) ? sanitize_textarea_field($data['delivery_to_address']) : '',
             'suburb' => isset($data['suburb']) ? sanitize_text_field($data['suburb']) : '',
             'job_type' => '',
             'status' => 'First Contact',
@@ -261,6 +265,16 @@ class HS_CRM_Database {
         
         if (isset($data['address'])) {
             $update_data['address'] = sanitize_textarea_field($data['address']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['delivery_from_address'])) {
+            $update_data['delivery_from_address'] = sanitize_textarea_field($data['delivery_from_address']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['delivery_to_address'])) {
+            $update_data['delivery_to_address'] = sanitize_textarea_field($data['delivery_to_address']);
             $update_format[] = '%s';
         }
         

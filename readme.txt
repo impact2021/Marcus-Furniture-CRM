@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.2
+Stable tag: 1.3
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -140,6 +140,13 @@ The plugin creates four tables:
 
 == Changelog ==
 
+= 1.3 =
+* Updated plugin to version 1.3
+* Added delivery from address field to track pick-up locations
+* Added delivery to address field to track drop-off locations
+* Enhanced enquiry editing capability with delivery address management
+* Improved database schema with new delivery address columns
+
 = 1.2 =
 * Added documentation page explaining Gravity Forms integration
 * Added truck assignment functionality to enquiries
@@ -163,6 +170,9 @@ The plugin creates four tables:
 * Timezone support
 
 == Upgrade Notice ==
+
+= 1.3 =
+Version 1.3 adds delivery address fields for better tracking of pick-up and drop-off locations, plus enhanced edit functionality.
 
 = 1.2 =
 Enhanced enquiries management with truck assignments, house details, and improved UI layout.

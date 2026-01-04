@@ -155,6 +155,17 @@ class HS_CRM_Admin {
                                         , <?php echo esc_html($enquiry->suburb); ?>
                                     <?php endif; ?>
                                     </small>
+                                    <?php if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address)): ?>
+                                        <br><small style="color: #0066cc; font-style: italic;">
+                                        <?php if (!empty($enquiry->delivery_from_address)): ?>
+                                            From: <?php echo esc_html($enquiry->delivery_from_address); ?>
+                                        <?php endif; ?>
+                                        <?php if (!empty($enquiry->delivery_to_address)): ?>
+                                            <?php if (!empty($enquiry->delivery_from_address)): ?> | <?php endif; ?>
+                                            To: <?php echo esc_html($enquiry->delivery_to_address); ?>
+                                        <?php endif; ?>
+                                        </small>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php 
@@ -287,6 +298,16 @@ class HS_CRM_Admin {
                     <div class="hs-crm-form-group">
                         <label for="enquiry-address">Address *</label>
                         <textarea id="enquiry-address" name="address" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-delivery-from">Delivery From Address</label>
+                        <textarea id="enquiry-delivery-from" name="delivery_from_address" rows="2" placeholder="Pick-up location (if different from main address)"></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-delivery-to">Delivery To Address</label>
+                        <textarea id="enquiry-delivery-to" name="delivery_to_address" rows="2" placeholder="Drop-off location (if different from main address)"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -538,6 +559,12 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['address'])) {
             $data['address'] = sanitize_textarea_field($_POST['address']);
+        }
+        if (isset($_POST['delivery_from_address'])) {
+            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
+        }
+        if (isset($_POST['delivery_to_address'])) {
+            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
         if (isset($_POST['suburb'])) {
             $data['suburb'] = sanitize_text_field($_POST['suburb']);

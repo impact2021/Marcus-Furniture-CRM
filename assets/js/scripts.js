@@ -224,6 +224,8 @@ jQuery(document).ready(function($) {
                             $('#enquiry-email').val(enquiry.email);
                             $('#enquiry-phone').val(enquiry.phone);
                             $('#enquiry-address').val(enquiry.address);
+                            $('#enquiry-delivery-from').val(enquiry.delivery_from_address || '');
+                            $('#enquiry-delivery-to').val(enquiry.delivery_to_address || '');
                             $('#enquiry-suburb').val(enquiry.suburb || '');
                             $('#enquiry-house-size').val(enquiry.house_size || '');
                             $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
