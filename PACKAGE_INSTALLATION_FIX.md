@@ -73,4 +73,4 @@ The included ZIP has been tested for:
 ---
 **Date**: January 4, 2026  
 **Version**: 1.0  
-**Tested**: WordPress 5.0+, PHP 7.0+
+**Compatible with**: WordPress 5.0+ and PHP 7.0+

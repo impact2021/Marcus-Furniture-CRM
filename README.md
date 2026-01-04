@@ -11,6 +11,8 @@ A comprehensive WordPress plugin for managing furniture moving enquiries with co
 3. Upload the zip file and activate
 4. Configure settings at MF Enquiries → Settings
 
+**Requirements:** WordPress 5.0+ | PHP 7.0+ | MySQL 5.6+
+
 **No build steps required!**
 
 ## 📚 Documentation
