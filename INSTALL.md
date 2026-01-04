@@ -10,36 +10,47 @@ The error "An error occurred: The package could not be installed" has been resol
 
 1. **Download the Plugin**
    - Download or clone this repository
-   - Navigate to the `marcus-furniture-crm` folder
+   - Use the pre-built `marcus-furniture-crm.zip` file from the repository root
+   - **OR** create your own ZIP file from the plugin files at repository root:
+     ```bash
+     # From the repository root, create a folder and copy files:
+     mkdir marcus-furniture-crm
+     cp -r assets includes marcus-furniture-crm.php readme.txt GRAVITY_FORMS_INTEGRATION.md USER_GUIDE.md marcus-furniture-crm/
+     zip -r marcus-furniture-crm.zip marcus-furniture-crm/
+     rm -rf marcus-furniture-crm/  # Clean up temp folder
+     ```
+   - ⚠️ **Important**: The ZIP must contain the `marcus-furniture-crm` folder, not just the files inside it
 
-2. **Create a ZIP file**
-   ```bash
-   # From the repository root:
-   zip -r marcus-furniture-crm.zip marcus-furniture-crm/
-   ```
-
-3. **Upload to WordPress**
+2. **Upload to WordPress**
    - Log into WordPress Admin
    - Go to **Plugins** > **Add New** > **Upload Plugin**
    - Click **Choose File** and select `marcus-furniture-crm.zip`
    - Click **Install Now**
    - Click **Activate Plugin**
 
-4. **Configure Settings**
+3. **Configure Settings**
    - Go to **MF Enquiries** > **Settings**
    - Set your admin email address
    - Configure timezone (defaults to Pacific/Auckland)
    - (Optional) Add Google Maps API key
 
-5. **Add Contact Form**
+4. **Add Contact Form**
    - Edit any page or post
    - Add the shortcode: `[hs_contact_form]`
    - Publish the page
 
 ### Option 2: FTP Upload
 
-1. **Download the Plugin**
-   - Download the `marcus-furniture-crm` folder from this repository
+1. **Prepare the Plugin Folder**
+   - Download or clone this repository
+   - Create a folder named `marcus-furniture-crm`
+   - Copy the plugin files into it:
+     - `marcus-furniture-crm.php`
+     - `readme.txt`
+     - `assets/` folder
+     - `includes/` folder
+     - `GRAVITY_FORMS_INTEGRATION.md`
+     - `USER_GUIDE.md`
 
 2. **Upload via FTP**
    - Connect to your WordPress site via FTP
@@ -52,7 +63,7 @@ The error "An error occurred: The package could not be installed" has been resol
    - Find "Marcus Furniture CRM"
    - Click **Activate**
 
-4. **Configure** (same as Option 1, steps 4-5)
+4. **Configure** (same as Option 1, step 3)
 
 ## Gravity Forms Integration (Optional)
 
@@ -77,7 +88,7 @@ If you have Gravity Forms installed, the plugin will automatically integrate!
    - Check **MF Enquiries** dashboard
    - Verify enquiry was created
 
-For detailed instructions, see [GRAVITY_FORMS_INTEGRATION.md](marcus-furniture-crm/GRAVITY_FORMS_INTEGRATION.md)
+For detailed instructions, see [GRAVITY_FORMS_INTEGRATION.md](GRAVITY_FORMS_INTEGRATION.md)
 
 ## What's Fixed
 
@@ -85,7 +96,10 @@ For detailed instructions, see [GRAVITY_FORMS_INTEGRATION.md](marcus-furniture-c
 **Before**: "The package could not be installed."
 **After**: Plugin installs successfully via WordPress admin
 
-**Solution**: Added proper `readme.txt` file in WordPress standard format
+**Solution**: 
+1. Added proper `readme.txt` file in WordPress standard format
+2. Included pre-built, tested `marcus-furniture-crm.zip` in the repository
+3. Updated .gitignore to allow distribution zip file
 
 ### Problem 2: No Gravity Forms Support ✅
 **Before**: No integration with Gravity Forms
@@ -95,11 +109,10 @@ For detailed instructions, see [GRAVITY_FORMS_INTEGRATION.md](marcus-furniture-c
 
 ## File Locations
 
-- **Plugin Folder**: `marcus-furniture-crm/`
-- **Main Plugin File**: `marcus-furniture-crm/marcus-furniture-crm.php`
-- **WordPress Readme**: `marcus-furniture-crm/readme.txt`
-- **User Documentation**: `marcus-furniture-crm/README.md`
-- **GF Integration Guide**: `marcus-furniture-crm/GRAVITY_FORMS_INTEGRATION.md`
+- **Main Plugin File**: `marcus-furniture-crm.php`
+- **WordPress Readme**: `readme.txt`
+- **User Documentation**: `USER_GUIDE.md`
+- **GF Integration Guide**: `GRAVITY_FORMS_INTEGRATION.md`
 
 ## Verification
 
@@ -116,8 +129,8 @@ The plugin has been verified for:
 
 ## Support
 
-- **User Guide**: `marcus-furniture-crm/README.md`
-- **Gravity Forms Guide**: `marcus-furniture-crm/GRAVITY_FORMS_INTEGRATION.md`
+- **User Guide**: `USER_GUIDE.md`
+- **Gravity Forms Guide**: `GRAVITY_FORMS_INTEGRATION.md`
 - **Deployment Guide**: `DEPLOYMENT.md`
 - **Solution Summary**: `SOLUTION_SUMMARY.md`
 

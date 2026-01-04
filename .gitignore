@@ -1,5 +1,7 @@
 # WordPress plugin development
 *.zip
+# Exception: Allow the distribution-ready plugin zip
+!marcus-furniture-crm.zip
 .DS_Store
 Thumbs.db
 
