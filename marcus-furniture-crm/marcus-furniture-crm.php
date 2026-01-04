@@ -284,3 +284,163 @@ function hs_crm_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'hs_crm_enqueue_assets');
 add_action('admin_enqueue_scripts', 'hs_crm_enqueue_assets');
+
+/**
+ * Gravity Forms Integration
+ * Hook into Gravity Forms submission to create enquiries
+ */
+function hs_crm_gravity_forms_integration($entry, $form) {
+    // Check if this form should be integrated (you can customize this based on form ID or form title)
+    // For example, only integrate forms with specific IDs or containing "moving" or "enquiry" in the title
+    $form_title = strtolower($form['title']);
+    $integrate_keywords = array('moving', 'enquiry', 'contact', 'furniture', 'quote');
+    
+    // Check if form title contains any integration keywords or if a specific setting is enabled
+    $should_integrate = false;
+    foreach ($integrate_keywords as $keyword) {
+        if (strpos($form_title, $keyword) !== false) {
+            $should_integrate = true;
+            break;
+        }
+    }
+    
+    // Allow manual override via form setting (if form has a CSS class "crm-integration")
+    if (isset($form['cssClass']) && strpos($form['cssClass'], 'crm-integration') !== false) {
+        $should_integrate = true;
+    }
+    
+    // If form doesn't match integration criteria, skip
+    if (!$should_integrate) {
+        return;
+    }
+    
+    // Map Gravity Forms fields to CRM fields
+    // This is flexible - it will try to find fields by label or input name
+    $field_mapping = array(
+        'first_name' => array('first name', 'first', 'fname'),
+        'last_name' => array('last name', 'last', 'surname', 'lname'),
+        'email' => array('email', 'e-mail', 'email address'),
+        'phone' => array('phone', 'telephone', 'mobile', 'phone number'),
+        'address' => array('address', 'street address', 'location'),
+        'move_date' => array('move date', 'moving date', 'preferred date', 'date')
+    );
+    
+    $data = array(
+        'contact_source' => 'form'
+    );
+    
+    // Extract data from Gravity Forms entry
+    foreach ($form['fields'] as $field) {
+        $field_label = strtolower(trim($field->label));
+        $field_value = '';
+        
+        // Get field value from entry
+        if (isset($entry[$field->id])) {
+            $field_value = $entry[$field->id];
+        }
+        
+        // Skip empty values
+        if (empty($field_value)) {
+            continue;
+        }
+        
+        // Match field to CRM field
+        foreach ($field_mapping as $crm_field => $possible_labels) {
+            foreach ($possible_labels as $label) {
+                if (strpos($field_label, $label) !== false) {
+                    // Handle name fields specially if using a single "Name" field
+                    if ($field->type === 'name' && is_array($field_value)) {
+                        if (isset($field_value[3])) { // First name
+                            $data['first_name'] = sanitize_text_field($field_value[3]);
+                        }
+                        if (isset($field_value[6])) { // Last name
+                            $data['last_name'] = sanitize_text_field($field_value[6]);
+                        }
+                    } elseif ($field->type === 'address' && is_array($field_value)) {
+                        // Combine address parts
+                        $address_parts = array();
+                        foreach ($field_value as $part) {
+                            if (!empty($part)) {
+                                $address_parts[] = $part;
+                            }
+                        }
+                        $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
+                    } elseif ($field->type === 'date') {
+                        // Format date properly
+                        $data[$crm_field] = sanitize_text_field($field_value);
+                    } else {
+                        // Standard text field
+                        if ($crm_field === 'email') {
+                            $data[$crm_field] = sanitize_email($field_value);
+                        } elseif ($crm_field === 'address') {
+                            $data[$crm_field] = sanitize_textarea_field($field_value);
+                        } else {
+                            $data[$crm_field] = sanitize_text_field($field_value);
+                        }
+                    }
+                    break 2; // Exit both loops once we find a match
+                }
+            }
+        }
+    }
+    
+    // Validate required fields
+    $required_fields = array('first_name', 'last_name', 'email', 'phone', 'address');
+    $has_all_required = true;
+    foreach ($required_fields as $field) {
+        if (empty($data[$field])) {
+            $has_all_required = false;
+            break;
+        }
+    }
+    
+    // Only create enquiry if we have all required fields
+    if ($has_all_required) {
+        // Insert into database
+        $enquiry_id = HS_CRM_Database::insert_enquiry($data);
+        
+        // Add a note indicating this came from Gravity Forms
+        if ($enquiry_id) {
+            global $wpdb;
+            $notes_table = $wpdb->prefix . 'hs_enquiry_notes';
+            $wpdb->insert(
+                $notes_table,
+                array(
+                    'enquiry_id' => $enquiry_id,
+                    'note' => 'Enquiry created from Gravity Forms: ' . esc_html($form['title']) . ' (Form ID: ' . $form['id'] . ')'
+                ),
+                array('%d', '%s')
+            );
+            
+            // Send admin notification (customer email already sent by Gravity Forms)
+            $admin_email = get_option('hs_crm_admin_email', get_option('admin_email'));
+            $subject = 'New Moving Enquiry from Gravity Forms - Marcus Furniture';
+            $dashboard_link = admin_url('admin.php?page=hs-crm-enquiries');
+            
+            $message = '<!DOCTYPE html>';
+            $message .= '<html>';
+            $message .= '<head><meta charset="UTF-8"></head>';
+            $message .= '<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">';
+            $message .= '<h1>New Moving Enquiry Received</h1>';
+            $message .= '<p>A new moving enquiry has been submitted via Gravity Forms.</p>';
+            $message .= '<h3>Customer Details</h3>';
+            $message .= '<p><strong>Name:</strong> ' . esc_html($data['first_name'] . ' ' . $data['last_name']) . '</p>';
+            $message .= '<p><strong>Email:</strong> ' . esc_html($data['email']) . '</p>';
+            $message .= '<p><strong>Phone:</strong> ' . esc_html($data['phone']) . '</p>';
+            $message .= '<p><strong>Address:</strong> ' . esc_html($data['address']) . '</p>';
+            if (!empty($data['move_date'])) {
+                $message .= '<p><strong>Requested Move Date:</strong> ' . esc_html(date('d/m/Y', strtotime($data['move_date']))) . '</p>';
+            }
+            $message .= '<p><strong>Source:</strong> Gravity Forms - ' . esc_html($form['title']) . '</p>';
+            $message .= '<p><a href="' . esc_url($dashboard_link) . '" style="display: inline-block; padding: 10px 20px; background: #0073aa; color: white; text-decoration: none; border-radius: 4px;">View in Dashboard</a></p>';
+            $message .= '</body>';
+            $message .= '</html>';
+            
+            $headers = array('Content-Type: text/html; charset=UTF-8');
+            wp_mail($admin_email, $subject, $message, $headers);
+        }
+    }
+}
+
+// Hook into Gravity Forms after submission
+add_action('gform_after_submission', 'hs_crm_gravity_forms_integration', 10, 2);
