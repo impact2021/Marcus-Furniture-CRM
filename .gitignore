@@ -1,0 +1,23 @@
+# WordPress plugin development
+*.zip
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Node modules (if using build tools)
+node_modules/
+package-lock.json
+
+# Temporary files
+/tmp/
+*.tmp
+*.log
+
+# Original source files
+/Home-Shield-Enquiries-CRM-main/
