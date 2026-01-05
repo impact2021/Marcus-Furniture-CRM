@@ -102,14 +102,14 @@ jQuery(document).ready(function($) {
                 },
                 success: function(response) {
                     if (response.success) {
-                        // Update status badge
+                        // Update status badge (Issue #5 fix - update colored text)
                         var statusClass = finalStatus.toLowerCase().replace(/\s+/g, '-');
                         $radioGroup.closest('td').find('.hs-crm-status-badge')
                             .removeClass()
                             .addClass('hs-crm-status-badge status-' + statusClass)
                             .text(finalStatus);
                         
-                        // Update current status
+                        // Update current status data attribute (Issue #5 fix - save status)
                         $radioGroup.data('current-status', finalStatus);
                         
                         // If should archive, update to Archived status
@@ -128,6 +128,7 @@ jQuery(document).ready(function($) {
                                     },
                                     success: function(archiveResponse) {
                                         if (archiveResponse.success) {
+                                            // Issue #5 fix - show alert
                                             alert('Job completed and moved to Archived.');
                                             // Remove the enquiry from view
                                             $radioGroup.closest('table.hs-crm-single-enquiry-table').fadeOut(300, function() {
@@ -138,7 +139,8 @@ jQuery(document).ready(function($) {
                                 });
                             }, 500);
                         } else {
-                            alert(response.data.message);
+                            // Issue #5 fix - show alert for all status changes
+                            alert(response.data.message || 'Status updated successfully.');
                         }
                     } else {
                         alert('Error: ' + response.data.message);
@@ -305,6 +307,12 @@ jQuery(document).ready(function($) {
                         $('#enquiry-modal-title').text('Edit Enquiry Details');
                         $('#enquiry-id').val(enquiry.id);
                         
+                        // Hide Gravity Forms container when editing (Issue #4)
+                        $('#gravity-forms-container').hide();
+                        
+                        // Show manual entry form when editing
+                        $('#hs-crm-enquiry-form').show();
+                        
                         // Common fields
                         $('#enquiry-first-name').val(enquiry.first_name);
                         $('#enquiry-last-name').val(enquiry.last_name);
@@ -315,7 +323,16 @@ jQuery(document).ready(function($) {
                         
                         // Determine job type and show appropriate fields
                         var isMovingHouse = enquiry.job_type === 'Moving House';
-                        $('#enquiry-type-toggle').prop('checked', isMovingHouse);
+                        
+                        // Update radio buttons to match job type
+                        if (isMovingHouse) {
+                            $('#enquiry-type-moving').prop('checked', true);
+                            $('#enquiry-type-pickup').prop('checked', false);
+                        } else {
+                            $('#enquiry-type-pickup').prop('checked', true);
+                            $('#enquiry-type-moving').prop('checked', false);
+                        }
+                        
                         $('#enquiry-job-type').val(enquiry.job_type || 'Pickup/Delivery');
                         
                         if (isMovingHouse) {
@@ -713,13 +730,24 @@ jQuery(document).ready(function($) {
             
             // Reset radio buttons to Pickup/Delivery (default)
             $('#enquiry-type-pickup').prop('checked', true);
+            $('#enquiry-type-moving').prop('checked', false);
             $('#enquiry-job-type').val('Pickup/Delivery');
+            
+            // Show Gravity Forms container for new enquiries
+            $('#gravity-forms-container').show();
             
             // Show/hide Gravity Forms
             $('#gf-moving-house').hide();
             $('#gf-pickup-delivery').show();
             
-            // Show/hide manual form sections (for fallback)
+            // Hide manual form when adding new (show Gravity Forms instead)
+            // Only show manual form if Gravity Forms is not available
+            // Check both: (1) gravity-forms-container has content AND (2) actual Gravity Forms are loaded
+            if ($('#gravity-forms-container').children().length > 0 && $('.gform_wrapper').length > 0) {
+                $('#hs-crm-enquiry-form').hide();
+            }
+            
+            // Show/hide manual form sections (for fallback when Gravity Forms not available)
             $('#moving-house-fields').hide();
             $('#pickup-delivery-fields').show();
             
