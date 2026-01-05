@@ -32,7 +32,7 @@ class HS_CRM_Truck_Scheduler {
             'hs-crm-enquiries',
             'Truck Scheduler',
             'Truck Scheduler',
-            'manage_options',
+            'manage_crm_enquiries', // Changed from 'manage_options' to match render_scheduler_page() check
             'hs-crm-truck-scheduler',
             array($this, 'render_scheduler_page')
         );
