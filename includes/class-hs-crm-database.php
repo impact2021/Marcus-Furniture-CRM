@@ -126,8 +126,8 @@ class HS_CRM_Database {
         // Determine the main address field value
         // Priority: 1) from/to addresses combined, 2) provided address field, 3) empty string
         $main_address = '';
-        if (isset($data['delivery_from_address']) && isset($data['delivery_to_address']) 
-            && !empty($data['delivery_from_address']) && !empty($data['delivery_to_address'])) {
+        if (isset($data['delivery_from_address']) && isset($data['delivery_to_address']) &&
+            !empty($data['delivery_from_address']) && !empty($data['delivery_to_address'])) {
             // Both from/to addresses provided - combine them
             $main_address = sanitize_textarea_field($data['delivery_from_address']) . ' → ' . sanitize_textarea_field($data['delivery_to_address']);
         } elseif (isset($data['address']) && !empty($data['address'])) {

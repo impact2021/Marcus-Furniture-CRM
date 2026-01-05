@@ -1,4 +1,5 @@
 /* Admin Menu Icon */
+/* \f464 is the Unicode value for dashicons-truck icon */
 #adminmenu #toplevel_page_hs-crm-enquiries .wp-menu-image.dashicons-truck::before {
     content: '\f464';
 }
