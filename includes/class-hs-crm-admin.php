@@ -293,12 +293,12 @@ class HS_CRM_Admin {
                     
                     <div class="hs-crm-form-group">
                         <label for="enquiry-from-address">From Address</label>
-                        <input type="text" id="enquiry-from-address" name="delivery_from_address">
+                        <textarea id="enquiry-from-address" name="delivery_from_address" rows="2"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group">
                         <label for="enquiry-to-address">To Address</label>
-                        <input type="text" id="enquiry-to-address" name="delivery_to_address">
+                        <textarea id="enquiry-to-address" name="delivery_to_address" rows="2"></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-buttons">
