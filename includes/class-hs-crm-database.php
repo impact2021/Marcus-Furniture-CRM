@@ -123,15 +123,25 @@ class HS_CRM_Database {
         $last_name = sanitize_text_field($data['last_name']);
         $full_name = trim($first_name . ' ' . $last_name);
         
+        // Determine the main address field value
+        // Priority: 1) from/to addresses combined, 2) provided address field, 3) empty string
+        $main_address = '';
+        if (isset($data['delivery_from_address']) && isset($data['delivery_to_address']) 
+            && !empty($data['delivery_from_address']) && !empty($data['delivery_to_address'])) {
+            // Both from/to addresses provided - combine them
+            $main_address = sanitize_textarea_field($data['delivery_from_address']) . ' → ' . sanitize_textarea_field($data['delivery_to_address']);
+        } elseif (isset($data['address']) && !empty($data['address'])) {
+            // Generic address field provided
+            $main_address = sanitize_textarea_field($data['address']);
+        }
+        
         $insert_data = array(
             'first_name' => $first_name,
             'last_name' => $last_name,
             'name' => $full_name,
             'email' => sanitize_email($data['email']),
             'phone' => sanitize_text_field($data['phone']),
-            'address' => isset($data['delivery_from_address']) && isset($data['delivery_to_address']) 
-                ? sanitize_textarea_field($data['delivery_from_address']) . ' → ' . sanitize_textarea_field($data['delivery_to_address'])
-                : '',
+            'address' => $main_address,
             'pickup_address' => isset($data['pickup_address']) ? sanitize_textarea_field($data['pickup_address']) : '',
             'dropoff_address' => isset($data['dropoff_address']) ? sanitize_textarea_field($data['dropoff_address']) : '',
             'delivery_from_address' => isset($data['delivery_from_address']) ? sanitize_textarea_field($data['delivery_from_address']) : '',

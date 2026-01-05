@@ -1,3 +1,12 @@
+/* Admin Menu Icon */
+#adminmenu #toplevel_page_hs-crm-enquiries .wp-menu-image.dashicons-truck::before {
+    content: '\f464';
+}
+
+#adminmenu #toplevel_page_hs-crm-enquiries .wp-menu-image {
+    display: inline-block;
+}
+
 /* Contact Form Styles */
 .hs-crm-form-container {
     max-width: 600px;
