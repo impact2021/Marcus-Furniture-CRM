@@ -214,9 +214,12 @@ jQuery(document).ready(function($) {
                         $('#enquiry-first-name').val(enquiry.first_name);
                         $('#enquiry-last-name').val(enquiry.last_name);
                         $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
+                        $('#enquiry-from-suburb').val(enquiry.from_suburb || '');
                         $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
+                        $('#enquiry-to-suburb').val(enquiry.to_suburb || '');
                         $('#enquiry-bedrooms').val(enquiry.number_of_bedrooms || '');
                         $('#enquiry-total-rooms').val(enquiry.number_of_rooms || '');
+                        $('#enquiry-property-notes').val(enquiry.property_notes || '');
                         $('#hs-crm-enquiry-modal').fadeIn();
                     }
                 },

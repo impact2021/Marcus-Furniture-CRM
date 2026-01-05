@@ -171,17 +171,11 @@ class HS_CRM_Admin {
                                     if (!empty($enquiry->number_of_bedrooms)) {
                                         $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
                                     }
-                                    if (!empty($enquiry->total_rooms)) {
-                                        $house_details[] = esc_html($enquiry->total_rooms) . ' total rooms';
-                                    }
-                                    if (!empty($enquiry->stairs_from)) {
-                                        $house_details[] = 'Stairs (From): ' . esc_html($enquiry->stairs_from);
-                                    }
-                                    if (!empty($enquiry->stairs_to)) {
-                                        $house_details[] = 'Stairs (To): ' . esc_html($enquiry->stairs_to);
+                                    if (!empty($enquiry->number_of_rooms)) {
+                                        $house_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
                                     }
                                     if (!empty($enquiry->property_notes)) {
-                                        $house_details[] = 'Notes: ' . esc_html($enquiry->property_notes);
+                                        $house_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
                                     }
                                     if (empty($house_details)) {
                                         echo '<em style="color: #999;">Not set</em>';
@@ -297,8 +291,18 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
+                        <label for="enquiry-from-suburb">From Suburb</label>
+                        <input type="text" id="enquiry-from-suburb" name="from_suburb">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
                         <label for="enquiry-to-address">To Address</label>
                         <textarea id="enquiry-to-address" name="delivery_to_address" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-to-suburb">To Suburb</label>
+                        <input type="text" id="enquiry-to-suburb" name="to_suburb">
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -333,6 +337,11 @@ class HS_CRM_Admin {
                             <option value="11">11</option>
                             <option value="12">12</option>
                         </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-property-notes">Property Notes</label>
+                        <textarea id="enquiry-property-notes" name="property_notes" rows="3" placeholder="Any additional notes about the property..."></textarea>
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-buttons">
@@ -447,8 +456,11 @@ class HS_CRM_Admin {
             'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
             'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
             'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
+            'from_suburb' => isset($_POST['from_suburb']) ? sanitize_text_field($_POST['from_suburb']) : '',
+            'to_suburb' => isset($_POST['to_suburb']) ? sanitize_text_field($_POST['to_suburb']) : '',
             'number_of_bedrooms' => isset($_POST['number_of_bedrooms']) ? sanitize_text_field($_POST['number_of_bedrooms']) : '',
             'number_of_rooms' => isset($_POST['number_of_rooms']) ? sanitize_text_field($_POST['number_of_rooms']) : '',
+            'property_notes' => isset($_POST['property_notes']) ? sanitize_textarea_field($_POST['property_notes']) : '',
             'contact_source' => 'form',
         );
         
@@ -517,11 +529,20 @@ class HS_CRM_Admin {
         if (isset($_POST['delivery_to_address'])) {
             $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
+        if (isset($_POST['from_suburb'])) {
+            $data['from_suburb'] = sanitize_text_field($_POST['from_suburb']);
+        }
+        if (isset($_POST['to_suburb'])) {
+            $data['to_suburb'] = sanitize_text_field($_POST['to_suburb']);
+        }
         if (isset($_POST['number_of_bedrooms'])) {
             $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
         }
         if (isset($_POST['number_of_rooms'])) {
             $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        }
+        if (isset($_POST['property_notes'])) {
+            $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
         }
         
         // DEBUG: Log the data being sent

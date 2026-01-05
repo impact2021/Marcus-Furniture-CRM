@@ -30,6 +30,8 @@ class HS_CRM_Database {
             dropoff_address text DEFAULT '' NOT NULL,
             delivery_from_address text DEFAULT '' NOT NULL,
             delivery_to_address text DEFAULT '' NOT NULL,
+            from_suburb varchar(255) DEFAULT '' NOT NULL,
+            to_suburb varchar(255) DEFAULT '' NOT NULL,
             suburb varchar(255) DEFAULT '' NOT NULL,
             house_size varchar(100) DEFAULT '' NOT NULL,
             number_of_bedrooms varchar(50) DEFAULT '' NOT NULL,
@@ -134,6 +136,8 @@ class HS_CRM_Database {
             'dropoff_address' => isset($data['dropoff_address']) ? sanitize_textarea_field($data['dropoff_address']) : '',
             'delivery_from_address' => isset($data['delivery_from_address']) ? sanitize_textarea_field($data['delivery_from_address']) : '',
             'delivery_to_address' => isset($data['delivery_to_address']) ? sanitize_textarea_field($data['delivery_to_address']) : '',
+            'from_suburb' => isset($data['from_suburb']) ? sanitize_text_field($data['from_suburb']) : '',
+            'to_suburb' => isset($data['to_suburb']) ? sanitize_text_field($data['to_suburb']) : '',
             'suburb' => isset($data['suburb']) ? sanitize_text_field($data['suburb']) : '',
             'house_size' => '',
             'number_of_bedrooms' => isset($data['number_of_bedrooms']) ? sanitize_text_field($data['number_of_bedrooms']) : '',
@@ -377,6 +381,16 @@ class HS_CRM_Database {
         
         if (isset($data['suburb'])) {
             $update_data['suburb'] = sanitize_text_field($data['suburb']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['from_suburb'])) {
+            $update_data['from_suburb'] = sanitize_text_field($data['from_suburb']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['to_suburb'])) {
+            $update_data['to_suburb'] = sanitize_text_field($data['to_suburb']);
             $update_format[] = '%s';
         }
         

@@ -421,6 +421,16 @@ function hs_crm_migrate_to_1_10_0() {
     if (!in_array('dropoff_address', $column_names)) {
         $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN dropoff_address text DEFAULT '' NOT NULL AFTER pickup_address");
     }
+    
+    // Add from_suburb column if it doesn't exist
+    if (!in_array('from_suburb', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN from_suburb varchar(255) DEFAULT '' NOT NULL AFTER delivery_from_address");
+    }
+    
+    // Add to_suburb column if it doesn't exist
+    if (!in_array('to_suburb', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN to_suburb varchar(255) DEFAULT '' NOT NULL AFTER delivery_to_address");
+    }
 }
 
 /**
