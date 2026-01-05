@@ -63,7 +63,6 @@ function hs_crm_create_custom_role() {
             'read' => true, // Required for backend access
             'manage_crm_enquiries' => true,
             'view_crm_dashboard' => true,
-            'manage_crm_settings' => false, // CRM Managers cannot manage settings
         )
     );
     

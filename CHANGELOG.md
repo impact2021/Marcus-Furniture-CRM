@@ -4,9 +4,10 @@
 
 ### Changed
 - **Version Update**: Updated plugin version to 2.1
-  - Updated plugin header version in main plugin file
-  - Updated stable tag in readme.txt
+  - Updated plugin header version in main plugin file from 2.0 to 2.1
+  - Updated stable tag in readme.txt from 1.9 to 2.1 (aligning WordPress stable tag with plugin version)
   - Ensures consistency across all version references
+  - Note: The main plugin file was at version 2.0 while readme.txt was at 1.9; both are now aligned at 2.1
 
 ### Verified
 - **CRM Manager Role**: Confirmed CRM Manager role functionality is working correctly
@@ -15,6 +16,9 @@
   - Role is visible in WordPress user creation/editing interface via `editable_roles` filter
   - Administrators automatically receive CRM capabilities
   - Users can be assigned the CRM Manager role when creating new users
+
+### Documentation
+- Added comprehensive CRM_MANAGER_ROLE_GUIDE.md with instructions for creating and managing CRM Manager users
 
 ## Version 1.9 - 2026-01-04
 
