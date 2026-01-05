@@ -19,19 +19,20 @@ There are two ways to enable CRM integration for a Gravity Form:
 If your form title contains any of these keywords, integration is automatically enabled:
 - "moving"
 - "enquiry" 
-- "contact"
+- "pickup"
+- "delivery"
 - "furniture"
 - "quote"
 
 **Examples:**
 - "Moving Quote Request" ✅
 - "Furniture Enquiry Form" ✅
-- "Contact Us" ✅
-- "Book a Truck" ❌ (use Method 2)
+- "Pickup and Delivery" ✅
+- "General Contact" ❌ (use Method 2 or add CSS class to exclude)
 
 ### Method 2: CSS Class (Manual)
 
-For forms that don't match the automatic keywords:
+For forms that don't match the automatic keywords, or to explicitly enable integration:
 
 1. Edit your Gravity Form
 2. Go to **Form Settings** > **Advanced**
@@ -39,6 +40,17 @@ For forms that don't match the automatic keywords:
 4. Save the form
 
 This method works for any form, regardless of title.
+
+### Method 3: Exclude Forms (Override)
+
+To prevent integration for a specific form even if it matches keywords:
+
+1. Edit your Gravity Form
+2. Go to **Form Settings** > **Advanced**
+3. In the **CSS Class Name** field, add: `no-crm-integration`
+4. Save the form
+
+**Use Case:** If you have a "General Contact" form that shouldn't create enquiries in the CRM, add the `no-crm-integration` CSS class to exclude it.
 
 ## Field Mapping
 
@@ -147,6 +159,22 @@ To verify integration is working:
 3. **Check MF Enquiries**: New enquiry should appear in CRM dashboard
 4. **Check the note**: Enquiry should have a note saying "Enquiry created from Gravity Forms: [Form Title]"
 5. **Check email**: Admin should receive notification from CRM
+
+## Importing Historical Entries
+
+If you already have Gravity Forms entries from before setting up the integration, you can import them into the CRM:
+
+1. Go to **Enquiries** > **Settings** in the WordPress admin
+2. Scroll down to the **Gravity Forms Import** section
+3. Select the form you want to import entries from
+4. Choose the number of recent entries to import (default: 50, max: 1000)
+5. Click **Import Entries**
+
+**Notes:**
+- Only entries with all required fields (first name, last name, email, phone, address) will be imported
+- Duplicate entries (same email and phone number) will be skipped
+- Each imported entry will have a note indicating it was imported from Gravity Forms with the original submission date
+- Entries are imported from newest to oldest
 
 ## Troubleshooting
 

@@ -594,10 +594,15 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         return;
     }
     
+    // Check if this form should be excluded (has no-crm-integration CSS class)
+    if (isset($form['cssClass']) && strpos($form['cssClass'], 'no-crm-integration') !== false) {
+        return; // Skip integration for this form
+    }
+    
     // Check if this form should be integrated (you can customize this based on form ID or form title)
     // For example, only integrate forms with specific IDs or containing "moving" or "enquiry" in the title
     $form_title = strtolower($form['title']);
-    $integrate_keywords = array('moving', 'enquiry', 'contact', 'furniture', 'quote');
+    $integrate_keywords = array('moving', 'enquiry', 'pickup', 'delivery', 'furniture', 'quote');
     
     // Check if form title contains any integration keywords or if a specific setting is enabled
     $should_integrate = false;
