@@ -38,6 +38,9 @@ class HS_CRM_Database {
             number_of_rooms varchar(50) DEFAULT '' NOT NULL,
             total_rooms varchar(50) DEFAULT '' NOT NULL,
             property_notes text DEFAULT '' NOT NULL,
+            items_being_collected text DEFAULT '' NOT NULL,
+            furniture_moved_question varchar(50) DEFAULT '' NOT NULL,
+            special_instructions text DEFAULT '' NOT NULL,
             stairs varchar(50) DEFAULT '' NOT NULL,
             stairs_from varchar(50) DEFAULT '' NOT NULL,
             stairs_to varchar(50) DEFAULT '' NOT NULL,
@@ -154,7 +157,10 @@ class HS_CRM_Database {
             'number_of_rooms' => isset($data['number_of_rooms']) ? sanitize_text_field($data['number_of_rooms']) : '',
             'total_rooms' => isset($data['total_rooms']) ? sanitize_text_field($data['total_rooms']) : '',
             'property_notes' => isset($data['property_notes']) ? sanitize_textarea_field($data['property_notes']) : '',
-            'stairs' => '',
+            'items_being_collected' => isset($data['items_being_collected']) ? sanitize_textarea_field($data['items_being_collected']) : '',
+            'furniture_moved_question' => isset($data['furniture_moved_question']) ? sanitize_text_field($data['furniture_moved_question']) : '',
+            'special_instructions' => isset($data['special_instructions']) ? sanitize_textarea_field($data['special_instructions']) : '',
+            'stairs' => isset($data['stairs']) ? sanitize_text_field($data['stairs']) : '',
             'stairs_from' => isset($data['stairs_from']) ? sanitize_text_field($data['stairs_from']) : '',
             'stairs_to' => isset($data['stairs_to']) ? sanitize_text_field($data['stairs_to']) : '',
             'job_type' => '',
@@ -421,6 +427,26 @@ class HS_CRM_Database {
         
         if (isset($data['property_notes'])) {
             $update_data['property_notes'] = sanitize_textarea_field($data['property_notes']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['items_being_collected'])) {
+            $update_data['items_being_collected'] = sanitize_textarea_field($data['items_being_collected']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['furniture_moved_question'])) {
+            $update_data['furniture_moved_question'] = sanitize_text_field($data['furniture_moved_question']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['special_instructions'])) {
+            $update_data['special_instructions'] = sanitize_textarea_field($data['special_instructions']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['stairs'])) {
+            $update_data['stairs'] = sanitize_text_field($data['stairs']);
             $update_format[] = '%s';
         }
         

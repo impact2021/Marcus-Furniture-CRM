@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 2.2
+ * Version: 2.3
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '2.2');
+define('HS_CRM_VERSION', '2.3');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
@@ -312,6 +312,12 @@ function hs_crm_check_db_version() {
         hs_crm_migrate_to_1_10_0();
         update_option('hs_crm_db_version', '1.10.0');
     }
+    
+    if (version_compare($db_version, '2.3.0', '<')) {
+        // Run migration for version 2.3.0 - Add pickup/delivery specific columns
+        hs_crm_migrate_to_2_3_0();
+        update_option('hs_crm_db_version', '2.3.0');
+    }
 }
 
 /**
@@ -560,6 +566,34 @@ function hs_crm_migrate_to_1_10_0() {
 }
 
 /**
+ * Migrate database to version 2.3.0
+ * Adds columns for pickup/delivery form enhancements
+ */
+function hs_crm_migrate_to_2_3_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add items_being_collected column if it doesn't exist
+    if (!in_array('items_being_collected', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN items_being_collected text DEFAULT '' NOT NULL AFTER property_notes");
+    }
+    
+    // Add furniture_moved_question column if it doesn't exist
+    if (!in_array('furniture_moved_question', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN furniture_moved_question varchar(50) DEFAULT '' NOT NULL AFTER items_being_collected");
+    }
+    
+    // Add special_instructions column if it doesn't exist
+    if (!in_array('special_instructions', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN special_instructions text DEFAULT '' NOT NULL AFTER furniture_moved_question");
+    }
+}
+
+/**
  * Enqueue styles and scripts
  */
 function hs_crm_enqueue_assets() {
@@ -639,7 +673,11 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         'address' => array('address', 'street address', 'location'),
         'suburb' => array('suburb', 'city', 'town'),
         'move_date' => array('move date', 'moving date', 'preferred date', 'date'),
-        'move_time' => array('move time', 'moving time', 'preferred time', 'time')
+        'move_time' => array('move time', 'moving time', 'preferred time', 'time'),
+        'stairs' => array('stairs', 'stairs involved', 'are there stairs'),
+        'items_being_collected' => array('items being delivered', 'items being collected', 'what items', 'items to collect', 'what item(s) are being collected'),
+        'furniture_moved_question' => array('existing furniture moved', 'furniture moved', 'do you need any existing furniture moved'),
+        'special_instructions' => array('special instructions', 'additional instructions', 'instructions', 'special requests')
     );
     
     $data = array(
@@ -864,6 +902,8 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         if ($enquiry_id) {
             global $wpdb;
             $notes_table = $wpdb->prefix . 'hs_enquiry_notes';
+            
+            // Add form source note
             $wpdb->insert(
                 $notes_table,
                 array(
@@ -872,6 +912,18 @@ function hs_crm_gravity_forms_integration($entry, $form) {
                 ),
                 array('%d', '%s')
             );
+            
+            // Add special instructions as a note if provided
+            if (!empty($data['special_instructions'])) {
+                $wpdb->insert(
+                    $notes_table,
+                    array(
+                        'enquiry_id' => $enquiry_id,
+                        'note' => 'Special Instructions: ' . esc_html($data['special_instructions'])
+                    ),
+                    array('%d', '%s')
+                );
+            }
             
             // Send admin notification (customer email already sent by Gravity Forms)
             $admin_email = get_option('hs_crm_admin_email', get_option('admin_email'));

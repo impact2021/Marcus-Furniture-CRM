@@ -22,6 +22,7 @@ class HS_CRM_Admin {
         add_action('wp_ajax_hs_crm_create_enquiry', array($this, 'ajax_create_enquiry'));
         add_action('wp_ajax_hs_crm_update_enquiry', array($this, 'ajax_update_enquiry'));
         add_action('wp_ajax_hs_crm_update_truck_assignment', array($this, 'ajax_update_truck_assignment'));
+        add_action('wp_ajax_hs_crm_delete_enquiry', array($this, 'ajax_delete_enquiry'));
     }
     
     /**
@@ -114,27 +115,39 @@ class HS_CRM_Admin {
                     $row_class = ($row_index % 2 === 0) ? 'hs-crm-even-row' : 'hs-crm-odd-row';
                     $has_notes = !empty($notes);
                     $add_note_row_style = $has_notes ? 'display: none;' : '';
+                    
+                    // Determine if this is a pickup/delivery enquiry based on form type
+                    $is_pickup_delivery = false;
+                    if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address) || !empty($enquiry->items_being_collected)) {
+                        $is_pickup_delivery = true;
+                    }
+                    
+                    // Set header color based on type
+                    $header_bg_color = $is_pickup_delivery ? '#FF8C00' : '#061257';
+                    $form_type_label = $is_pickup_delivery ? 'Pickup/Delivery' : 'Moving House';
+                    
                     $row_index++;
                 ?>
                     <!-- Individual table for each enquiry -->
                     <table class="wp-list-table widefat fixed hs-crm-enquiries-table hs-crm-single-enquiry-table">
                         <tbody>
                             <!-- Customer Header Row -->
-                            <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>">
-                                <th style="width: 16%;">
+                            <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>" style="background: <?php echo $header_bg_color; ?> !important;">
+                                <th style="width: 14%;">
                                     Source & Dates
                                 </th>
-                                <th style="width: 20%;">Contact & Address</th>
+                                <th style="width: 18%;">Contact & Address</th>
                                 <th style="width: 14%;">House Details</th>
-                                <th style="width: 10%;">Status</th>
+                                <th style="width: 16%;">Items & Instructions</th>
+                                <th style="width: 8%;">Status</th>
                                 <th style="width: 10%;">Truck</th>
-                                <th style="width: 12%;">Status Change</th>
-                                <th style="width: 8%;">Edit</th>
-                                <th style="width: 10%;">Action</th>
+                                <th style="width: 12%;">Status / Action</th>
+                                <th style="width: 8%;">Edit / Delete</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                 <td>
                                     <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span><br>
+                                    <small style="color: #666;"><strong><?php echo esc_html($form_type_label); ?></strong></small><br>
                                     <small style="color: #666;">Contact: <?php echo esc_html(hs_crm_format_date($enquiry->created_at, 'd/m/Y')); ?></small><br>
                                     <?php if (!empty($enquiry->move_date)): ?>
                                         <small style="color: #666;">Move: <strong><?php echo esc_html(date('d/m/Y', strtotime($enquiry->move_date))); ?></strong>
@@ -168,11 +181,22 @@ class HS_CRM_Admin {
                                 <td>
                                     <?php 
                                     $house_details = array();
-                                    if (!empty($enquiry->number_of_bedrooms)) {
-                                        $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
-                                    }
-                                    if (!empty($enquiry->number_of_rooms)) {
-                                        $house_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
+                                    if ($is_pickup_delivery) {
+                                        // For pickup/delivery, show stairs and other relevant info
+                                        if (!empty($enquiry->stairs)) {
+                                            $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
+                                        }
+                                    } else {
+                                        // For moving house, show bedrooms and rooms
+                                        if (!empty($enquiry->number_of_bedrooms)) {
+                                            $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
+                                        }
+                                        if (!empty($enquiry->number_of_rooms)) {
+                                            $house_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
+                                        }
+                                        if (!empty($enquiry->stairs)) {
+                                            $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
+                                        }
                                     }
                                     if (!empty($enquiry->property_notes)) {
                                         $house_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
@@ -181,6 +205,25 @@ class HS_CRM_Admin {
                                         echo '<em style="color: #999;">Not set</em>';
                                     } else {
                                         echo '<small>' . implode('<br>', $house_details) . '</small>';
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php 
+                                    $items_details = array();
+                                    if ($is_pickup_delivery) {
+                                        // Show items being collected
+                                        if (!empty($enquiry->items_being_collected)) {
+                                            $items_details[] = '<strong>Items:</strong> ' . esc_html(wp_trim_words($enquiry->items_being_collected, 15));
+                                        }
+                                        if (!empty($enquiry->furniture_moved_question)) {
+                                            $items_details[] = '<strong>Furniture moved?</strong> ' . esc_html($enquiry->furniture_moved_question);
+                                        }
+                                    }
+                                    if (empty($items_details)) {
+                                        echo '<em style="color: #999;">-</em>';
+                                    } else {
+                                        echo '<small>' . implode('<br>', $items_details) . '</small>';
                                     }
                                     ?>
                                 </td>
@@ -215,17 +258,16 @@ class HS_CRM_Admin {
                                         <option value="Completed">Completed</option>
                                         <option value="Archived">Archived</option>
                                     </select>
-                                </td>
-                                <td>
-                                    <button type="button" class="button button-small hs-crm-edit-enquiry" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">Edit</button>
-                                </td>
-                                <td>
                                     <select class="hs-crm-action-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                         <option value="">Select Action...</option>
                                         <option value="send_quote">Send Quote</option>
                                         <option value="send_invoice">Send Invoice</option>
                                         <option value="send_receipt">Send Receipt</option>
                                     </select>
+                                </td>
+                                <td>
+                                    <button type="button" class="button button-small hs-crm-edit-enquiry" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">Edit</button>
+                                    <button type="button" class="button button-small hs-crm-delete-enquiry" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="margin-top: 3px;">Delete</button>
                                 </td>
                             </tr>
                             
@@ -291,18 +333,8 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-from-suburb">From Suburb</label>
-                        <input type="text" id="enquiry-from-suburb" name="from_suburb">
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
                         <label for="enquiry-to-address">To Address</label>
                         <textarea id="enquiry-to-address" name="delivery_to_address" rows="2"></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-to-suburb">To Suburb</label>
-                        <input type="text" id="enquiry-to-suburb" name="to_suburb">
                     </div>
                     
                     <div class="hs-crm-form-group">
@@ -336,6 +368,29 @@ class HS_CRM_Admin {
                             <option value="10">10</option>
                             <option value="11">11</option>
                             <option value="12">12</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-stairs">Stairs</label>
+                        <select id="enquiry-stairs" name="stairs">
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-items-collected">What item(s) are being collected?</label>
+                        <textarea id="enquiry-items-collected" name="items_being_collected" rows="2" placeholder="E.g., Sofa, Dining Table, etc."></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-furniture-moved">Do you need any existing furniture moved?</label>
+                        <select id="enquiry-furniture-moved" name="furniture_moved_question">
+                            <option value="">Select...</option>
+                            <option value="Yes">Yes</option>
+                            <option value="No">No</option>
                         </select>
                     </div>
                     
@@ -456,10 +511,11 @@ class HS_CRM_Admin {
             'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
             'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
             'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
-            'from_suburb' => isset($_POST['from_suburb']) ? sanitize_text_field($_POST['from_suburb']) : '',
-            'to_suburb' => isset($_POST['to_suburb']) ? sanitize_text_field($_POST['to_suburb']) : '',
             'number_of_bedrooms' => isset($_POST['number_of_bedrooms']) ? sanitize_text_field($_POST['number_of_bedrooms']) : '',
             'number_of_rooms' => isset($_POST['number_of_rooms']) ? sanitize_text_field($_POST['number_of_rooms']) : '',
+            'stairs' => isset($_POST['stairs']) ? sanitize_text_field($_POST['stairs']) : '',
+            'items_being_collected' => isset($_POST['items_being_collected']) ? sanitize_textarea_field($_POST['items_being_collected']) : '',
+            'furniture_moved_question' => isset($_POST['furniture_moved_question']) ? sanitize_text_field($_POST['furniture_moved_question']) : '',
             'property_notes' => isset($_POST['property_notes']) ? sanitize_textarea_field($_POST['property_notes']) : '',
             'contact_source' => 'form',
         );
@@ -529,17 +585,20 @@ class HS_CRM_Admin {
         if (isset($_POST['delivery_to_address'])) {
             $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
-        if (isset($_POST['from_suburb'])) {
-            $data['from_suburb'] = sanitize_text_field($_POST['from_suburb']);
-        }
-        if (isset($_POST['to_suburb'])) {
-            $data['to_suburb'] = sanitize_text_field($_POST['to_suburb']);
-        }
         if (isset($_POST['number_of_bedrooms'])) {
             $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
         }
         if (isset($_POST['number_of_rooms'])) {
             $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        }
+        if (isset($_POST['stairs'])) {
+            $data['stairs'] = sanitize_text_field($_POST['stairs']);
+        }
+        if (isset($_POST['items_being_collected'])) {
+            $data['items_being_collected'] = sanitize_textarea_field($_POST['items_being_collected']);
+        }
+        if (isset($_POST['furniture_moved_question'])) {
+            $data['furniture_moved_question'] = sanitize_text_field($_POST['furniture_moved_question']);
         }
         if (isset($_POST['property_notes'])) {
             $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
@@ -775,6 +834,35 @@ class HS_CRM_Admin {
             wp_send_json_success(array('message' => 'Truck assignment updated successfully.'));
         } else {
             wp_send_json_error(array('message' => 'Failed to update truck assignment.'));
+        }
+    }
+    
+    /**
+     * AJAX handler for deleting (archiving) an enquiry
+     */
+    public function ajax_delete_enquiry() {
+        check_ajax_referer('hs_crm_nonce', 'nonce');
+        
+        if (!current_user_can('manage_crm_enquiries')) {
+            wp_send_json_error(array('message' => 'Permission denied.'));
+        }
+        
+        $enquiry_id = isset($_POST['enquiry_id']) ? intval($_POST['enquiry_id']) : 0;
+        
+        if (!$enquiry_id) {
+            wp_send_json_error(array('message' => 'Invalid enquiry ID.'));
+        }
+        
+        // Archive the enquiry by setting status to 'Archived'
+        $result = HS_CRM_Database::update_status($enquiry_id, 'Archived');
+        
+        if ($result) {
+            // Add note about archiving
+            HS_CRM_Database::add_note($enquiry_id, 'Enquiry archived (deleted from active view)');
+            
+            wp_send_json_success(array('message' => 'Enquiry archived successfully.'));
+        } else {
+            wp_send_json_error(array('message' => 'Failed to archive enquiry.'));
         }
     }
 }
