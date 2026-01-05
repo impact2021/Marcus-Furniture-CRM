@@ -180,6 +180,12 @@ function hs_crm_check_db_version() {
         // Version 1.7 focuses on UI improvements: removed address field, removed house_size from UI
         update_option('hs_crm_db_version', '1.7.0');
     }
+    
+    if (version_compare($db_version, '1.10.0', '<')) {
+        // Run migration for version 1.10.0 - Add number_of_bedrooms column
+        hs_crm_migrate_to_1_10_0();
+        update_option('hs_crm_db_version', '1.10.0');
+    }
 }
 
 /**
@@ -366,6 +372,54 @@ function hs_crm_migrate_to_1_6_0() {
     // Add delivery_to_address column if it doesn't exist
     if (!in_array('delivery_to_address', $column_names)) {
         $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN delivery_to_address text DEFAULT '' NOT NULL AFTER delivery_from_address");
+    }
+}
+
+/**
+ * Migrate database to version 1.10.0
+ * Adds number_of_bedrooms column (was missing from 1.5.0 migration)
+ */
+function hs_crm_migrate_to_1_10_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add number_of_bedrooms column if it doesn't exist
+    if (!in_array('number_of_bedrooms', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN number_of_bedrooms varchar(50) DEFAULT '' NOT NULL AFTER house_size");
+    }
+    
+    // Add total_rooms column if it doesn't exist (also missing from original schema)
+    if (!in_array('total_rooms', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN total_rooms varchar(50) DEFAULT '' NOT NULL AFTER number_of_rooms");
+    }
+    
+    // Add stairs_from column if it doesn't exist
+    if (!in_array('stairs_from', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN stairs_from varchar(50) DEFAULT '' NOT NULL AFTER stairs");
+    }
+    
+    // Add stairs_to column if it doesn't exist
+    if (!in_array('stairs_to', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN stairs_to varchar(50) DEFAULT '' NOT NULL AFTER stairs_from");
+    }
+    
+    // Add property_notes column if it doesn't exist
+    if (!in_array('property_notes', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN property_notes text DEFAULT '' NOT NULL AFTER total_rooms");
+    }
+    
+    // Add pickup_address column if it doesn't exist
+    if (!in_array('pickup_address', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN pickup_address text DEFAULT '' NOT NULL AFTER address");
+    }
+    
+    // Add dropoff_address column if it doesn't exist
+    if (!in_array('dropoff_address', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN dropoff_address text DEFAULT '' NOT NULL AFTER pickup_address");
     }
 }
 
