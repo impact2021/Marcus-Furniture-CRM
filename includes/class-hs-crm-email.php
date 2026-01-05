@@ -22,7 +22,7 @@ class HS_CRM_Email {
     public function ajax_send_email() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
