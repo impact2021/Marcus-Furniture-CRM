@@ -302,21 +302,6 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-bedrooms">Number of Bedrooms</label>
-                        <select id="enquiry-bedrooms" name="number_of_bedrooms">
-                            <option value="">Select...</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
                         <label for="enquiry-total-rooms">Total Number of Rooms</label>
                         <select id="enquiry-total-rooms" name="number_of_rooms">
                             <option value="">Select...</option>
@@ -450,14 +435,6 @@ class HS_CRM_Admin {
             'contact_source' => 'form',
         );
         
-        // Validate and add number of bedrooms (1-8)
-        if (isset($_POST['number_of_bedrooms']) && $_POST['number_of_bedrooms'] !== '') {
-            $bedrooms = intval($_POST['number_of_bedrooms']);
-            if ($bedrooms >= 1 && $bedrooms <= 8) {
-                $data['number_of_bedrooms'] = strval($bedrooms);
-            }
-        }
-        
         // Validate and add number of rooms (1-12)
         if (isset($_POST['number_of_rooms']) && $_POST['number_of_rooms'] !== '') {
             $rooms = intval($_POST['number_of_rooms']);
@@ -515,18 +492,6 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['delivery_to_address'])) {
             $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
-        }
-        
-        // Validate and add number of bedrooms (1-8)
-        if (isset($_POST['number_of_bedrooms'])) {
-            if ($_POST['number_of_bedrooms'] === '') {
-                $data['number_of_bedrooms'] = '';
-            } else {
-                $bedrooms = intval($_POST['number_of_bedrooms']);
-                if ($bedrooms >= 1 && $bedrooms <= 8) {
-                    $data['number_of_bedrooms'] = strval($bedrooms);
-                }
-            }
         }
         
         // Validate and add number of rooms (1-12)
