@@ -121,6 +121,8 @@ class HS_CRM_Truck_Scheduler {
                 'enquiry_id' => $enquiry->id,
                 'first_name' => $enquiry->first_name,
                 'last_name' => $enquiry->last_name,
+                'delivery_from_address' => isset($enquiry->delivery_from_address) ? $enquiry->delivery_from_address : '',
+                'delivery_to_address' => isset($enquiry->delivery_to_address) ? $enquiry->delivery_to_address : '',
                 'start_time' => $enquiry->move_time,
                 'end_time' => null,
                 'notes' => '',
@@ -215,6 +217,17 @@ class HS_CRM_Truck_Scheduler {
                                                     if ($booking->enquiry_id && $booking->first_name) {
                                                         $customer_name = $booking->first_name . ' ' . $booking->last_name;
                                                     }
+                                                    
+                                                    // Get addresses
+                                                    $from_address = '';
+                                                    $to_address = '';
+                                                    if (isset($booking->delivery_from_address) && !empty($booking->delivery_from_address)) {
+                                                        $from_address = $booking->delivery_from_address;
+                                                    }
+                                                    if (isset($booking->delivery_to_address) && !empty($booking->delivery_to_address)) {
+                                                        $to_address = $booking->delivery_to_address;
+                                                    }
+                                                    
                                                     $time_display = '';
                                                     if ($booking->start_time) {
                                                         $time_display = date('g:ia', strtotime($booking->start_time));
@@ -236,10 +249,26 @@ class HS_CRM_Truck_Scheduler {
                                                             <div style="font-weight: bold;"><?php echo esc_html($time_display); ?></div>
                                                         <?php endif; ?>
                                                         <?php if ($customer_name): ?>
-                                                            <div><?php echo esc_html($customer_name); ?></div>
-                                                        <?php elseif ($booking->notes): ?>
+                                                            <div style="font-weight: bold; margin-top: 2px;"><?php echo esc_html($customer_name); ?></div>
+                                                        <?php endif; ?>
+                                                        <?php if ($from_address && $to_address): ?>
+                                                            <div style="font-size: 11px; margin-top: 2px; color: #666;">
+                                                                <strong>From:</strong> <?php echo esc_html(wp_trim_words($from_address, 4, '...')); ?>
+                                                            </div>
+                                                            <div style="font-size: 11px; color: #666;">
+                                                                <strong>To:</strong> <?php echo esc_html(wp_trim_words($to_address, 4, '...')); ?>
+                                                            </div>
+                                                        <?php elseif ($from_address): ?>
+                                                            <div style="font-size: 11px; margin-top: 2px; color: #666;">
+                                                                <strong>From:</strong> <?php echo esc_html(wp_trim_words($from_address, 4, '...')); ?>
+                                                            </div>
+                                                        <?php elseif ($to_address): ?>
+                                                            <div style="font-size: 11px; margin-top: 2px; color: #666;">
+                                                                <strong>To:</strong> <?php echo esc_html(wp_trim_words($to_address, 4, '...')); ?>
+                                                            </div>
+                                                        <?php elseif (!$customer_name && $booking->notes): ?>
                                                             <div><?php echo esc_html(wp_trim_words($booking->notes, 5)); ?></div>
-                                                        <?php else: ?>
+                                                        <?php elseif (!$customer_name): ?>
                                                             <div><em>Blocked</em></div>
                                                         <?php endif; ?>
                                                     </div>

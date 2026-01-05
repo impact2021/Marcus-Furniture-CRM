@@ -744,7 +744,8 @@ class HS_CRM_Database {
         
         $where_clause = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
         
-        $sql = "SELECT b.*, t.name as truck_name, e.first_name, e.last_name, e.address 
+        $sql = "SELECT b.*, t.name as truck_name, e.first_name, e.last_name, e.address, 
+                       e.delivery_from_address, e.delivery_to_address 
                 FROM $table_name b
                 LEFT JOIN {$wpdb->prefix}hs_trucks t ON b.truck_id = t.id
                 LEFT JOIN {$wpdb->prefix}hs_enquiries e ON b.enquiry_id = e.id
