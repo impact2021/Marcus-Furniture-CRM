@@ -159,8 +159,8 @@ jQuery(document).ready(function($) {
                 success: function(response) {
                     if (response.success) {
                         $select.data('current-truck', truckId);
-                        // Optional: Show success message
-                        // alert(response.data.message);
+                        // Show confirmation alert
+                        alert(response.data.message);
                     } else {
                         alert('Error: ' + response.data.message);
                     }
@@ -582,7 +582,26 @@ jQuery(document).ready(function($) {
             $('#enquiry-modal-title').text('Add New Enquiry');
             $('#hs-crm-enquiry-form')[0].reset();
             $('#enquiry-id').val('');
+            $('#enquiry-type-toggle').prop('checked', false);
+            $('#enquiry-job-type').val('Pickup/Delivery');
+            $('#moving-house-fields').hide();
+            $('#pickup-delivery-fields').show();
             $('#hs-crm-enquiry-modal').fadeIn();
+        });
+        
+        // Handle job type toggle checkbox
+        $('#enquiry-type-toggle').on('change', function() {
+            if ($(this).is(':checked')) {
+                // House move selected
+                $('#enquiry-job-type').val('Moving House');
+                $('#pickup-delivery-fields').hide();
+                $('#moving-house-fields').show();
+            } else {
+                // Pickup/Delivery selected
+                $('#enquiry-job-type').val('Pickup/Delivery');
+                $('#moving-house-fields').hide();
+                $('#pickup-delivery-fields').show();
+            }
         });
         
         // Handle enquiry form submission (add/edit)

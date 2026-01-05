@@ -348,6 +348,12 @@ function hs_crm_check_db_version() {
         hs_crm_migrate_to_2_5_0();
         update_option('hs_crm_db_version', '2.5.0');
     }
+    
+    if (version_compare($db_version, '2.6.0', '<')) {
+        // Run migration for version 2.6.0 - Add new enquiry form fields
+        hs_crm_migrate_to_2_6_0();
+        update_option('hs_crm_db_version', '2.6.0');
+    }
 }
 
 /**
@@ -647,6 +653,57 @@ function hs_crm_migrate_to_2_5_0() {
 }
 
 /**
+ * Migrate database to version 2.6.0
+ * Adds columns for enhanced enquiry modal fields
+ */
+function hs_crm_migrate_to_2_6_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    // Table name is safe: uses $wpdb->prefix (sanitized by WordPress) + hardcoded string
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add move_type column if it doesn't exist
+    if (!in_array('move_type', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN move_type varchar(100) DEFAULT '' NOT NULL AFTER job_type");
+    }
+    
+    // Add outdoor_plants column if it doesn't exist
+    if (!in_array('outdoor_plants', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN outdoor_plants varchar(50) DEFAULT '' NOT NULL AFTER property_notes");
+    }
+    
+    // Add oversize_items column if it doesn't exist
+    if (!in_array('oversize_items', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN oversize_items varchar(50) DEFAULT '' NOT NULL AFTER outdoor_plants");
+    }
+    
+    // Add driveway_concerns column if it doesn't exist
+    if (!in_array('driveway_concerns', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN driveway_concerns varchar(50) DEFAULT '' NOT NULL AFTER oversize_items");
+    }
+    
+    // Add assembly_help column if it doesn't exist
+    if (!in_array('assembly_help', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN assembly_help varchar(50) DEFAULT '' NOT NULL AFTER special_instructions");
+    }
+    
+    // Add alternate_date column if it doesn't exist
+    if (!in_array('alternate_date', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN alternate_date date DEFAULT NULL AFTER move_time");
+    }
+}
+
+/**
  * Enqueue styles and scripts
  */
 function hs_crm_enqueue_assets() {
@@ -738,10 +795,17 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         'source_form_name' => $form['title']
     );
     
-    // Determine job type based on form title
-    // Check for moving keywords FIRST (higher priority) since "delivery" often appears in moving forms
-    // Use word boundaries to avoid false positives (e.g., "remove" shouldn't match "move")
-    if (preg_match('/\b(moving(\s+house)?|move(\s+house)?)\b/i', $form_title)) {
+    // Determine job type based on form CSS class (highest priority), then form title
+    // Check CSS class first - allows users to explicitly set the form type
+    $form_css_class = isset($form['cssClass']) ? strtolower($form['cssClass']) : '';
+    
+    if (strpos($form_css_class, 'moving-house') !== false || strpos($form_css_class, 'house-move') !== false) {
+        $data['job_type'] = 'Moving House';
+    } elseif (strpos($form_css_class, 'pickup-delivery') !== false || strpos($form_css_class, 'delivery') !== false) {
+        $data['job_type'] = 'Pickup/Delivery';
+    } elseif (preg_match('/\b(moving(\s+house)?|move(\s+house)?)\b/i', $form_title)) {
+        // Fallback to form title - Check for moving keywords FIRST (higher priority) since "delivery" often appears in moving forms
+        // Use word boundaries to avoid false positives (e.g., "remove" shouldn't match "move")
         $data['job_type'] = 'Moving House';
     } elseif (preg_match('/\b(pickup|pick\s+up|delivery)\b/i', $form_title)) {
         $data['job_type'] = 'Pickup/Delivery';
