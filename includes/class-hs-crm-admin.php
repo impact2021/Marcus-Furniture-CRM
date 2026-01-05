@@ -668,15 +668,16 @@ class HS_CRM_Admin {
         
         // Validate required fields
         if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone'])) {
-            wp_send_json_error(array('message' => 'Please fill in all required fields (Name, Email, Phone).'));
+            wp_send_json_error(array('message' => 'Please fill in all required fields (First Name, Last Name, Email, Phone).'));
         }
         
         $enquiry_id = HS_CRM_Database::insert_enquiry($data);
         
         if ($enquiry_id) {
             // Add note about manual creation
-            $job_type = !empty($data['job_type']) ? $data['job_type'] : 'Unknown';
-            HS_CRM_Database::add_note($enquiry_id, "Enquiry manually created via admin panel - Job Type: " . $job_type);
+            $job_type = !empty($data['job_type']) ? sanitize_text_field($data['job_type']) : 'Unknown';
+            $note_text = sprintf('Enquiry manually created via admin panel - Job Type: %s', esc_html($job_type));
+            HS_CRM_Database::add_note($enquiry_id, $note_text);
             
             wp_send_json_success(array(
                 'message' => 'Enquiry created successfully.',

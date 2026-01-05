@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '2.5');
+define('HS_CRM_VERSION', '2.6');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
