@@ -19,12 +19,12 @@ jobs:
       - name: Zip plugin for deployment
         run: zip -r plugin.zip .
 
-      # 3. Deploy via FTP
+      # 3. Deploy via FTP (uses Sam Kirkland's action)
       - name: Deploy plugin to site
-        uses: sebastianpopp/ftp-action@v1
+        uses: SamKirkland/FTP-Deploy-Action@4.5.6
         with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          localDir: plugin.zip
-          remoteDir: ${{ secrets.FTP_PATH }}/wp-content/plugins/your-plugin-folder
+          ftp-server: ${{ secrets.FTP_HOST }}
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./ # This sends everything in your repo
+          server-dir: ${{ secrets.FTP_PATH }}/wp-content/plugins/your-plugin-folder/
