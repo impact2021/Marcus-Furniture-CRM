@@ -302,6 +302,21 @@ class HS_CRM_Admin {
                     </div>
                     
                     <div class="hs-crm-form-group">
+                        <label for="enquiry-bedrooms">Number of Bedrooms</label>
+                        <select id="enquiry-bedrooms" name="number_of_bedrooms">
+                            <option value="">Select...</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
                         <label for="enquiry-total-rooms">Total Number of Rooms</label>
                         <select id="enquiry-total-rooms" name="number_of_rooms">
                             <option value="">Select...</option>
@@ -432,16 +447,10 @@ class HS_CRM_Admin {
             'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
             'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
             'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
+            'number_of_bedrooms' => isset($_POST['number_of_bedrooms']) ? sanitize_text_field($_POST['number_of_bedrooms']) : '',
+            'number_of_rooms' => isset($_POST['number_of_rooms']) ? sanitize_text_field($_POST['number_of_rooms']) : '',
             'contact_source' => 'form',
         );
-        
-        // Validate and add number of rooms (1-12)
-        if (isset($_POST['number_of_rooms']) && $_POST['number_of_rooms'] !== '') {
-            $rooms = intval($_POST['number_of_rooms']);
-            if ($rooms >= 1 && $rooms <= 12) {
-                $data['number_of_rooms'] = strval($rooms);
-            }
-        }
         
         // Validate required fields
         if (empty($data['first_name']) || empty($data['last_name'])) {
@@ -493,17 +502,11 @@ class HS_CRM_Admin {
         if (isset($_POST['delivery_to_address'])) {
             $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
-        
-        // Validate and add number of rooms (1-12)
+        if (isset($_POST['number_of_bedrooms'])) {
+            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+        }
         if (isset($_POST['number_of_rooms'])) {
-            if ($_POST['number_of_rooms'] === '') {
-                $data['number_of_rooms'] = '';
-            } else {
-                $rooms = intval($_POST['number_of_rooms']);
-                if ($rooms >= 1 && $rooms <= 12) {
-                    $data['number_of_rooms'] = strval($rooms);
-                }
-            }
+            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
         }
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);

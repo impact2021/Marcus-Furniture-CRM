@@ -215,6 +215,7 @@ jQuery(document).ready(function($) {
                         $('#enquiry-last-name').val(enquiry.last_name);
                         $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
                         $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
+                        $('#enquiry-bedrooms').val(enquiry.number_of_bedrooms || '');
                         $('#enquiry-total-rooms').val(enquiry.number_of_rooms || '');
                         $('#hs-crm-enquiry-modal').fadeIn();
                     }
