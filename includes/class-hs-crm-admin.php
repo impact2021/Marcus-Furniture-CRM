@@ -399,10 +399,10 @@ class HS_CRM_Admin {
         $data = array(
             'first_name' => isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '',
             'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
-            'email' => 'placeholder@example.com', // Placeholder required field
-            'phone' => '000-000-0000', // Placeholder required field
-            'delivery_from_address' => 'TBD', // Placeholder required field
-            'delivery_to_address' => 'TBD', // Placeholder required field
+            'email' => 'TEMP_PLACEHOLDER@example.com', // Temporary placeholder for testing
+            'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
+            'delivery_from_address' => 'TEMP_TBD', // Temporary placeholder for testing
+            'delivery_to_address' => 'TEMP_TBD', // Temporary placeholder for testing
             'contact_source' => 'form',
         );
         
@@ -415,7 +415,7 @@ class HS_CRM_Admin {
         
         if ($enquiry_id) {
             // Add note about manual creation
-            HS_CRM_Database::add_note($enquiry_id, "Enquiry manually created - placeholder data used");
+            HS_CRM_Database::add_note($enquiry_id, "Enquiry manually created - TEMPORARY PLACEHOLDER DATA USED (needs proper details)");
             
             wp_send_json_success(array(
                 'message' => 'Enquiry created successfully.',

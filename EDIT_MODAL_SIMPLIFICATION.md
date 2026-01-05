@@ -40,12 +40,12 @@ Following the problem statement to "Remove every field in that modal apart from 
 
 #### ajax_create_enquiry()
 - Simplified to only accept first_name and last_name from user
-- Added placeholder values for required database fields:
-  - email: 'placeholder@example.com'
-  - phone: '000-000-0000'
-  - delivery_from_address: 'TBD'
-  - delivery_to_address: 'TBD'
-- Added note: "Enquiry manually created - placeholder data used"
+- Added temporary placeholder values for required database fields:
+  - email: 'TEMP_PLACEHOLDER@example.com'
+  - phone: 'TEMP_000-000-0000'
+  - delivery_from_address: 'TEMP_TBD'
+  - delivery_to_address: 'TEMP_TBD'
+- Added note: "Enquiry manually created - TEMPORARY PLACEHOLDER DATA USED (needs proper details)"
 
 ## Testing Instructions
 
@@ -77,10 +77,10 @@ Following the problem statement to "Remove every field in that modal apart from 
    - Success message: "Enquiry created successfully."
    - Page reloads showing the new enquiry with:
      - The entered name
-     - Placeholder email: placeholder@example.com
-     - Placeholder phone: 000-000-0000
-     - Placeholder addresses: TBD
-   - A note: "Enquiry manually created - placeholder data used"
+     - Temporary placeholder email: TEMP_PLACEHOLDER@example.com
+     - Temporary placeholder phone: TEMP_000-000-0000
+     - Temporary placeholder addresses: TEMP_TBD
+   - A note: "Enquiry manually created - TEMPORARY PLACEHOLDER DATA USED (needs proper details)"
 
 ### Test 3: Cancel Modal
 1. Click "Edit" on any enquiry
