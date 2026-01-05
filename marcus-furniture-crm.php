@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 2.3
+ * Version: 2.4
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '2.3');
+define('HS_CRM_VERSION', '2.4');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
@@ -709,14 +709,16 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     );
     
     // Determine job type based on form title
-    // Check for pickup/delivery keywords in the form title
-    if (stripos($form_title, 'pickup') !== false || 
-        stripos($form_title, 'delivery') !== false || 
-        stripos($form_title, 'pick up') !== false) {
-        $data['job_type'] = 'Pickup/Delivery';
-    } elseif (stripos($form_title, 'moving') !== false || 
-              stripos($form_title, 'move') !== false) {
+    // Check for moving keywords FIRST (higher priority) since "delivery" often appears in moving forms
+    if (stripos($form_title, 'moving house') !== false || 
+        stripos($form_title, 'move house') !== false ||
+        stripos($form_title, 'moving') !== false || 
+        stripos($form_title, 'move') !== false) {
         $data['job_type'] = 'Moving House';
+    } elseif (stripos($form_title, 'pickup') !== false || 
+              stripos($form_title, 'delivery') !== false || 
+              stripos($form_title, 'pick up') !== false) {
+        $data['job_type'] = 'Pickup/Delivery';
     } else {
         // Default - try to determine from fields later
         $data['job_type'] = '';
