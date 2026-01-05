@@ -7,24 +7,22 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Plugin to WordPress
+    name: Deploy Plugin to FTP
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Clone the repository
+      # 1. Checkout repository files
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Zip the plugin files
-      - name: Zip plugin for deployment
-        run: zip -r plugin.zip .
-
-      # 3. Deploy via FTP (ModernUFTP Action)
-      - name: Deploy plugin to site
-        uses: ModernUFTP/deploy-ftp-action@v1
+      # 2. Deploy plugin using FTP
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          ftp-server: ${{ secrets.FTP_HOST }}
-          ftp-username: ${{ secrets.FTP_USERNAME }}
-          ftp-password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./plugin.zip
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps # Change to 'ftp' or 'sftp' if needed
+          port: 21       # Adjust if your host uses a custom port
+          local-dir: ./  # Sync all files
           server-dir: ${{ secrets.FTP_PATH }}/wp-content/plugins/your-plugin-folder/
