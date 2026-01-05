@@ -155,9 +155,8 @@ class HS_CRM_Admin {
                                 <th style="width: 12%;">Moving From</th>
                                 <th style="width: 12%;">Moving To</th>
                                 <th style="width: 14%;">Items & Instructions</th>
-                                <th style="width: 8%;">Status</th>
                                 <th style="width: 8%;">Truck</th>
-                                <th style="width: 10%;">Status / Action</th>
+                                <th style="width: 18%;">Status</th>
                                 <th style="width: 8%;">Edit / Delete</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
@@ -274,11 +273,6 @@ class HS_CRM_Admin {
                                     ?>
                                 </td>
                                 <td>
-                                    <span class="hs-crm-status-badge status-<?php echo esc_attr(strtolower(str_replace(' ', '-', $enquiry->status))); ?>">
-                                        <?php echo esc_html($enquiry->status); ?>
-                                    </span>
-                                </td>
-                                <td>
                                     <?php 
                                     $trucks = HS_CRM_Database::get_trucks('active');
                                     if (!is_array($trucks)) {
@@ -295,21 +289,32 @@ class HS_CRM_Admin {
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="hs-crm-status-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-status="<?php echo esc_attr($enquiry->status); ?>">
-                                        <option value="">Change Status...</option>
-                                        <option value="First Contact">First Contact</option>
-                                        <option value="Quote Sent">Quote Sent</option>
-                                        <option value="Booking Confirmed">Booking Confirmed</option>
-                                        <option value="Deposit Paid">Deposit Paid</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="Archived">Archived</option>
-                                    </select>
-                                    <select class="hs-crm-action-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                        <option value="">Select Action...</option>
-                                        <option value="send_quote">Send Quote</option>
-                                        <option value="send_invoice">Send Invoice</option>
-                                        <option value="send_receipt">Send Receipt</option>
-                                    </select>
+                                    <!-- Current Status Display -->
+                                    <div style="margin-bottom: 10px;">
+                                        <span class="hs-crm-status-badge status-<?php echo esc_attr(strtolower(str_replace(' ', '-', $enquiry->status))); ?>">
+                                            <?php echo esc_html($enquiry->status); ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Status Update Radio Buttons -->
+                                    <div class="hs-crm-status-radio-group" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-status="<?php echo esc_attr($enquiry->status); ?>">
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="First Contact" <?php checked($enquiry->status, 'First Contact'); ?>>
+                                            I've contacted them
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Quote Sent" <?php checked($enquiry->status, 'Quote Sent'); ?>>
+                                            I've sent a quote
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Booking Confirmed" <?php checked($enquiry->status, 'Booking Confirmed'); ?>>
+                                            The booking has been confirmed
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Completed" <?php checked($enquiry->status, 'Completed'); ?>>
+                                            The job has been done
+                                        </label>
+                                    </div>
                                 </td>
                                 <td>
                                     <button type="button" class="button button-small hs-crm-edit-enquiry" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">Edit</button>
@@ -320,7 +325,7 @@ class HS_CRM_Admin {
                             <!-- Notes section - collapsible -->
                             <?php if (!empty($notes)): ?>
                                 <tr class="hs-crm-notes-toggle-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                    <td colspan="9" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
+                                    <td colspan="8" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
                                         <span class="hs-crm-notes-toggle dashicons dashicons-arrow-down" style="font-size: 16px; vertical-align: middle;"></span>
                                         <strong>Notes (<?php echo count($notes); ?>)</strong> - Click to expand
                                     </td>
@@ -330,7 +335,7 @@ class HS_CRM_Admin {
                                         <td class="hs-crm-note-date">
                                             <?php echo esc_html(hs_crm_format_date($note->created_at)); ?>
                                         </td>
-                                        <td colspan="7" class="hs-crm-note-content">
+                                        <td colspan="6" class="hs-crm-note-content">
                                             <div class="hs-crm-note-text"><?php echo esc_html(stripslashes($note->note)); ?></div>
                                         </td>
                                         <td class="hs-crm-note-actions">
@@ -342,7 +347,7 @@ class HS_CRM_Admin {
                             
                             <!-- Add note row -->
                             <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo esc_attr($add_note_row_style); ?>">
-                                <td colspan="8">
+                                <td colspan="7">
                                     <textarea class="hs-crm-new-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" rows="2" placeholder="Add a new note..."></textarea>
                                 </td>
                                 <td>

@@ -61,7 +61,100 @@ jQuery(document).ready(function($) {
     // Admin page functionality
     if ($('.hs-crm-admin-wrap').length > 0) {
         
-        // Handle status change
+        // Handle status change via radio buttons
+        $(document).on('change', '.hs-crm-status-radio-group input[type="radio"]', function() {
+            var $radio = $(this);
+            var $radioGroup = $radio.closest('.hs-crm-status-radio-group');
+            var enquiryId = $radioGroup.data('enquiry-id');
+            var newStatus = $radio.val();
+            var oldStatus = $radioGroup.data('current-status');
+            
+            // Don't process if already at this status
+            if (newStatus === oldStatus) {
+                return;
+            }
+            
+            // Confirm the change
+            var confirmMessage = 'Are you sure you want to change the status to "' + newStatus + '"?';
+            if (newStatus === 'Completed') {
+                confirmMessage = 'Mark this job as completed? This will move it to the Archived status.';
+            }
+            
+            if (!confirm(confirmMessage)) {
+                // Revert the radio button to the old status
+                $radioGroup.find('input[value="' + oldStatus + '"]').prop('checked', true);
+                return;
+            }
+            
+            // If "The job has been done" is selected, set status to "Completed" then archive
+            var finalStatus = newStatus;
+            var shouldArchive = (newStatus === 'Completed');
+            
+            $.ajax({
+                url: hsCrmAjax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'hs_crm_update_status',
+                    nonce: hsCrmAjax.nonce,
+                    enquiry_id: enquiryId,
+                    status: finalStatus,
+                    old_status: oldStatus
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update status badge
+                        var statusClass = finalStatus.toLowerCase().replace(/\s+/g, '-');
+                        $radioGroup.closest('td').find('.hs-crm-status-badge')
+                            .removeClass()
+                            .addClass('hs-crm-status-badge status-' + statusClass)
+                            .text(finalStatus);
+                        
+                        // Update current status
+                        $radioGroup.data('current-status', finalStatus);
+                        
+                        // If should archive, update to Archived status
+                        if (shouldArchive) {
+                            setTimeout(function() {
+                                // Now archive it
+                                $.ajax({
+                                    url: hsCrmAjax.ajaxurl,
+                                    type: 'POST',
+                                    data: {
+                                        action: 'hs_crm_update_status',
+                                        nonce: hsCrmAjax.nonce,
+                                        enquiry_id: enquiryId,
+                                        status: 'Archived',
+                                        old_status: finalStatus
+                                    },
+                                    success: function(archiveResponse) {
+                                        if (archiveResponse.success) {
+                                            alert('Job completed and moved to Archived.');
+                                            // Remove the enquiry from view
+                                            $radioGroup.closest('table.hs-crm-single-enquiry-table').fadeOut(300, function() {
+                                                $(this).remove();
+                                            });
+                                        }
+                                    }
+                                });
+                            }, 500);
+                        } else {
+                            alert(response.data.message);
+                        }
+                    } else {
+                        alert('Error: ' + response.data.message);
+                        // Revert the radio button
+                        $radioGroup.find('input[value="' + oldStatus + '"]').prop('checked', true);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating the status.');
+                    // Revert the radio button
+                    $radioGroup.find('input[value="' + oldStatus + '"]').prop('checked', true);
+                }
+            });
+        });
+        
+        // Legacy: Handle status change via dropdown (kept for backward compatibility)
         $('.hs-crm-status-select').on('change', function() {
             var $select = $(this);
             var enquiryId = $select.data('enquiry-id');
