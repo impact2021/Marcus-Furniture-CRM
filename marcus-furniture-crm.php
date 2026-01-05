@@ -130,7 +130,8 @@ function hs_crm_init() {
         add_action('wp_before_admin_bar_render', 'hs_crm_customize_admin_bar');
     }
     
-    // Add login redirect filter for CRM Managers (outside is_admin check)
+    // Add login redirect filter for CRM Managers
+    // Login redirects occur before admin context is established, so this filter must be registered outside is_admin()
     add_filter('login_redirect', 'hs_crm_login_redirect', 10, 3);
     
     // Initialize email handler
@@ -709,14 +710,12 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     
     // Determine job type based on form title
     // Check for pickup/delivery keywords in the form title
-    $is_pickup_delivery = false;
     if (stripos($form_title, 'pickup') !== false || 
         stripos($form_title, 'delivery') !== false || 
         stripos($form_title, 'pick up') !== false) {
-        $is_pickup_delivery = true;
         $data['job_type'] = 'Pickup/Delivery';
-    } else if (stripos($form_title, 'moving') !== false || 
-               stripos($form_title, 'move') !== false) {
+    } elseif (stripos($form_title, 'moving') !== false || 
+              stripos($form_title, 'move') !== false) {
         $data['job_type'] = 'Moving House';
     } else {
         // Default - try to determine from fields later
