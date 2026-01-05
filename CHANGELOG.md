@@ -1,5 +1,32 @@
 # Changelog
 
+## Version 2.4 - 2026-01-05
+
+### Fixed
+- **Job Type Detection**: Fixed incorrect categorization of forms as Pickup/Delivery vs Moving House
+  - Changed keyword priority to check for "moving" keywords BEFORE "delivery/pickup" keywords
+  - This prevents forms like "Moving House Delivery" from being incorrectly tagged as Pickup/Delivery
+  - Moving house forms are now correctly identified even if they contain the word "delivery"
+  - Improved with word boundary regex matching to avoid false positives (e.g., "remove" won't match "move")
+  
+- **Auto-Archive Feature**: Implemented automatic archiving of enquiries with past move dates
+  - When viewing the Active tab, enquiries with move dates in the past are automatically moved to Archived status
+  - Uses WordPress `current_time()` to respect the site's timezone setting
+  - Only affects enquiries in active statuses (First Contact, Quote Sent, Booking Confirmed, Deposit Paid)
+  - Enquiries without a move date are not affected
+  - Throttled to run once per hour using WordPress transients to optimize performance
+  
+- **Address Truncation**: Fixed address truncation in truck scheduler page
+  - Removed `wp_trim_words()` function that was limiting addresses to 4 words
+  - Full addresses are now displayed in the calendar view
+  - Improves readability and ensures all address details are visible
+
+### Changed
+- **Version Update**: Updated plugin version to 2.4
+  - Updated plugin header version in main plugin file from 2.3 to 2.4
+  - Updated stable tag in readme.txt from 2.2 to 2.4
+  - Ensures consistency across all version references
+
 ## Version 2.1 - 2026-01-05
 
 ### Changed

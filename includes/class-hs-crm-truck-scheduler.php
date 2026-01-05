@@ -255,18 +255,18 @@ class HS_CRM_Truck_Scheduler {
                                                         <?php endif; ?>
                                                         <?php if ($from_address && $to_address): ?>
                                                             <div style="font-size: 11px; margin-top: 2px; color: #666;">
-                                                                <strong>From:</strong> <?php echo esc_html(wp_trim_words($from_address, 4, '...')); ?>
+                                                                <strong>From:</strong> <?php echo esc_html($from_address); ?>
                                                             </div>
                                                             <div style="font-size: 11px; color: #666;">
-                                                                <strong>To:</strong> <?php echo esc_html(wp_trim_words($to_address, 4, '...')); ?>
+                                                                <strong>To:</strong> <?php echo esc_html($to_address); ?>
                                                             </div>
                                                         <?php elseif ($from_address): ?>
                                                             <div style="font-size: 11px; margin-top: 2px; color: #666;">
-                                                                <strong>From:</strong> <?php echo esc_html(wp_trim_words($from_address, 4, '...')); ?>
+                                                                <strong>From:</strong> <?php echo esc_html($from_address); ?>
                                                             </div>
                                                         <?php elseif ($to_address): ?>
                                                             <div style="font-size: 11px; margin-top: 2px; color: #666;">
-                                                                <strong>To:</strong> <?php echo esc_html(wp_trim_words($to_address, 4, '...')); ?>
+                                                                <strong>To:</strong> <?php echo esc_html($to_address); ?>
                                                             </div>
                                                         <?php elseif (!$customer_name && $booking->notes): ?>
                                                             <div><?php echo esc_html(wp_trim_words($booking->notes, 5)); ?></div>
