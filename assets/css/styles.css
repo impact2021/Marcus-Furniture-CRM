@@ -243,7 +243,7 @@
 
 /* Customer header row styling */
 .hs-crm-customer-header-row th {
-    background: #061257 !important;
+    /* Background color is set inline in PHP based on job type */
     font-weight: 600 !important;
     font-size: 11px !important;
     text-transform: uppercase !important;
