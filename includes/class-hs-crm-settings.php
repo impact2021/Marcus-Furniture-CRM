@@ -44,6 +44,10 @@ class HS_CRM_Settings {
         register_setting('hs_crm_settings', 'hs_crm_default_booking_duration', array(
             'sanitize_callback' => array($this, 'sanitize_booking_duration')
         ));
+        register_setting('hs_crm_settings', 'hs_crm_delete_on_uninstall', array(
+            'type' => 'boolean',
+            'default' => false
+        ));
     }
     
     /**
@@ -214,6 +218,24 @@ class HS_CRM_Settings {
                             <p class="description">
                                 Select the timezone to use for displaying dates and times in the admin dashboard.<br>
                                 This setting overrides the WordPress timezone setting for this plugin only.
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="hs_crm_delete_on_uninstall">Delete All Data on Uninstall</label>
+                        </th>
+                        <td>
+                            <label>
+                                <input type="checkbox" 
+                                       id="hs_crm_delete_on_uninstall" 
+                                       name="hs_crm_delete_on_uninstall" 
+                                       value="1" 
+                                       <?php checked(get_option('hs_crm_delete_on_uninstall', false), true); ?>>
+                                Remove all plugin data when the plugin is uninstalled
+                            </label>
+                            <p class="description">
+                                <strong>Warning:</strong> If checked, all CRM data (enquiries, notes, trucks, bookings) and settings will be permanently deleted when you uninstall this plugin. This action cannot be undone. Leave unchecked to preserve your data.
                             </p>
                         </td>
                     </tr>

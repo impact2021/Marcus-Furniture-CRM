@@ -148,15 +148,16 @@ class HS_CRM_Admin {
                         <tbody>
                             <!-- Customer Header Row -->
                             <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>" style="background: <?php echo $header_bg_color; ?> !important;">
-                                <th style="width: 14%;">
+                                <th style="width: 12%;">
                                     Source & Dates
                                 </th>
-                                <th style="width: 18%;">Contact & Address</th>
-                                <th style="width: 14%;">House Details</th>
-                                <th style="width: 16%;">Items & Instructions</th>
+                                <th style="width: 16%;">Contact & Address</th>
+                                <th style="width: 12%;">Moving From</th>
+                                <th style="width: 12%;">Moving To</th>
+                                <th style="width: 14%;">Items & Instructions</th>
                                 <th style="width: 8%;">Status</th>
-                                <th style="width: 10%;">Truck</th>
-                                <th style="width: 12%;">Status / Action</th>
+                                <th style="width: 8%;">Truck</th>
+                                <th style="width: 10%;">Status / Action</th>
                                 <th style="width: 8%;">Edit / Delete</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
@@ -199,31 +200,48 @@ class HS_CRM_Admin {
                                 </td>
                                 <td>
                                     <?php 
-                                    $house_details = array();
-                                    if ($is_pickup_delivery) {
-                                        // For pickup/delivery, show stairs and other relevant info
-                                        if (!empty($enquiry->stairs)) {
-                                            $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
-                                        }
-                                    } else {
-                                        // For moving house, show bedrooms and rooms
-                                        if (!empty($enquiry->number_of_bedrooms)) {
-                                            $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
-                                        }
-                                        if (!empty($enquiry->number_of_rooms)) {
-                                            $house_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
-                                        }
-                                        if (!empty($enquiry->stairs)) {
-                                            $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
-                                        }
+                                    // Moving From details
+                                    $from_details = array();
+                                    if (!empty($enquiry->delivery_from_address)) {
+                                        $from_details[] = '<strong>' . esc_html($enquiry->delivery_from_address) . '</strong>';
                                     }
-                                    if (!empty($enquiry->property_notes)) {
-                                        $house_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
+                                    if (!empty($enquiry->stairs_from)) {
+                                        $from_details[] = 'Stairs: ' . esc_html($enquiry->stairs_from);
                                     }
-                                    if (empty($house_details)) {
+                                    if ($is_pickup_delivery && !empty($enquiry->stairs) && empty($enquiry->stairs_from)) {
+                                        // Fallback for old entries
+                                        $from_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
+                                    }
+                                    if (empty($from_details)) {
                                         echo '<em style="color: #999;">Not set</em>';
                                     } else {
-                                        echo '<small>' . implode('<br>', $house_details) . '</small>';
+                                        echo '<small>' . implode('<br>', $from_details) . '</small>';
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php 
+                                    // Moving To details
+                                    $to_details = array();
+                                    if (!empty($enquiry->delivery_to_address)) {
+                                        $to_details[] = '<strong>' . esc_html($enquiry->delivery_to_address) . '</strong>';
+                                    }
+                                    if (!empty($enquiry->stairs_to)) {
+                                        $to_details[] = 'Stairs: ' . esc_html($enquiry->stairs_to);
+                                    }
+                                    if (!empty($enquiry->number_of_bedrooms)) {
+                                        $to_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
+                                    }
+                                    if (!empty($enquiry->number_of_rooms)) {
+                                        $to_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
+                                    }
+                                    if (!empty($enquiry->property_notes)) {
+                                        $to_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
+                                    }
+                                    if (empty($to_details)) {
+                                        echo '<em style="color: #999;">Not set</em>';
+                                    } else {
+                                        echo '<small>' . implode('<br>', $to_details) . '</small>';
                                     }
                                     ?>
                                 </td>
@@ -293,7 +311,7 @@ class HS_CRM_Admin {
                             <!-- Notes section - collapsible -->
                             <?php if (!empty($notes)): ?>
                                 <tr class="hs-crm-notes-toggle-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                    <td colspan="8" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
+                                    <td colspan="9" style="padding: 5px 10px; cursor: pointer; background: #f9f9f9;">
                                         <span class="hs-crm-notes-toggle dashicons dashicons-arrow-down" style="font-size: 16px; vertical-align: middle;"></span>
                                         <strong>Notes (<?php echo count($notes); ?>)</strong> - Click to expand
                                     </td>
@@ -303,7 +321,7 @@ class HS_CRM_Admin {
                                         <td class="hs-crm-note-date">
                                             <?php echo esc_html(hs_crm_format_date($note->created_at)); ?>
                                         </td>
-                                        <td colspan="6" class="hs-crm-note-content">
+                                        <td colspan="7" class="hs-crm-note-content">
                                             <div class="hs-crm-note-text"><?php echo esc_html(stripslashes($note->note)); ?></div>
                                         </td>
                                         <td class="hs-crm-note-actions">
@@ -315,7 +333,7 @@ class HS_CRM_Admin {
                             
                             <!-- Add note row -->
                             <tr class="hs-crm-add-note-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" style="<?php echo esc_attr($add_note_row_style); ?>">
-                                <td colspan="7">
+                                <td colspan="8">
                                     <textarea class="hs-crm-new-note" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" rows="2" placeholder="Add a new note..."></textarea>
                                 </td>
                                 <td>

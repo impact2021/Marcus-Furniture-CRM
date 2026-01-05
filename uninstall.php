@@ -14,6 +14,14 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
+// Check if user has opted to delete all data on uninstall
+$delete_on_uninstall = get_option('hs_crm_delete_on_uninstall', false);
+
+if (!$delete_on_uninstall) {
+    // User has not opted to delete data - preserve everything
+    return;
+}
+
 global $wpdb;
 
 // Remove database tables
@@ -38,7 +46,8 @@ $options = array(
     'hs_crm_admin_email',
     'hs_crm_google_api_key',
     'hs_crm_timezone',
-    'hs_crm_default_booking_duration'
+    'hs_crm_default_booking_duration',
+    'hs_crm_delete_on_uninstall'
 );
 
 foreach ($options as $option) {
