@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 2.4
+Stable tag: 2.5
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,16 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 2.5 =
+* Added Gravity Form name display - enquiries now show which specific form they came from
+* Added source_form_name database column to track the originating Gravity Form
+* Form name displays in blue above the job type in the admin enquiries table
+* Enhanced move date visibility with larger fonts, color coding, and highlighted box
+* Move dates now stand out with red/pink highlighting and 15px bold font
+* Added complete uninstall script to remove all data when plugin is deleted
+* Uninstall removes all database tables, options, and custom user role
+* Updated plugin version to 2.5
 
 = 2.2 =
 * Added comprehensive debug mode for Gravity Forms import to identify field mapping issues

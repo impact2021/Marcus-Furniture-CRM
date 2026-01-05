@@ -1,5 +1,36 @@
 # Changelog
 
+## Version 2.5 - 2026-01-05
+
+### Added
+- **Gravity Form Name Display**: Enquiries now show which specific Gravity Form they came from
+  - Added `source_form_name` database column to track the originating form
+  - Form name displays in blue above the job type in the admin table
+  - Database migration automatically adds the column on plugin update
+  - Makes it easy to identify which form (e.g., "Moving House Enquiry", "Pickup Request") created each enquiry
+
+- **Uninstall Data Cleanup**: Complete data removal when plugin is deleted
+  - Created `uninstall.php` to handle plugin deletion
+  - Removes all 4 database tables (enquiries, notes, trucks, bookings)
+  - Removes all plugin options (settings, API keys, etc.)
+  - Removes custom CRM Manager role and capabilities
+  - Ensures clean uninstall with no orphaned data
+
+### Enhanced
+- **Move Date Visibility**: Made move dates much more prominent and easier to see
+  - Increased date font size to 15px with bold styling
+  - Added color coding: dates in red/pink background, times in blue
+  - Wrapped move date in yellow highlighted box with orange left border
+  - Significantly improved visual hierarchy in the enquiries table
+  
+### Technical
+- Updated plugin version to 2.5
+- Updated database version to 2.5.0
+- Added migration function `hs_crm_migrate_to_2_5_0()`
+- Enhanced CSS with new classes: `.hs-crm-move-date`, `.hs-crm-date-highlight`, `.hs-crm-time-highlight`
+- Updated `HS_CRM_Database::insert_enquiry()` to handle `source_form_name` field
+- Modified Gravity Forms integration to capture form title on submission
+
 ## Version 2.4 - 2026-01-05
 
 ### Fixed
