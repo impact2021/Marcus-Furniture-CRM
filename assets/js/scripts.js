@@ -211,16 +211,51 @@ jQuery(document).ready(function($) {
                         var enquiry = response.data.enquiry;
                         $('#enquiry-modal-title').text('Edit Enquiry Details');
                         $('#enquiry-id').val(enquiry.id);
+                        
+                        // Common fields
                         $('#enquiry-first-name').val(enquiry.first_name);
                         $('#enquiry-last-name').val(enquiry.last_name);
-                        $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
-                        $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
-                        $('#enquiry-bedrooms').val(enquiry.number_of_bedrooms || '');
-                        $('#enquiry-total-rooms').val(enquiry.number_of_rooms || '');
-                        $('#enquiry-stairs').val(enquiry.stairs || '');
-                        $('#enquiry-items-collected').val(enquiry.items_being_collected || '');
-                        $('#enquiry-furniture-moved').val(enquiry.furniture_moved_question || '');
-                        $('#enquiry-property-notes').val(enquiry.property_notes || '');
+                        $('#enquiry-phone').val(enquiry.phone || '');
+                        $('#enquiry-email').val(enquiry.email || '');
+                        $('#enquiry-move-date').val(enquiry.move_date || '');
+                        $('#enquiry-move-time').val(enquiry.move_time || '');
+                        
+                        // Determine job type and show appropriate fields
+                        var isMovingHouse = enquiry.job_type === 'Moving House';
+                        $('#enquiry-type-toggle').prop('checked', isMovingHouse);
+                        $('#enquiry-job-type').val(enquiry.job_type || 'Pickup/Delivery');
+                        
+                        if (isMovingHouse) {
+                            $('#pickup-delivery-fields').hide();
+                            $('#moving-house-fields').show();
+                            
+                            // Moving house fields
+                            $('#enquiry-moving-from').val(enquiry.delivery_from_address || '');
+                            $('#enquiry-moving-to').val(enquiry.delivery_to_address || '');
+                            $('#enquiry-stairs-from').val(enquiry.stairs_from || '');
+                            $('#enquiry-stairs-to').val(enquiry.stairs_to || '');
+                            $('#enquiry-move-type').val(enquiry.move_type || '');
+                            $('#enquiry-move-size').val(enquiry.house_size || '');
+                            $('#enquiry-additional-info').val(enquiry.property_notes || '');
+                            $('#enquiry-outdoor-plants').val(enquiry.outdoor_plants || '');
+                            $('#enquiry-oversize-items').val(enquiry.oversize_items || '');
+                            $('#enquiry-driveway-concerns').val(enquiry.driveway_concerns || '');
+                        } else {
+                            $('#moving-house-fields').hide();
+                            $('#pickup-delivery-fields').show();
+                            
+                            // Pickup/delivery fields
+                            $('#enquiry-pickup-from').val(enquiry.delivery_from_address || '');
+                            $('#enquiry-deliver-to').val(enquiry.delivery_to_address || '');
+                            $('#enquiry-stairs-pickup').val(enquiry.stairs_from || '');
+                            $('#enquiry-stairs-delivery').val(enquiry.stairs_to || '');
+                            $('#enquiry-items-collected').val(enquiry.items_being_collected || '');
+                            $('#enquiry-special-instructions').val(enquiry.special_instructions || '');
+                            $('#enquiry-assembly-help').val(enquiry.assembly_help || '');
+                            $('#enquiry-furniture-moved').val(enquiry.furniture_moved_question || '');
+                            $('#enquiry-alt-date').val(enquiry.alternate_date || '');
+                        }
+                        
                         $('#hs-crm-enquiry-modal').fadeIn();
                     }
                 },
