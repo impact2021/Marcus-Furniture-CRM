@@ -825,6 +825,8 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     
     // Handle single 'name' field - split into first_name and last_name if needed
     // Only process if we have a name field AND both first_name and last_name are missing
+    // Note: This assumes Western naming conventions (first name, then last name separated by space)
+    // For international names with different formats, users should use separate first/last name fields
     if (!empty($data['name']) && empty($data['first_name']) && empty($data['last_name'])) {
         $name_parts = explode(' ', trim($data['name']), 2);
         if (isset($name_parts[0])) {
