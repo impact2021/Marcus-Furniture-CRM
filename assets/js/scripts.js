@@ -213,6 +213,8 @@ jQuery(document).ready(function($) {
                         $('#enquiry-id').val(enquiry.id);
                         $('#enquiry-first-name').val(enquiry.first_name);
                         $('#enquiry-last-name').val(enquiry.last_name);
+                        $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
+                        $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
                         $('#hs-crm-enquiry-modal').fadeIn();
                     }
                 },

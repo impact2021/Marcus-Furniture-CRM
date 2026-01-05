@@ -291,6 +291,16 @@ class HS_CRM_Admin {
                         <input type="text" id="enquiry-last-name" name="last_name" required>
                     </div>
                     
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-from-address">From Address</label>
+                        <input type="text" id="enquiry-from-address" name="delivery_from_address">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-to-address">To Address</label>
+                        <input type="text" id="enquiry-to-address" name="delivery_to_address">
+                    </div>
+                    
                     <div class="hs-crm-form-group hs-crm-form-buttons">
                         <button type="submit" class="button button-primary">Save Enquiry</button>
                         <button type="button" class="button hs-crm-modal-close">Cancel</button>
@@ -401,8 +411,8 @@ class HS_CRM_Admin {
             'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
             'email' => 'TEMP_PLACEHOLDER@example.com', // Temporary placeholder for testing
             'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
-            'delivery_from_address' => 'TEMP_TBD', // Temporary placeholder for testing
-            'delivery_to_address' => 'TEMP_TBD', // Temporary placeholder for testing
+            'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
+            'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
             'contact_source' => 'form',
         );
         
@@ -449,6 +459,12 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['last_name'])) {
             $data['last_name'] = sanitize_text_field($_POST['last_name']);
+        }
+        if (isset($_POST['delivery_from_address'])) {
+            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
+        }
+        if (isset($_POST['delivery_to_address'])) {
+            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);
