@@ -63,11 +63,12 @@ function hs_crm_create_custom_role() {
             'read' => true, // Required for backend access
             'manage_crm_enquiries' => true,
             'view_crm_dashboard' => true,
-            'manage_crm_settings' => false, // Set to true if you want them to manage settings
+            'manage_crm_settings' => false, // CRM Managers cannot manage settings
         )
     );
     
     // Also ensure admin has these capabilities
+    // Admins already have manage_options which gives them full access
     $admin_role = get_role('administrator');
     if ($admin_role) {
         $admin_role->add_cap('manage_crm_enquiries');
@@ -75,6 +76,25 @@ function hs_crm_create_custom_role() {
         $admin_role->add_cap('manage_crm_settings');
     }
 }
+
+/**
+ * Ensure CRM Manager role is visible in user role dropdown
+ */
+function hs_crm_make_role_editable($roles) {
+    // Ensure CRM Manager role is available for assignment
+    // This makes the role visible in the user creation/editing interface
+    if (!isset($roles['crm_manager'])) {
+        $crm_role = get_role('crm_manager');
+        if ($crm_role) {
+            $roles['crm_manager'] = array(
+                'name' => 'CRM Manager',
+                'capabilities' => $crm_role->capabilities
+            );
+        }
+    }
+    return $roles;
+}
+add_filter('editable_roles', 'hs_crm_make_role_editable');
 
 /**
  * Deactivation hook
