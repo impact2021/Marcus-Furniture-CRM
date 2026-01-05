@@ -367,7 +367,11 @@ class HS_CRM_Database {
                     // Both addresses are empty - clear the address field for consistency
                     $update_data['address'] = '';
                 }
-                $update_format[] = '%s';
+                
+                // Only add format specifier if address wasn't already added above
+                if (!isset($data['address'])) {
+                    $update_format[] = '%s';
+                }
             }
         }
         
