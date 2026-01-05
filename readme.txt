@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 2.1
+Stable tag: 2.2
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,17 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 2.2 =
+* Added comprehensive debug mode for Gravity Forms import to identify field mapping issues
+* Debug mode shows detailed information about each entry including:
+  - All form fields found and their types
+  - Name and address field subfield values
+  - Extracted data for each required field
+  - Reasons why entries were skipped (missing fields or duplicates)
+  - All available entry keys for troubleshooting
+* Enhanced Gravity Forms import error reporting
+* Updated plugin version to 2.2
 
 = 1.9 =
 * Fixed critical bug in update_enquiry() that caused "Failed to update enquiry" errors

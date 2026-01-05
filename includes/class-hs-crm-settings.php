@@ -266,6 +266,20 @@ class HS_CRM_Settings {
                             </p>
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="hs_crm_gf_debug">Debug Mode</label>
+                        </th>
+                        <td>
+                            <label>
+                                <input type="checkbox" id="hs_crm_gf_debug" value="1">
+                                Enable detailed debugging (shows why entries were skipped)
+                            </label>
+                            <p class="description">
+                                When enabled, you'll see detailed information about each entry including field mapping, extracted data, and reasons for skipping.
+                            </p>
+                        </td>
+                    </tr>
                 </table>
                 <button type="button" id="hs-crm-import-gf-btn" class="button button-secondary">Import Entries</button>
                 <div id="hs-crm-import-gf-result" style="margin-top: 15px;"></div>
@@ -275,6 +289,7 @@ class HS_CRM_Settings {
                     $('#hs-crm-import-gf-btn').on('click', function() {
                         var formId = $('#hs_crm_gf_form_id').val();
                         var limit = $('#hs_crm_gf_limit').val();
+                        var debug = $('#hs_crm_gf_debug').is(':checked');
                         var $button = $(this);
                         var $result = $('#hs-crm-import-gf-result');
                         
@@ -293,17 +308,135 @@ class HS_CRM_Settings {
                                 action: 'hs_crm_import_gravity_forms',
                                 form_id: formId,
                                 limit: limit,
+                                debug: debug ? 'true' : 'false',
                                 nonce: <?php echo wp_json_encode(wp_create_nonce('hs_crm_import_gf')); ?>
                             },
                             success: function(response) {
                                 if (response.success) {
-                                    $result.html('<div class="notice notice-success"><p>' + response.data.message + '</p></div>');
+                                    var $successDiv = $('<div>').addClass('notice notice-success');
+                                    $successDiv.append($('<p>').text(response.data.message));
+                                    
+                                    // Display debug information if available
+                                    if (response.data.debug && response.data.debug.length > 0) {
+                                        var $debugContainer = $('<div>').css('margin-top', '20px');
+                                        $debugContainer.append($('<h3>').text('Debug Information'));
+                                        
+                                        var $debugContent = $('<div>').css({
+                                            'background': '#f5f5f5',
+                                            'padding': '15px',
+                                            'border': '1px solid #ddd',
+                                            'max-height': '600px',
+                                            'overflow-y': 'auto'
+                                        });
+                                        
+                                        response.data.debug.forEach(function(entry, index) {
+                                            var statusClass = entry.status === 'success' ? 'success' : 'error';
+                                            var borderColor = statusClass === 'success' ? '#46b450' : '#dc3232';
+                                            
+                                            var $entryDiv = $('<div>').css({
+                                                'margin-bottom': '20px',
+                                                'padding': '10px',
+                                                'background': 'white',
+                                                'border-left': '4px solid ' + borderColor
+                                            });
+                                            
+                                            $entryDiv.append(
+                                                $('<h4>').css('margin-top', '0').text(
+                                                    'Entry #' + (index + 1) + ' (ID: ' + entry.entry_id + ') - ' + entry.date_created
+                                                )
+                                            );
+                                            
+                                            $entryDiv.append(
+                                                $('<p>').append(
+                                                    $('<strong>').text('Status: '),
+                                                    document.createTextNode(entry.skip_reason)
+                                                )
+                                            );
+                                            
+                                            if (entry.fields_found && entry.fields_found.length > 0) {
+                                                var $fieldsP = $('<p>').append($('<strong>').text('Form Fields Found:'));
+                                                var $fieldsList = $('<ul>');
+                                                entry.fields_found.forEach(function(field) {
+                                                    $fieldsList.append(
+                                                        $('<li>').text('ID: ' + field.id + ', Label: "' + field.label + '", Type: ' + field.type)
+                                                    );
+                                                });
+                                                $entryDiv.append($fieldsP, $fieldsList);
+                                            }
+                                            
+                                            if (entry.name_field_debug) {
+                                                var $nameDetails = $('<details>').css('margin-top', '10px');
+                                                $nameDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('Name Field Debug'));
+                                                $nameDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.name_field_debug, null, 2))
+                                                );
+                                                $entryDiv.append($nameDetails);
+                                            }
+                                            
+                                            if (entry.address_field_debug) {
+                                                var $addrDetails = $('<details>').css('margin-top', '10px');
+                                                $addrDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('Address Field Debug'));
+                                                $addrDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.address_field_debug, null, 2))
+                                                );
+                                                $entryDiv.append($addrDetails);
+                                            }
+                                            
+                                            if (entry.data_extracted) {
+                                                var $dataDetails = $('<details>').css('margin-top', '10px');
+                                                $dataDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('Data Extracted'));
+                                                $dataDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.data_extracted, null, 2))
+                                                );
+                                                $entryDiv.append($dataDetails);
+                                            }
+                                            
+                                            if (entry.missing_required && entry.missing_required.length > 0) {
+                                                $entryDiv.append(
+                                                    $('<p>').css('color', '#dc3232').append(
+                                                        $('<strong>').text('Missing Required Fields: '),
+                                                        document.createTextNode(entry.missing_required.join(', '))
+                                                    )
+                                                );
+                                            }
+                                            
+                                            if (entry.all_entry_keys && entry.all_entry_keys.length > 0) {
+                                                var $keysDetails = $('<details>').css('margin-top', '10px');
+                                                $keysDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('All Entry Keys Available'));
+                                                $keysDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.all_entry_keys, null, 2))
+                                                );
+                                                $entryDiv.append($keysDetails);
+                                            }
+                                            
+                                            $debugContent.append($entryDiv);
+                                        });
+                                        
+                                        $debugContainer.append($debugContent);
+                                        $result.empty().append($successDiv, $debugContainer);
+                                    } else {
+                                        $result.empty().append($successDiv);
+                                    }
                                 } else {
-                                    $result.html('<div class="notice notice-error"><p>' + response.data.message + '</p></div>');
+                                    var $errorDiv = $('<div>').addClass('notice notice-error');
+                                    $errorDiv.append($('<p>').text(response.data.message));
+                                    $result.empty().append($errorDiv);
                                 }
                             },
-                            error: function() {
-                                $result.html('<div class="notice notice-error"><p>An error occurred during import. Please try again.</p></div>');
+                            error: function(xhr, status, error) {
+                                var $errorDiv = $('<div>').addClass('notice notice-error');
+                                var errorMsg = 'An error occurred during import. ';
+                                if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                                    errorMsg += xhr.responseJSON.data.message;
+                                } else {
+                                    errorMsg += 'Status: ' + status + ', Error: ' + error;
+                                }
+                                $errorDiv.append($('<p>').text(errorMsg));
+                                $result.empty().append($errorDiv);
                             },
                             complete: function() {
                                 $button.prop('disabled', false).text('Import Entries');
@@ -349,6 +482,7 @@ class HS_CRM_Settings {
         // Get form ID and limit
         $form_id = isset($_POST['form_id']) ? intval($_POST['form_id']) : 0;
         $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 50;
+        $debug_mode = isset($_POST['debug']) && $_POST['debug'] === 'true';
         
         if ($form_id <= 0) {
             wp_send_json_error(array('message' => 'Invalid form ID.'));
@@ -377,9 +511,10 @@ class HS_CRM_Settings {
         // Import entries
         $imported_count = 0;
         $skipped_count = 0;
+        $debug_log = array();
         
         foreach ($entries as $entry) {
-            $result = $this->import_single_gravity_form_entry($entry, $form);
+            $result = $this->import_single_gravity_form_entry($entry, $form, $debug_mode, $debug_log);
             if ($result) {
                 $imported_count++;
             } else {
@@ -393,14 +528,30 @@ class HS_CRM_Settings {
             $skipped_count
         );
         
-        wp_send_json_success(array('message' => $message));
+        $response = array('message' => $message);
+        if ($debug_mode && !empty($debug_log)) {
+            $response['debug'] = $debug_log;
+        }
+        
+        wp_send_json_success($response);
     }
     
     /**
      * Import a single Gravity Forms entry into the CRM
      * This uses the same logic as the live integration
      */
-    private function import_single_gravity_form_entry($entry, $form) {
+    private function import_single_gravity_form_entry($entry, $form, $debug_mode = false, &$debug_log = array()) {
+        $entry_debug = array(
+            'entry_id' => $entry['id'],
+            'date_created' => $entry['date_created'],
+            'status' => 'processing', // Will be updated: 'success', 'missing_fields', 'duplicate', or 'error'
+            'fields_found' => array(),
+            'data_extracted' => array(),
+            'missing_required' => array(),
+            'skip_reason' => '',
+            'all_entry_keys' => $debug_mode ? array_keys($entry) : array()
+        );
+        
         // Map Gravity Forms fields to CRM fields
         $field_mapping = array(
             'first_name' => array('first name', 'first', 'fname'),
@@ -422,6 +573,14 @@ class HS_CRM_Settings {
             $field_label = strtolower(trim($field->label));
             $field_value = '';
             
+            if ($debug_mode) {
+                $entry_debug['fields_found'][] = array(
+                    'id' => $field->id,
+                    'label' => $field->label,
+                    'type' => $field->type
+                );
+            }
+            
             // Get field value from entry
             if (isset($entry[$field->id])) {
                 $field_value = $entry[$field->id];
@@ -438,6 +597,17 @@ class HS_CRM_Settings {
                 // Gravity Forms name field uses subfield keys: field_id.3 = First Name, field_id.6 = Last Name
                 $first_name_key = $field->id . '.3';
                 $last_name_key = $field->id . '.6';
+                
+                if ($debug_mode) {
+                    $entry_debug['name_field_debug'] = array(
+                        'field_id' => $field->id,
+                        'first_name_key' => $first_name_key,
+                        'last_name_key' => $last_name_key,
+                        'first_name_value' => isset($entry[$first_name_key]) ? $entry[$first_name_key] : 'NOT SET',
+                        'last_name_value' => isset($entry[$last_name_key]) ? $entry[$last_name_key] : 'NOT SET',
+                        'combined_value' => $field_value
+                    );
+                }
                 
                 if (isset($entry[$first_name_key]) && !empty($entry[$first_name_key])) {
                     $data['first_name'] = sanitize_text_field($entry[$first_name_key]);
@@ -458,6 +628,18 @@ class HS_CRM_Settings {
                 $city_key = $field->id . '.3';
                 $state_key = $field->id . '.4';
                 $zip_key = $field->id . '.5';
+                
+                if ($debug_mode) {
+                    $entry_debug['address_field_debug'] = array(
+                        'field_id' => $field->id,
+                        'street_value' => isset($entry[$street_key]) ? $entry[$street_key] : 'NOT SET',
+                        'street2_value' => isset($entry[$street2_key]) ? $entry[$street2_key] : 'NOT SET',
+                        'city_value' => isset($entry[$city_key]) ? $entry[$city_key] : 'NOT SET',
+                        'state_value' => isset($entry[$state_key]) ? $entry[$state_key] : 'NOT SET',
+                        'zip_value' => isset($entry[$zip_key]) ? $entry[$zip_key] : 'NOT SET',
+                        'combined_value' => $field_value
+                    );
+                }
                 
                 // Extract suburb/city if available
                 if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
@@ -522,12 +704,27 @@ class HS_CRM_Settings {
             }
         }
         
+        if ($debug_mode) {
+            $entry_debug['data_extracted'] = $data;
+        }
+        
         // Validate required fields
         $required_fields = array('first_name', 'last_name', 'email', 'phone', 'address');
         foreach ($required_fields as $field) {
             if (empty($data[$field])) {
-                return false; // Skip this entry
+                if ($debug_mode) {
+                    $entry_debug['missing_required'][] = $field;
+                }
             }
+        }
+        
+        if (!empty($entry_debug['missing_required'])) {
+            $entry_debug['status'] = 'missing_fields';
+            $entry_debug['skip_reason'] = 'Missing required fields: ' . implode(', ', $entry_debug['missing_required']);
+            if ($debug_mode) {
+                $debug_log[] = $entry_debug;
+            }
+            return false; // Skip this entry
         }
         
         // Check if this entry already exists (by email and phone)
@@ -540,6 +737,11 @@ class HS_CRM_Settings {
         ));
         
         if ($existing) {
+            $entry_debug['status'] = 'duplicate';
+            $entry_debug['skip_reason'] = 'Duplicate entry (email and phone already exist in database)';
+            if ($debug_mode) {
+                $debug_log[] = $entry_debug;
+            }
             return false; // Skip duplicate
         }
         
@@ -562,9 +764,19 @@ class HS_CRM_Settings {
                 ),
                 array('%d', '%s')
             );
+            $entry_debug['status'] = 'success';
+            $entry_debug['skip_reason'] = 'SUCCESS - Imported as enquiry ID: ' . $enquiry_id;
+            if ($debug_mode) {
+                $debug_log[] = $entry_debug;
+            }
             return true;
         }
         
+        $entry_debug['status'] = 'error';
+        $entry_debug['skip_reason'] = 'Failed to insert into database';
+        if ($debug_mode) {
+            $debug_log[] = $entry_debug;
+        }
         return false;
     }
 }
