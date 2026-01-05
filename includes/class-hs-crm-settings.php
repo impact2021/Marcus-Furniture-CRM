@@ -432,39 +432,56 @@ class HS_CRM_Settings {
                 continue;
             }
             
-            // Match field to CRM field
+            // Handle special field types FIRST (name, address, email, phone)
+            // This ensures we catch fields regardless of their label
+            if ($field->type === 'name' && is_array($field_value)) {
+                // Gravity Forms name field indices: 3 = First Name, 6 = Last Name
+                if (isset($field_value[3]) && !empty($field_value[3])) {
+                    $data['first_name'] = sanitize_text_field($field_value[3]);
+                }
+                if (isset($field_value[6]) && !empty($field_value[6])) {
+                    $data['last_name'] = sanitize_text_field($field_value[6]);
+                }
+                continue; // Move to next field
+            }
+            
+            if ($field->type === 'address' && is_array($field_value)) {
+                // Gravity Forms address field indices:
+                // 1 = Street Address, 2 = Address Line 2, 3 = City/Suburb
+                // 4 = State/Province, 5 = ZIP/Postal Code
+                
+                // Extract suburb/city if available
+                if (!empty($field_value[3])) {
+                    $data['suburb'] = sanitize_text_field($field_value[3]);
+                }
+                
+                // Combine address parts
+                $address_parts = array();
+                if (!empty($field_value[1])) $address_parts[] = $field_value[1];
+                if (!empty($field_value[2])) $address_parts[] = $field_value[2];
+                if (!empty($field_value[3])) $address_parts[] = $field_value[3];
+                if (!empty($field_value[4])) $address_parts[] = $field_value[4];
+                if (!empty($field_value[5])) $address_parts[] = $field_value[5];
+                
+                $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
+                continue; // Move to next field
+            }
+            
+            if ($field->type === 'email') {
+                $data['email'] = sanitize_email($field_value);
+                continue; // Move to next field
+            }
+            
+            if ($field->type === 'phone') {
+                $data['phone'] = sanitize_text_field($field_value);
+                continue; // Move to next field
+            }
+            
+            // For other field types, match by label
             foreach ($field_mapping as $crm_field => $possible_labels) {
                 foreach ($possible_labels as $label) {
                     if (strpos($field_label, $label) !== false) {
-                        // Handle name fields specially if using a single "Name" field
-                        if ($field->type === 'name' && is_array($field_value)) {
-                            // Gravity Forms name field indices: 3 = First Name, 6 = Last Name
-                            if (isset($field_value[3])) {
-                                $data['first_name'] = sanitize_text_field($field_value[3]);
-                            }
-                            if (isset($field_value[6])) {
-                                $data['last_name'] = sanitize_text_field($field_value[6]);
-                            }
-                        } elseif ($field->type === 'address' && is_array($field_value)) {
-                            // Gravity Forms address field indices:
-                            // 1 = Street Address, 2 = Address Line 2, 3 = City/Suburb
-                            // 4 = State/Province, 5 = ZIP/Postal Code
-                            
-                            // Extract suburb/city if available
-                            if (!empty($field_value[3])) {
-                                $data['suburb'] = sanitize_text_field($field_value[3]);
-                            }
-                            
-                            // Combine address parts
-                            $address_parts = array();
-                            if (!empty($field_value[1])) $address_parts[] = $field_value[1];
-                            if (!empty($field_value[2])) $address_parts[] = $field_value[2];
-                            if (!empty($field_value[3])) $address_parts[] = $field_value[3];
-                            if (!empty($field_value[4])) $address_parts[] = $field_value[4];
-                            if (!empty($field_value[5])) $address_parts[] = $field_value[5];
-                            
-                            $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
-                        } elseif ($field->type === 'date') {
+                        if ($field->type === 'date') {
                             $data[$crm_field] = sanitize_text_field($field_value);
                         } elseif ($field->type === 'time') {
                             $data[$crm_field] = sanitize_text_field($field_value);
@@ -478,7 +495,7 @@ class HS_CRM_Settings {
                                 $data[$crm_field] = sanitize_text_field($field_value);
                             }
                         }
-                        break 2;
+                        break 2; // Exit both loops once we find a match
                     }
                 }
             }
