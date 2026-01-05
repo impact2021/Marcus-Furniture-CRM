@@ -226,18 +226,26 @@ class HS_CRM_Database {
         
         if ($status === 'active') {
             // Auto-archive enquiries with past move dates in Active tab
-            // Get current date in local timezone
-            $current_date = current_time('Y-m-d');
+            // Use transient to throttle this operation to once per hour to avoid performance impact
+            $last_auto_archive = get_transient('hs_crm_last_auto_archive');
             
-            // Archive enquiries with move_date in the past (excluding today)
-            $wpdb->query($wpdb->prepare(
-                "UPDATE $table_name 
-                 SET status = 'Archived' 
-                 WHERE status IN ('First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid') 
-                 AND move_date IS NOT NULL 
-                 AND move_date < %s",
-                $current_date
-            ));
+            if ($last_auto_archive === false) {
+                // Get current date in local timezone
+                $current_date = current_time('Y-m-d');
+                
+                // Archive enquiries with move_date in the past (excluding today)
+                $wpdb->query($wpdb->prepare(
+                    "UPDATE $table_name 
+                     SET status = 'Archived' 
+                     WHERE status IN ('First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid') 
+                     AND move_date IS NOT NULL 
+                     AND move_date < %s",
+                    $current_date
+                ));
+                
+                // Set transient to prevent running again for 1 hour (3600 seconds)
+                set_transient('hs_crm_last_auto_archive', time(), 3600);
+            }
             
             // Active leads: First Contact, Quote Sent, Booking Confirmed, Deposit Paid
             // Only show those with future move dates or no move date
