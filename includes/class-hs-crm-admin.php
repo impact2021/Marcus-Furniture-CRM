@@ -148,15 +148,15 @@ class HS_CRM_Admin {
                         <tbody>
                             <!-- Customer Header Row -->
                             <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>" style="background: <?php echo $header_bg_color; ?> !important;">
-                                <th style="width: 14%;">
+                                <th style="width: 12%;">
                                     Source & Dates
                                 </th>
-                                <th style="width: 18%;">Contact & Address</th>
-                                <th style="width: 14%;">House Details</th>
-                                <th style="width: 16%;">Items & Instructions</th>
-                                <th style="width: 8%;">Status</th>
-                                <th style="width: 10%;">Truck</th>
-                                <th style="width: 12%;">Status / Action</th>
+                                <th style="width: 16%;">Contact & Address</th>
+                                <th style="width: 12%;">Moving From</th>
+                                <th style="width: 12%;">Moving To</th>
+                                <th style="width: 14%;">Items & Instructions</th>
+                                <th style="width: 8%;">Truck</th>
+                                <th style="width: 18%;">Status</th>
                                 <th style="width: 8%;">Edit / Delete</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
@@ -164,6 +164,15 @@ class HS_CRM_Admin {
                                     <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span><br>
                                     <?php if (!empty($form_source_label)): ?>
                                         <small style="color: #0073aa;"><strong><?php echo esc_html($form_source_label); ?></strong></small><br>
+                                    <?php endif; ?>
+                                    <?php if (!empty($enquiry->gravity_forms_entry_id) && !empty($enquiry->gravity_forms_form_id)): ?>
+                                        <small>
+                                            <a href="<?php echo esc_url(admin_url('admin.php?page=gf_entries&view=entry&id=' . $enquiry->gravity_forms_form_id . '&lid=' . $enquiry->gravity_forms_entry_id)); ?>" 
+                                               target="_blank" 
+                                               style="color: #2271b1; text-decoration: none;">
+                                                📋 View Form Entry ↗
+                                            </a>
+                                        </small><br>
                                     <?php endif; ?>
                                     <small style="color: #666;"><strong><?php echo esc_html($form_type_label); ?></strong></small><br>
                                     <small style="color: #666;">Contact: <?php echo esc_html(hs_crm_format_date($enquiry->created_at, 'd/m/Y')); ?></small><br>
@@ -199,31 +208,48 @@ class HS_CRM_Admin {
                                 </td>
                                 <td>
                                     <?php 
-                                    $house_details = array();
-                                    if ($is_pickup_delivery) {
-                                        // For pickup/delivery, show stairs and other relevant info
-                                        if (!empty($enquiry->stairs)) {
-                                            $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
-                                        }
-                                    } else {
-                                        // For moving house, show bedrooms and rooms
-                                        if (!empty($enquiry->number_of_bedrooms)) {
-                                            $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
-                                        }
-                                        if (!empty($enquiry->number_of_rooms)) {
-                                            $house_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
-                                        }
-                                        if (!empty($enquiry->stairs)) {
-                                            $house_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
-                                        }
+                                    // Moving From details
+                                    $from_details = array();
+                                    if (!empty($enquiry->delivery_from_address)) {
+                                        $from_details[] = '<strong>' . esc_html($enquiry->delivery_from_address) . '</strong>';
                                     }
-                                    if (!empty($enquiry->property_notes)) {
-                                        $house_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
+                                    if (!empty($enquiry->stairs_from)) {
+                                        $from_details[] = 'Stairs: ' . esc_html($enquiry->stairs_from);
                                     }
-                                    if (empty($house_details)) {
+                                    if ($is_pickup_delivery && !empty($enquiry->stairs) && empty($enquiry->stairs_from)) {
+                                        // Fallback for old entries
+                                        $from_details[] = 'Stairs: ' . esc_html($enquiry->stairs);
+                                    }
+                                    if (empty($from_details)) {
                                         echo '<em style="color: #999;">Not set</em>';
                                     } else {
-                                        echo '<small>' . implode('<br>', $house_details) . '</small>';
+                                        echo '<small>' . implode('<br>', $from_details) . '</small>';
+                                    }
+                                    ?>
+                                </td>
+                                <td>
+                                    <?php 
+                                    // Moving To details
+                                    $to_details = array();
+                                    if (!empty($enquiry->delivery_to_address)) {
+                                        $to_details[] = '<strong>' . esc_html($enquiry->delivery_to_address) . '</strong>';
+                                    }
+                                    if (!empty($enquiry->stairs_to)) {
+                                        $to_details[] = 'Stairs: ' . esc_html($enquiry->stairs_to);
+                                    }
+                                    if (!empty($enquiry->number_of_bedrooms)) {
+                                        $to_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
+                                    }
+                                    if (!empty($enquiry->number_of_rooms)) {
+                                        $to_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
+                                    }
+                                    if (!empty($enquiry->property_notes)) {
+                                        $to_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
+                                    }
+                                    if (empty($to_details)) {
+                                        echo '<em style="color: #999;">Not set</em>';
+                                    } else {
+                                        echo '<small>' . implode('<br>', $to_details) . '</small>';
                                     }
                                     ?>
                                 </td>
@@ -239,17 +265,16 @@ class HS_CRM_Admin {
                                             $items_details[] = '<strong>Furniture moved?</strong> ' . esc_html($enquiry->furniture_moved_question);
                                         }
                                     }
+                                    // Show special instructions for all types
+                                    if (!empty($enquiry->special_instructions)) {
+                                        $items_details[] = '<strong>Instructions:</strong> ' . esc_html(wp_trim_words($enquiry->special_instructions, 15));
+                                    }
                                     if (empty($items_details)) {
                                         echo '<em style="color: #999;">-</em>';
                                     } else {
                                         echo '<small>' . implode('<br>', $items_details) . '</small>';
                                     }
                                     ?>
-                                </td>
-                                <td>
-                                    <span class="hs-crm-status-badge status-<?php echo esc_attr(strtolower(str_replace(' ', '-', $enquiry->status))); ?>">
-                                        <?php echo esc_html($enquiry->status); ?>
-                                    </span>
                                 </td>
                                 <td>
                                     <?php 
@@ -268,21 +293,32 @@ class HS_CRM_Admin {
                                     </select>
                                 </td>
                                 <td>
-                                    <select class="hs-crm-status-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-status="<?php echo esc_attr($enquiry->status); ?>">
-                                        <option value="">Change Status...</option>
-                                        <option value="First Contact">First Contact</option>
-                                        <option value="Quote Sent">Quote Sent</option>
-                                        <option value="Booking Confirmed">Booking Confirmed</option>
-                                        <option value="Deposit Paid">Deposit Paid</option>
-                                        <option value="Completed">Completed</option>
-                                        <option value="Archived">Archived</option>
-                                    </select>
-                                    <select class="hs-crm-action-select" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
-                                        <option value="">Select Action...</option>
-                                        <option value="send_quote">Send Quote</option>
-                                        <option value="send_invoice">Send Invoice</option>
-                                        <option value="send_receipt">Send Receipt</option>
-                                    </select>
+                                    <!-- Current Status Display -->
+                                    <div style="margin-bottom: 10px;">
+                                        <span class="hs-crm-status-badge status-<?php echo esc_attr(strtolower(str_replace(' ', '-', $enquiry->status))); ?>">
+                                            <?php echo esc_html($enquiry->status); ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Status Update Radio Buttons -->
+                                    <div class="hs-crm-status-radio-group" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-status="<?php echo esc_attr($enquiry->status); ?>">
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="First Contact" <?php checked($enquiry->status, 'First Contact'); ?>>
+                                            I've contacted them
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Quote Sent" <?php checked($enquiry->status, 'Quote Sent'); ?>>
+                                            I've sent a quote
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Booking Confirmed" <?php checked($enquiry->status, 'Booking Confirmed'); ?>>
+                                            The booking has been confirmed
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Completed" <?php checked($enquiry->status, 'Completed'); ?>>
+                                            The job has been done
+                                        </label>
+                                    </div>
                                 </td>
                                 <td>
                                     <button type="button" class="button button-small hs-crm-edit-enquiry" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">Edit</button>
@@ -330,21 +366,50 @@ class HS_CRM_Admin {
         
         <!-- Add/Edit Enquiry Modal -->
         <div id="hs-crm-enquiry-modal" class="hs-crm-modal" style="display: none;">
-            <div class="hs-crm-modal-content">
+            <div class="hs-crm-modal-content" style="max-width: 900px;">
                 <span class="hs-crm-modal-close">&times;</span>
                 <h2 id="enquiry-modal-title">Add New Enquiry</h2>
-                <form id="hs-crm-enquiry-form">
+                
+                <!-- Job Type Selector with Radio Buttons -->
+                <div class="hs-crm-form-group" style="border: 2px solid #0073aa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
+                        Select Enquiry Type:
+                    </label>
+                    <div style="display: flex; gap: 30px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="enquiry-type" id="enquiry-type-moving" value="moving-house" style="margin-right: 8px;">
+                            <strong>Moving House</strong>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="enquiry-type" id="enquiry-type-pickup" value="pickup-delivery" checked style="margin-right: 8px;">
+                            <strong>Pickup/Delivery</strong>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Gravity Forms Embed Container -->
+                <div id="gravity-forms-container">
+                    <?php if (class_exists('GFForms')): ?>
+                        <!-- Moving House Form (ID 11) - Initially Hidden -->
+                        <div id="gf-moving-house" style="display: none;">
+                            <?php echo do_shortcode('[gravityform id="11" title="false" description="false" ajax="true"]'); ?>
+                        </div>
+                        
+                        <!-- Pickup/Delivery Form (ID 8) - Initially Visible -->
+                        <div id="gf-pickup-delivery">
+                            <?php echo do_shortcode('[gravityform id="8" title="false" description="false" ajax="true"]'); ?>
+                        </div>
+                    <?php else: ?>
+                        <p style="color: #d63638; background: #fcf0f1; padding: 10px; border-radius: 4px;">
+                            <strong>Note:</strong> Gravity Forms plugin is not active. Please activate Gravity Forms to use this feature, or manually enter enquiry details below.
+                        </p>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Fallback Manual Entry Form (shown if Gravity Forms not available or for editing) -->
+                <form id="hs-crm-enquiry-form" style="<?php echo class_exists('GFForms') ? 'display: none;' : ''; ?>">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
                     <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">
-                    
-                    <!-- Job Type Selector -->
-                    <div class="hs-crm-form-group">
-                        <label>
-                            <input type="checkbox" id="enquiry-type-toggle" value="house-move">
-                            <strong>House move or Pickup/Delivery?</strong>
-                        </label>
-                        <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">Check this box if this is a house move, leave unchecked for pickup/delivery</p>
-                    </div>
                     
                     <!-- Common Fields -->
                     <div class="hs-crm-form-group">
