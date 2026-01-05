@@ -116,15 +116,24 @@ class HS_CRM_Admin {
                     $has_notes = !empty($notes);
                     $add_note_row_style = $has_notes ? 'display: none;' : '';
                     
-                    // Determine if this is a pickup/delivery enquiry based on form type
+                    // Determine form type - prioritize job_type field if set, otherwise infer from fields
                     $is_pickup_delivery = false;
-                    if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address) || !empty($enquiry->items_being_collected)) {
-                        $is_pickup_delivery = true;
+                    $form_type_label = 'Moving House'; // Default
+                    
+                    if (!empty($enquiry->job_type)) {
+                        // Use the job_type field if it's set (from Gravity Forms integration)
+                        $form_type_label = $enquiry->job_type;
+                        $is_pickup_delivery = ($enquiry->job_type === 'Pickup/Delivery');
+                    } else {
+                        // Fallback: infer from fields for older entries or non-Gravity Forms submissions
+                        if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address) || !empty($enquiry->items_being_collected)) {
+                            $is_pickup_delivery = true;
+                            $form_type_label = 'Pickup/Delivery';
+                        }
                     }
                     
                     // Set header color based on type
                     $header_bg_color = $is_pickup_delivery ? '#FF8C00' : '#061257';
-                    $form_type_label = $is_pickup_delivery ? 'Pickup/Delivery' : 'Moving House';
                     
                     $row_index++;
                 ?>

@@ -707,6 +707,22 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         'contact_source' => 'form'
     );
     
+    // Determine job type based on form title
+    // Check for pickup/delivery keywords in the form title
+    $is_pickup_delivery = false;
+    if (stripos($form_title, 'pickup') !== false || 
+        stripos($form_title, 'delivery') !== false || 
+        stripos($form_title, 'pick up') !== false) {
+        $is_pickup_delivery = true;
+        $data['job_type'] = 'Pickup/Delivery';
+    } else if (stripos($form_title, 'moving') !== false || 
+               stripos($form_title, 'move') !== false) {
+        $data['job_type'] = 'Moving House';
+    } else {
+        // Default - try to determine from fields later
+        $data['job_type'] = '';
+    }
+    
     // Extract data from Gravity Forms entry
     foreach ($form['fields'] as $field) {
         $field_label = strtolower(trim($field->label));
