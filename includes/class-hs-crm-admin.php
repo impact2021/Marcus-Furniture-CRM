@@ -31,7 +31,7 @@ class HS_CRM_Admin {
         add_menu_page(
             'Marcus Furniture Enquiries',
             'MF Enquiries',
-            'manage_options',
+            'view_crm_dashboard', // Changed from 'manage_options' to custom capability
             'hs-crm-enquiries',
             array($this, 'render_admin_page'),
             'dashicons-move',
@@ -43,7 +43,7 @@ class HS_CRM_Admin {
      * Render admin page
      */
     public function render_admin_page() {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('view_crm_dashboard')) { // Changed from 'manage_options'
             return;
         }
         
@@ -445,7 +445,7 @@ class HS_CRM_Admin {
     public function ajax_create_enquiry() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -505,7 +505,7 @@ class HS_CRM_Admin {
     public function ajax_update_enquiry() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -576,7 +576,7 @@ class HS_CRM_Admin {
     public function ajax_update_status() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -623,7 +623,7 @@ class HS_CRM_Admin {
     public function ajax_save_notes() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -649,7 +649,7 @@ class HS_CRM_Admin {
     public function ajax_get_enquiry() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -674,7 +674,7 @@ class HS_CRM_Admin {
     public function ajax_add_note() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -708,7 +708,7 @@ class HS_CRM_Admin {
     public function ajax_delete_note() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -742,7 +742,7 @@ class HS_CRM_Admin {
     public function ajax_update_truck_assignment() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         

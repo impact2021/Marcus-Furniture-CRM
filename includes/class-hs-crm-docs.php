@@ -34,7 +34,7 @@ class HS_CRM_Docs {
      * Render documentation page
      */
     public function render_docs_page() {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('view_crm_dashboard')) {
             return;
         }
         

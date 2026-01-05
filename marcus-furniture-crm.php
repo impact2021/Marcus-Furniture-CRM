@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 1.9
+ * Version: 2.0
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '1.9');
+define('HS_CRM_VERSION', '2.0');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
@@ -33,22 +33,56 @@ require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-truck-scheduler.php';
 require_once HS_CRM_PLUGIN_DIR . 'includes/class-hs-crm-docs.php';
 
 /**
- * Activation hook - Create database tables
+ * Activation hook - Create database tables and custom role
  */
 function hs_crm_activate() {
     HS_CRM_Database::create_tables();
     // Ensure migration runs on activation
     delete_option('hs_crm_db_version');
     hs_crm_check_db_version();
+    
+    // Create custom user role for CRM-only access
+    hs_crm_create_custom_role();
+    
     flush_rewrite_rules();
 }
 register_activation_hook(__FILE__, 'hs_crm_activate');
+
+/**
+ * Create custom CRM Manager role
+ */
+function hs_crm_create_custom_role() {
+    // Remove the role first if it exists to ensure clean slate
+    remove_role('crm_manager');
+    
+    // Add the CRM Manager role with only CRM access capabilities
+    add_role(
+        'crm_manager',
+        'CRM Manager',
+        array(
+            'read' => true, // Required for backend access
+            'manage_crm_enquiries' => true,
+            'view_crm_dashboard' => true,
+            'manage_crm_settings' => false, // Set to true if you want them to manage settings
+        )
+    );
+    
+    // Also ensure admin has these capabilities
+    $admin_role = get_role('administrator');
+    if ($admin_role) {
+        $admin_role->add_cap('manage_crm_enquiries');
+        $admin_role->add_cap('view_crm_dashboard');
+        $admin_role->add_cap('manage_crm_settings');
+    }
+}
 
 /**
  * Deactivation hook
  */
 function hs_crm_deactivate() {
     flush_rewrite_rules();
+    // Note: We don't remove the role on deactivation to preserve user assignments
+    // Role will be removed on plugin uninstall if uninstall.php is implemented
 }
 register_deactivation_hook(__FILE__, 'hs_crm_deactivate');
 
@@ -68,12 +102,87 @@ function hs_crm_init() {
         $settings = new HS_CRM_Settings();
         $truck_scheduler = new HS_CRM_Truck_Scheduler();
         $docs = new HS_CRM_Docs();
+        
+        // Hide other admin menu items for CRM Managers
+        add_action('admin_menu', 'hs_crm_restrict_admin_menu', 999);
+        
+        // Redirect CRM Managers to CRM dashboard on login
+        add_action('admin_init', 'hs_crm_redirect_crm_manager');
+        
+        // Hide admin bar items for CRM Managers
+        add_action('wp_before_admin_bar_render', 'hs_crm_customize_admin_bar');
     }
     
     // Initialize email handler
     $email = new HS_CRM_Email();
 }
 add_action('plugins_loaded', 'hs_crm_init');
+
+/**
+ * Restrict admin menu for CRM Managers - hide everything except CRM pages
+ */
+function hs_crm_restrict_admin_menu() {
+    $user = wp_get_current_user();
+    
+    // Only restrict for CRM Managers (not admins)
+    if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+        // Remove default WordPress menu items
+        remove_menu_page('index.php');                  // Dashboard
+        remove_menu_page('edit.php');                   // Posts
+        remove_menu_page('upload.php');                 // Media
+        remove_menu_page('edit.php?post_type=page');   // Pages
+        remove_menu_page('edit-comments.php');          // Comments
+        remove_menu_page('themes.php');                 // Appearance
+        remove_menu_page('plugins.php');                // Plugins
+        remove_menu_page('users.php');                  // Users
+        remove_menu_page('tools.php');                  // Tools
+        remove_menu_page('options-general.php');        // Settings
+        
+        // Remove other common plugin menu items
+        remove_menu_page('wpcf7');                      // Contact Form 7
+        remove_menu_page('gf_edit_forms');              // Gravity Forms
+        remove_menu_page('jetpack');                    // Jetpack
+        remove_menu_page('wpseo_dashboard');            // Yoast SEO
+        
+        // Remove profile submenu (they can't edit their profile)
+        remove_submenu_page('users.php', 'profile.php');
+    }
+}
+
+/**
+ * Redirect CRM Managers to CRM dashboard after login
+ */
+function hs_crm_redirect_crm_manager() {
+    $user = wp_get_current_user();
+    
+    // Only redirect CRM Managers on their first admin page load
+    if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+        // Check if we're on a non-CRM admin page
+        global $pagenow;
+        if ($pagenow === 'index.php' || ($pagenow === 'admin.php' && !isset($_GET['page']))) {
+            wp_safe_redirect(admin_url('admin.php?page=hs-crm-enquiries'));
+            exit;
+        }
+    }
+}
+
+/**
+ * Customize admin bar for CRM Managers
+ */
+function hs_crm_customize_admin_bar() {
+    global $wp_admin_bar;
+    $user = wp_get_current_user();
+    
+    if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+        // Remove WordPress logo and menu
+        $wp_admin_bar->remove_menu('wp-logo');
+        
+        // Remove other non-essential items
+        $wp_admin_bar->remove_menu('comments');
+        $wp_admin_bar->remove_menu('new-content');
+        $wp_admin_bar->remove_menu('updates');
+    }
+}
 
 /**
  * Format date with plugin timezone setting

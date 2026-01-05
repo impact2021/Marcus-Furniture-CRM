@@ -42,7 +42,7 @@ class HS_CRM_Truck_Scheduler {
      * Render scheduler page
      */
     public function render_scheduler_page() {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             return;
         }
         
@@ -396,7 +396,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_get_trucks() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -410,7 +410,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_add_truck() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -439,7 +439,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_update_truck() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -470,7 +470,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_delete_truck() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -495,7 +495,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_get_bookings() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -512,7 +512,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_add_booking() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -547,7 +547,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_update_booking() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -584,7 +584,7 @@ class HS_CRM_Truck_Scheduler {
     public function ajax_delete_booking() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
