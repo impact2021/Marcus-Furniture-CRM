@@ -72,6 +72,7 @@ class HS_CRM_Truck_Scheduler {
         }
         
         // Get enquiries with assigned trucks and move dates in this month
+        // Only include enquiries with status "Booking Confirmed"
         global $wpdb;
         $enquiries_table = $wpdb->prefix . 'hs_enquiries';
         $enquiries_with_trucks = $wpdb->get_results($wpdb->prepare(
@@ -80,6 +81,7 @@ class HS_CRM_Truck_Scheduler {
              LEFT JOIN {$wpdb->prefix}hs_trucks t ON e.truck_id = t.id
              WHERE e.truck_id IS NOT NULL 
              AND e.move_date BETWEEN %s AND %s
+             AND e.status = 'Booking Confirmed'
              ORDER BY e.move_date ASC",
             $first_day,
             $last_day

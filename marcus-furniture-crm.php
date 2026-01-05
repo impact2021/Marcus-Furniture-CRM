@@ -130,6 +130,10 @@ function hs_crm_init() {
         add_action('wp_before_admin_bar_render', 'hs_crm_customize_admin_bar');
     }
     
+    // Add login redirect filter for CRM Managers
+    // Login redirects occur before admin context is established, so this filter must be registered outside is_admin()
+    add_filter('login_redirect', 'hs_crm_login_redirect', 10, 3);
+    
     // Initialize email handler
     $email = new HS_CRM_Email();
 }
@@ -167,16 +171,36 @@ function hs_crm_restrict_admin_menu() {
 }
 
 /**
- * Redirect CRM Managers to CRM dashboard after login
+ * Redirect CRM Managers to enquiries page on login
+ * 
+ * @param string $redirect_to The redirect destination URL
+ * @param string $request The requested redirect destination URL passed as a parameter
+ * @param WP_User|WP_Error $user The user object or WP_Error on login failure
+ * @return string The redirect URL
+ */
+function hs_crm_login_redirect($redirect_to, $request, $user) {
+    // Check if user is valid and is a CRM Manager (and not an administrator)
+    if (is_a($user, 'WP_User') && isset($user->roles) && is_array($user->roles)) {
+        if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+            return admin_url('admin.php?page=hs-crm-enquiries');
+        }
+    }
+    
+    return $redirect_to;
+}
+
+/**
+ * Redirect CRM Managers to enquiries page after admin navigation (fallback)
+ * This handles cases where CRM Managers navigate to non-CRM admin pages
  */
 function hs_crm_redirect_crm_manager() {
     $user = wp_get_current_user();
     
-    // Only redirect CRM Managers on their first admin page load
+    // Only redirect CRM Managers on non-CRM admin pages
     if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
         // Check if we're on a non-CRM admin page
         global $pagenow;
-        if ($pagenow === 'index.php' || ($pagenow === 'admin.php' && !isset($_GET['page']))) {
+        if ($pagenow === 'index.php' || $pagenow === 'profile.php' || ($pagenow === 'admin.php' && !isset($_GET['page']))) {
             wp_safe_redirect(admin_url('admin.php?page=hs-crm-enquiries'));
             exit;
         }
@@ -683,6 +707,20 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     $data = array(
         'contact_source' => 'form'
     );
+    
+    // Determine job type based on form title
+    // Check for pickup/delivery keywords in the form title
+    if (stripos($form_title, 'pickup') !== false || 
+        stripos($form_title, 'delivery') !== false || 
+        stripos($form_title, 'pick up') !== false) {
+        $data['job_type'] = 'Pickup/Delivery';
+    } elseif (stripos($form_title, 'moving') !== false || 
+              stripos($form_title, 'move') !== false) {
+        $data['job_type'] = 'Moving House';
+    } else {
+        // Default - try to determine from fields later
+        $data['job_type'] = '';
+    }
     
     // Extract data from Gravity Forms entry
     foreach ($form['fields'] as $field) {

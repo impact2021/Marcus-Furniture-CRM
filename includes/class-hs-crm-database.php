@@ -163,7 +163,7 @@ class HS_CRM_Database {
             'stairs' => isset($data['stairs']) ? sanitize_text_field($data['stairs']) : '',
             'stairs_from' => isset($data['stairs_from']) ? sanitize_text_field($data['stairs_from']) : '',
             'stairs_to' => isset($data['stairs_to']) ? sanitize_text_field($data['stairs_to']) : '',
-            'job_type' => '',
+            'job_type' => isset($data['job_type']) ? sanitize_text_field($data['job_type']) : '',
             'status' => 'First Contact',
             'email_sent' => 0,
             'admin_notes' => '',
