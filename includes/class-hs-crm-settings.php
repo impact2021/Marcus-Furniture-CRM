@@ -458,7 +458,6 @@ class HS_CRM_Settings {
                 $city_key = $field->id . '.3';
                 $state_key = $field->id . '.4';
                 $zip_key = $field->id . '.5';
-                $country_key = $field->id . '.6';
                 
                 // Extract suburb/city if available
                 if (isset($entry[$city_key]) && !empty($entry[$city_key])) {

@@ -681,7 +681,6 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             $city_key = $field->id . '.3';
             $state_key = $field->id . '.4';
             $zip_key = $field->id . '.5';
-            $country_key = $field->id . '.6';
             
             // Extract suburb/city if available
             if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
