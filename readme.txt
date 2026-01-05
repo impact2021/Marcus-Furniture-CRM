@@ -140,6 +140,16 @@ The plugin creates four tables:
 
 == Changelog ==
 
+= 2.5 =
+* Added Gravity Form name display - enquiries now show which specific form they came from
+* Added source_form_name database column to track the originating Gravity Form
+* Form name displays in blue above the job type in the admin enquiries table
+* Enhanced move date visibility with larger fonts, color coding, and highlighted box
+* Move dates now stand out with red/pink highlighting and 15px bold font
+* Added complete uninstall script to remove all data when plugin is deleted
+* Uninstall removes all database tables, options, and custom user role
+* Updated plugin version to 2.5
+
 = 2.2 =
 * Added comprehensive debug mode for Gravity Forms import to identify field mapping issues
 * Debug mode shows detailed information about each entry including:
