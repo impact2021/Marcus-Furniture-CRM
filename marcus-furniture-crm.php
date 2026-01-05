@@ -563,6 +563,11 @@ function hs_crm_migrate_to_1_10_0() {
  * Enqueue styles and scripts
  */
 function hs_crm_enqueue_assets() {
+    // Ensure dashicons are loaded in admin (should be by default, but explicitly load just in case)
+    if (is_admin()) {
+        wp_enqueue_style('dashicons');
+    }
+    
     wp_enqueue_style('hs-crm-styles', HS_CRM_PLUGIN_URL . 'assets/css/styles.css', array(), HS_CRM_VERSION);
     
     // Enqueue Google Places API
