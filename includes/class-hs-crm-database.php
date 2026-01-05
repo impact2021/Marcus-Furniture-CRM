@@ -51,6 +51,8 @@ class HS_CRM_Database {
             booking_end_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
             source_form_name varchar(255) DEFAULT '' NOT NULL,
+            gravity_forms_entry_id int(11) DEFAULT NULL,
+            gravity_forms_form_id int(11) DEFAULT NULL,
             job_type varchar(100) DEFAULT '' NOT NULL,
             move_type varchar(100) DEFAULT '' NOT NULL,
             outdoor_plants varchar(50) DEFAULT '' NOT NULL,
@@ -180,7 +182,9 @@ class HS_CRM_Database {
             'email_sent' => 0,
             'admin_notes' => '',
             'contact_source' => isset($data['contact_source']) ? sanitize_text_field($data['contact_source']) : 'form',
-            'source_form_name' => isset($data['source_form_name']) ? sanitize_text_field($data['source_form_name']) : ''
+            'source_form_name' => isset($data['source_form_name']) ? sanitize_text_field($data['source_form_name']) : '',
+            'gravity_forms_entry_id' => isset($data['gravity_forms_entry_id']) ? intval($data['gravity_forms_entry_id']) : null,
+            'gravity_forms_form_id' => isset($data['gravity_forms_form_id']) ? intval($data['gravity_forms_form_id']) : null
         );
         
         // Add move_date if provided

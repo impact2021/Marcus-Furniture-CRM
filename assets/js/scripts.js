@@ -617,23 +617,38 @@ jQuery(document).ready(function($) {
             $('#enquiry-modal-title').text('Add New Enquiry');
             $('#hs-crm-enquiry-form')[0].reset();
             $('#enquiry-id').val('');
-            $('#enquiry-type-toggle').prop('checked', false);
+            
+            // Reset radio buttons to Pickup/Delivery (default)
+            $('#enquiry-type-pickup').prop('checked', true);
             $('#enquiry-job-type').val('Pickup/Delivery');
+            
+            // Show/hide Gravity Forms
+            $('#gf-moving-house').hide();
+            $('#gf-pickup-delivery').show();
+            
+            // Show/hide manual form sections (for fallback)
             $('#moving-house-fields').hide();
             $('#pickup-delivery-fields').show();
+            
             $('#hs-crm-enquiry-modal').fadeIn();
         });
         
-        // Handle job type toggle checkbox
-        $('#enquiry-type-toggle').on('change', function() {
-            if ($(this).is(':checked')) {
-                // House move selected
+        // Handle job type radio button change
+        $('input[name="enquiry-type"]').on('change', function() {
+            var selectedType = $(this).val();
+            
+            if (selectedType === 'moving-house') {
+                // Moving House selected
                 $('#enquiry-job-type').val('Moving House');
+                $('#gf-pickup-delivery').hide();
+                $('#gf-moving-house').show();
                 $('#pickup-delivery-fields').hide();
                 $('#moving-house-fields').show();
             } else {
                 // Pickup/Delivery selected
                 $('#enquiry-job-type').val('Pickup/Delivery');
+                $('#gf-moving-house').hide();
+                $('#gf-pickup-delivery').show();
                 $('#moving-house-fields').hide();
                 $('#pickup-delivery-fields').show();
             }

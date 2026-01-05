@@ -354,6 +354,12 @@ function hs_crm_check_db_version() {
         hs_crm_migrate_to_2_6_0();
         update_option('hs_crm_db_version', '2.6.0');
     }
+    
+    if (version_compare($db_version, '2.6.1', '<')) {
+        // Run migration for version 2.6.1 - Add Gravity Forms entry ID tracking
+        hs_crm_migrate_to_2_6_1();
+        update_option('hs_crm_db_version', '2.6.1');
+    }
 }
 
 /**
@@ -704,6 +710,33 @@ function hs_crm_migrate_to_2_6_0() {
 }
 
 /**
+ * Migrate database to version 2.6.1
+ * Adds gravity_forms_entry_id and gravity_forms_form_id columns to track source
+ */
+function hs_crm_migrate_to_2_6_1() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    // Table name is safe: uses $wpdb->prefix (sanitized by WordPress) + hardcoded string
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add gravity_forms_entry_id column if it doesn't exist
+    if (!in_array('gravity_forms_entry_id', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN gravity_forms_entry_id int(11) DEFAULT NULL AFTER source_form_name");
+    }
+    
+    // Add gravity_forms_form_id column if it doesn't exist
+    if (!in_array('gravity_forms_form_id', $column_names)) {
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN gravity_forms_form_id int(11) DEFAULT NULL AFTER gravity_forms_entry_id");
+    }
+}
+
+/**
  * Enqueue styles and scripts
  */
 function hs_crm_enqueue_assets() {
@@ -792,7 +825,9 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     
     $data = array(
         'contact_source' => 'form',
-        'source_form_name' => $form['title']
+        'source_form_name' => $form['title'],
+        'gravity_forms_entry_id' => intval($entry['id']),
+        'gravity_forms_form_id' => intval($form['id'])
     );
     
     // Determine job type based on form CSS class (highest priority), then form title

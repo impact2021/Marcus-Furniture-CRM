@@ -166,6 +166,15 @@ class HS_CRM_Admin {
                                     <?php if (!empty($form_source_label)): ?>
                                         <small style="color: #0073aa;"><strong><?php echo esc_html($form_source_label); ?></strong></small><br>
                                     <?php endif; ?>
+                                    <?php if (!empty($enquiry->gravity_forms_entry_id) && !empty($enquiry->gravity_forms_form_id)): ?>
+                                        <small>
+                                            <a href="<?php echo esc_url(admin_url('admin.php?page=gf_entries&view=entry&id=' . $enquiry->gravity_forms_form_id . '&lid=' . $enquiry->gravity_forms_entry_id)); ?>" 
+                                               target="_blank" 
+                                               style="color: #2271b1; text-decoration: none;">
+                                                📋 View Form Entry ↗
+                                            </a>
+                                        </small><br>
+                                    <?php endif; ?>
                                     <small style="color: #666;"><strong><?php echo esc_html($form_type_label); ?></strong></small><br>
                                     <small style="color: #666;">Contact: <?php echo esc_html(hs_crm_format_date($enquiry->created_at, 'd/m/Y')); ?></small><br>
                                     <?php if (!empty($enquiry->move_date)): ?>
@@ -348,21 +357,50 @@ class HS_CRM_Admin {
         
         <!-- Add/Edit Enquiry Modal -->
         <div id="hs-crm-enquiry-modal" class="hs-crm-modal" style="display: none;">
-            <div class="hs-crm-modal-content">
+            <div class="hs-crm-modal-content" style="max-width: 900px;">
                 <span class="hs-crm-modal-close">&times;</span>
                 <h2 id="enquiry-modal-title">Add New Enquiry</h2>
-                <form id="hs-crm-enquiry-form">
+                
+                <!-- Job Type Selector with Radio Buttons -->
+                <div class="hs-crm-form-group" style="border: 2px solid #0073aa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
+                        Select Enquiry Type:
+                    </label>
+                    <div style="display: flex; gap: 30px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="enquiry-type" id="enquiry-type-moving" value="moving-house" style="margin-right: 8px;">
+                            <strong>Moving House</strong>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="radio" name="enquiry-type" id="enquiry-type-pickup" value="pickup-delivery" checked style="margin-right: 8px;">
+                            <strong>Pickup/Delivery</strong>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Gravity Forms Embed Container -->
+                <div id="gravity-forms-container">
+                    <?php if (class_exists('GFForms')): ?>
+                        <!-- Moving House Form (ID 11) - Initially Hidden -->
+                        <div id="gf-moving-house" style="display: none;">
+                            <?php echo do_shortcode('[gravityform id="11" title="false" description="false" ajax="true"]'); ?>
+                        </div>
+                        
+                        <!-- Pickup/Delivery Form (ID 8) - Initially Visible -->
+                        <div id="gf-pickup-delivery">
+                            <?php echo do_shortcode('[gravityform id="8" title="false" description="false" ajax="true"]'); ?>
+                        </div>
+                    <?php else: ?>
+                        <p style="color: #d63638; background: #fcf0f1; padding: 10px; border-radius: 4px;">
+                            <strong>Note:</strong> Gravity Forms plugin is not active. Please activate Gravity Forms to use this feature, or manually enter enquiry details below.
+                        </p>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Fallback Manual Entry Form (shown if Gravity Forms not available or for editing) -->
+                <form id="hs-crm-enquiry-form" style="<?php echo class_exists('GFForms') ? 'display: none;' : ''; ?>">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
                     <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">
-                    
-                    <!-- Job Type Selector -->
-                    <div class="hs-crm-form-group">
-                        <label>
-                            <input type="checkbox" id="enquiry-type-toggle" value="house-move">
-                            <strong>House move or Pickup/Delivery?</strong>
-                        </label>
-                        <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">Check this box if this is a house move, leave unchecked for pickup/delivery</p>
-                    </div>
                     
                     <!-- Common Fields -->
                     <div class="hs-crm-form-group">
