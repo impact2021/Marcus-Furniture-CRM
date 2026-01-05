@@ -265,6 +265,10 @@ class HS_CRM_Admin {
                                             $items_details[] = '<strong>Furniture moved?</strong> ' . esc_html($enquiry->furniture_moved_question);
                                         }
                                     }
+                                    // Show special instructions for all types
+                                    if (!empty($enquiry->special_instructions)) {
+                                        $items_details[] = '<strong>Instructions:</strong> ' . esc_html(wp_trim_words($enquiry->special_instructions, 15));
+                                    }
                                     if (empty($items_details)) {
                                         echo '<em style="color: #999;">-</em>';
                                     } else {
