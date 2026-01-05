@@ -742,6 +742,7 @@ jQuery(document).ready(function($) {
             
             // Hide manual form when adding new (show Gravity Forms instead)
             // Only show manual form if Gravity Forms is not available
+            // Check both: (1) gravity-forms-container has content AND (2) actual Gravity Forms are loaded
             if ($('#gravity-forms-container').children().length > 0 && $('.gform_wrapper').length > 0) {
                 $('#hs-crm-enquiry-form').hide();
             }
