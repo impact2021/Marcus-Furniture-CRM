@@ -214,17 +214,52 @@ jQuery(document).ready(function($) {
                         $('#enquiry-first-name').val(enquiry.first_name);
                         $('#enquiry-last-name').val(enquiry.last_name);
                         $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
-                        $('#enquiry-from-suburb').val(enquiry.from_suburb || '');
                         $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
-                        $('#enquiry-to-suburb').val(enquiry.to_suburb || '');
                         $('#enquiry-bedrooms').val(enquiry.number_of_bedrooms || '');
                         $('#enquiry-total-rooms').val(enquiry.number_of_rooms || '');
+                        $('#enquiry-stairs').val(enquiry.stairs || '');
+                        $('#enquiry-items-collected').val(enquiry.items_being_collected || '');
+                        $('#enquiry-furniture-moved').val(enquiry.furniture_moved_question || '');
                         $('#enquiry-property-notes').val(enquiry.property_notes || '');
                         $('#hs-crm-enquiry-modal').fadeIn();
                     }
                 },
                 error: function() {
                     alert('An error occurred while loading enquiry data.');
+                }
+            });
+        });
+        
+        // Handle "Delete Enquiry" button (archives the enquiry)
+        $(document).on('click', '.hs-crm-delete-enquiry', function() {
+            var $button = $(this);
+            var enquiryId = $button.data('enquiry-id');
+            
+            if (!confirm('Are you sure you want to delete (archive) this enquiry? This will move it to the Archived tab.')) {
+                return;
+            }
+            
+            $.ajax({
+                url: hsCrmAjax.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'hs_crm_delete_enquiry',
+                    nonce: hsCrmAjax.nonce,
+                    enquiry_id: enquiryId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Remove the entire enquiry table from the DOM
+                        $button.closest('table.hs-crm-single-enquiry-table').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        alert(response.data.message || 'Enquiry archived successfully.');
+                    } else {
+                        alert(response.data.message || 'Failed to archive enquiry.');
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while archiving the enquiry.');
                 }
             });
         });
