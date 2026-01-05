@@ -1,5 +1,5 @@
 # Marcus Furniture CRM
-
+Added a test workflow trigger.
 A comprehensive WordPress plugin for managing furniture moving enquiries with contact form, admin dashboard, and truck scheduling system.
 
 ## 🚀 Quick Installation
