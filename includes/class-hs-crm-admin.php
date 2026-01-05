@@ -335,87 +335,201 @@ class HS_CRM_Admin {
                 <h2 id="enquiry-modal-title">Add New Enquiry</h2>
                 <form id="hs-crm-enquiry-form">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
+                    <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">
                     
+                    <!-- Job Type Selector -->
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-first-name">First Name *</label>
-                        <input type="text" id="enquiry-first-name" name="first_name" required>
+                        <label>
+                            <input type="checkbox" id="enquiry-type-toggle" value="house-move">
+                            <strong>House move or Pickup/Delivery?</strong>
+                        </label>
+                        <p style="font-size: 12px; color: #666; margin: 5px 0 0 0;">Check this box if this is a house move, leave unchecked for pickup/delivery</p>
+                    </div>
+                    
+                    <!-- Common Fields -->
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-first-name">Name *</label>
+                        <input type="text" id="enquiry-first-name" name="first_name" placeholder="First Name" required>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-last-name">Last Name *</label>
-                        <input type="text" id="enquiry-last-name" name="last_name" required>
+                        <label for="enquiry-last-name">Last Name</label>
+                        <input type="text" id="enquiry-last-name" name="last_name" placeholder="Last Name" required>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-from-address">From Address</label>
-                        <textarea id="enquiry-from-address" name="delivery_from_address" rows="2"></textarea>
+                        <label for="enquiry-phone">Phone Number *</label>
+                        <input type="tel" id="enquiry-phone" name="phone" required>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-to-address">To Address</label>
-                        <textarea id="enquiry-to-address" name="delivery_to_address" rows="2"></textarea>
+                        <label for="enquiry-email">Email *</label>
+                        <input type="email" id="enquiry-email" name="email" required>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-bedrooms">Number of Bedrooms</label>
-                        <select id="enquiry-bedrooms" name="number_of_bedrooms">
-                            <option value="">Select...</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                        </select>
+                        <label for="enquiry-move-date">Moving/Delivery Date *</label>
+                        <input type="date" id="enquiry-move-date" name="move_date" required>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-total-rooms">Total Number of Rooms</label>
-                        <select id="enquiry-total-rooms" name="number_of_rooms">
-                            <option value="">Select...</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                        </select>
+                        <label for="enquiry-move-time">Preferred Time</label>
+                        <input type="time" id="enquiry-move-time" name="move_time">
                     </div>
                     
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-stairs">Stairs</label>
-                        <select id="enquiry-stairs" name="stairs">
-                            <option value="">Select...</option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
+                    <!-- Moving House Fields -->
+                    <div id="moving-house-fields" style="display: none;">
+                        <h3 style="margin: 20px 0 10px 0; border-top: 2px solid #0073aa; padding-top: 15px;">Moving House Details</h3>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-moving-from">Moving from: *</label>
+                            <input type="text" id="enquiry-moving-from" name="delivery_from_address" placeholder="Street Address">
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-stairs-from">Stairs involved? (From) *</label>
+                            <select id="enquiry-stairs-from" name="stairs_from">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-moving-to">Moving to: *</label>
+                            <input type="text" id="enquiry-moving-to" name="delivery_to_address" placeholder="Street Address">
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-stairs-to">Stairs involved? (To) *</label>
+                            <select id="enquiry-stairs-to" name="stairs_to">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-move-type">What's the type of your move? *</label>
+                            <select id="enquiry-move-type" name="move_type">
+                                <option value="">Select...</option>
+                                <option value="Residential">Residential</option>
+                                <option value="Office">Office</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-move-size">What's the size of your move? *</label>
+                            <select id="enquiry-move-size" name="house_size">
+                                <option value="">Select...</option>
+                                <option value="1 Room Worth of Items Only">1 Room Worth of Items Only</option>
+                                <option value="1 BR House - Big Items Only">1 BR House - Big Items Only</option>
+                                <option value="1 BR House - Big Items and Boxes">1 BR House - Big Items and Boxes</option>
+                                <option value="2 BR House - Big Items Only">2 BR House - Big Items Only</option>
+                                <option value="2 BR House - Big Items and Boxes">2 BR House - Big Items and Boxes</option>
+                                <option value="3 BR House - Big Items Only">3 BR House - Big Items Only</option>
+                                <option value="3 BR House - Big Items and Boxes">3 BR House - Big Items and Boxes</option>
+                                <option value="4 BR Houses or above">4 BR Houses or above</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-additional-info">Additional info</label>
+                            <textarea id="enquiry-additional-info" name="property_notes" rows="3" placeholder="Any additional information..."></textarea>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-outdoor-plants">Any outdoor plants? *</label>
+                            <select id="enquiry-outdoor-plants" name="outdoor_plants">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-oversize-items">Any oversize items such as piano, double-door fridge or spa? *</label>
+                            <select id="enquiry-oversize-items" name="oversize_items">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-driveway-concerns">Anything that could be a concern with the driveway? *</label>
+                            <select id="enquiry-driveway-concerns" name="driveway_concerns">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-items-collected">What item(s) are being collected?</label>
-                        <textarea id="enquiry-items-collected" name="items_being_collected" rows="2" placeholder="E.g., Sofa, Dining Table, etc."></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-furniture-moved">Do you need any existing furniture moved?</label>
-                        <select id="enquiry-furniture-moved" name="furniture_moved_question">
-                            <option value="">Select...</option>
-                            <option value="Yes">Yes</option>
-                            <option value="No">No</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-property-notes">Property Notes</label>
-                        <textarea id="enquiry-property-notes" name="property_notes" rows="3" placeholder="Any additional notes about the property..."></textarea>
+                    <!-- Pickup/Delivery Fields -->
+                    <div id="pickup-delivery-fields">
+                        <h3 style="margin: 20px 0 10px 0; border-top: 2px solid #FF8C00; padding-top: 15px;">Pickup/Delivery Details</h3>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-alt-date">Alternate delivery date</label>
+                            <input type="date" id="enquiry-alt-date" name="alternate_date">
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-pickup-from">Where is the item(s) being collected from? *</label>
+                            <input type="text" id="enquiry-pickup-from" name="delivery_from_address" placeholder="Street Address">
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-stairs-pickup">Stairs involved? (Pickup) *</label>
+                            <select id="enquiry-stairs-pickup" name="stairs_from">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-deliver-to">Where is the item(s) being delivered to? *</label>
+                            <input type="text" id="enquiry-deliver-to" name="delivery_to_address" placeholder="Street Address">
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-stairs-delivery">Stairs involved? (Delivery) *</label>
+                            <select id="enquiry-stairs-delivery" name="stairs_to">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-items-collected">What item(s) are being collected? *</label>
+                            <textarea id="enquiry-items-collected" name="items_being_collected" rows="2" placeholder="E.g., Sofa, Dining Table, etc."></textarea>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-special-instructions">Any special Instructions?</label>
+                            <textarea id="enquiry-special-instructions" name="special_instructions" rows="2"></textarea>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-assembly-help">Do you need help assembling the item we're collecting?</label>
+                            <select id="enquiry-assembly-help" name="assembly_help">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="hs-crm-form-group">
+                            <label for="enquiry-furniture-moved">Do you need any existing furniture moved? *</label>
+                            <select id="enquiry-furniture-moved" name="furniture_moved_question">
+                                <option value="">Select...</option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
                     </div>
                     
                     <div class="hs-crm-form-group hs-crm-form-buttons">
@@ -526,49 +640,53 @@ class HS_CRM_Admin {
         $data = array(
             'first_name' => isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '',
             'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
-            'email' => 'TEMP_PLACEHOLDER@example.com', // Temporary placeholder for testing
-            'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
-            'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
-            'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
+            'email' => isset($_POST['email']) ? sanitize_email($_POST['email']) : '',
+            'phone' => isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '',
+            'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : '',
+            'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : '',
             'number_of_bedrooms' => isset($_POST['number_of_bedrooms']) ? sanitize_text_field($_POST['number_of_bedrooms']) : '',
             'number_of_rooms' => isset($_POST['number_of_rooms']) ? sanitize_text_field($_POST['number_of_rooms']) : '',
             'stairs' => isset($_POST['stairs']) ? sanitize_text_field($_POST['stairs']) : '',
+            'stairs_from' => isset($_POST['stairs_from']) ? sanitize_text_field($_POST['stairs_from']) : '',
+            'stairs_to' => isset($_POST['stairs_to']) ? sanitize_text_field($_POST['stairs_to']) : '',
             'items_being_collected' => isset($_POST['items_being_collected']) ? sanitize_textarea_field($_POST['items_being_collected']) : '',
             'furniture_moved_question' => isset($_POST['furniture_moved_question']) ? sanitize_text_field($_POST['furniture_moved_question']) : '',
             'property_notes' => isset($_POST['property_notes']) ? sanitize_textarea_field($_POST['property_notes']) : '',
-            'contact_source' => 'form',
+            'special_instructions' => isset($_POST['special_instructions']) ? sanitize_textarea_field($_POST['special_instructions']) : '',
+            'job_type' => isset($_POST['job_type']) ? sanitize_text_field($_POST['job_type']) : '',
+            'move_type' => isset($_POST['move_type']) ? sanitize_text_field($_POST['move_type']) : '',
+            'house_size' => isset($_POST['house_size']) ? sanitize_text_field($_POST['house_size']) : '',
+            'outdoor_plants' => isset($_POST['outdoor_plants']) ? sanitize_text_field($_POST['outdoor_plants']) : '',
+            'oversize_items' => isset($_POST['oversize_items']) ? sanitize_text_field($_POST['oversize_items']) : '',
+            'driveway_concerns' => isset($_POST['driveway_concerns']) ? sanitize_text_field($_POST['driveway_concerns']) : '',
+            'assembly_help' => isset($_POST['assembly_help']) ? sanitize_text_field($_POST['assembly_help']) : '',
+            'move_date' => isset($_POST['move_date']) ? sanitize_text_field($_POST['move_date']) : '',
+            'move_time' => isset($_POST['move_time']) ? sanitize_text_field($_POST['move_time']) : '',
+            'alternate_date' => isset($_POST['alternate_date']) ? sanitize_text_field($_POST['alternate_date']) : '',
+            'contact_source' => 'manual',
         );
         
-        // DEBUG: Log the data being sent
-        error_log('CREATE ENQUIRY DATA: ' . print_r($data, true));
-        error_log('POST bedrooms value: ' . (isset($_POST['number_of_bedrooms']) ? $_POST['number_of_bedrooms'] : 'NOT SET'));
-        
         // Validate required fields
-        if (empty($data['first_name']) || empty($data['last_name'])) {
-            wp_send_json_error(array('message' => 'Please fill in all required fields.'));
+        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone'])) {
+            wp_send_json_error(array('message' => 'Please fill in all required fields (First Name, Last Name, Email, Phone).'));
         }
         
         $enquiry_id = HS_CRM_Database::insert_enquiry($data);
         
-        // DEBUG: Log result
-        error_log('INSERT RESULT: ' . ($enquiry_id ? 'ID=' . $enquiry_id : 'FALSE'));
-        global $wpdb;
-        if (!$enquiry_id) {
-            error_log('WPDB ERROR: ' . $wpdb->last_error);
-            error_log('WPDB LAST QUERY: ' . $wpdb->last_query);
-        }
-        
         if ($enquiry_id) {
             // Add note about manual creation
-            HS_CRM_Database::add_note($enquiry_id, "Enquiry manually created - TEMPORARY PLACEHOLDER DATA USED (needs proper details)");
+            $job_type = !empty($data['job_type']) ? sanitize_text_field($data['job_type']) : 'Unknown';
+            $note_text = sprintf('Enquiry manually created via admin panel - Job Type: %s', esc_html($job_type));
+            HS_CRM_Database::add_note($enquiry_id, $note_text);
             
             wp_send_json_success(array(
                 'message' => 'Enquiry created successfully.',
                 'enquiry_id' => $enquiry_id
             ));
         } else {
+            global $wpdb;
             wp_send_json_error(array(
-                'message' => 'Failed to create enquiry. Check error log for details.',
+                'message' => 'Failed to create enquiry. Please check all required fields.',
                 'debug' => $wpdb->last_error
             ));
         }
@@ -598,6 +716,12 @@ class HS_CRM_Admin {
         if (isset($_POST['last_name'])) {
             $data['last_name'] = sanitize_text_field($_POST['last_name']);
         }
+        if (isset($_POST['email'])) {
+            $data['email'] = sanitize_email($_POST['email']);
+        }
+        if (isset($_POST['phone'])) {
+            $data['phone'] = sanitize_text_field($_POST['phone']);
+        }
         if (isset($_POST['delivery_from_address'])) {
             $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
         }
@@ -613,6 +737,12 @@ class HS_CRM_Admin {
         if (isset($_POST['stairs'])) {
             $data['stairs'] = sanitize_text_field($_POST['stairs']);
         }
+        if (isset($_POST['stairs_from'])) {
+            $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);
+        }
+        if (isset($_POST['stairs_to'])) {
+            $data['stairs_to'] = sanitize_text_field($_POST['stairs_to']);
+        }
         if (isset($_POST['items_being_collected'])) {
             $data['items_being_collected'] = sanitize_textarea_field($_POST['items_being_collected']);
         }
@@ -622,27 +752,48 @@ class HS_CRM_Admin {
         if (isset($_POST['property_notes'])) {
             $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
         }
-        
-        // DEBUG: Log the data being sent
-        error_log('UPDATE ENQUIRY ID: ' . $enquiry_id);
-        error_log('UPDATE DATA: ' . print_r($data, true));
-        error_log('POST bedrooms value: ' . (isset($_POST['number_of_bedrooms']) ? $_POST['number_of_bedrooms'] : 'NOT SET'));
+        if (isset($_POST['special_instructions'])) {
+            $data['special_instructions'] = sanitize_textarea_field($_POST['special_instructions']);
+        }
+        if (isset($_POST['job_type'])) {
+            $data['job_type'] = sanitize_text_field($_POST['job_type']);
+        }
+        if (isset($_POST['move_type'])) {
+            $data['move_type'] = sanitize_text_field($_POST['move_type']);
+        }
+        if (isset($_POST['house_size'])) {
+            $data['house_size'] = sanitize_text_field($_POST['house_size']);
+        }
+        if (isset($_POST['outdoor_plants'])) {
+            $data['outdoor_plants'] = sanitize_text_field($_POST['outdoor_plants']);
+        }
+        if (isset($_POST['oversize_items'])) {
+            $data['oversize_items'] = sanitize_text_field($_POST['oversize_items']);
+        }
+        if (isset($_POST['driveway_concerns'])) {
+            $data['driveway_concerns'] = sanitize_text_field($_POST['driveway_concerns']);
+        }
+        if (isset($_POST['assembly_help'])) {
+            $data['assembly_help'] = sanitize_text_field($_POST['assembly_help']);
+        }
+        if (isset($_POST['move_date'])) {
+            $data['move_date'] = sanitize_text_field($_POST['move_date']);
+        }
+        if (isset($_POST['move_time'])) {
+            $data['move_time'] = sanitize_text_field($_POST['move_time']);
+        }
+        if (isset($_POST['alternate_date'])) {
+            $data['alternate_date'] = sanitize_text_field($_POST['alternate_date']);
+        }
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);
-        
-        // DEBUG: Log result
-        error_log('UPDATE RESULT: ' . ($result !== false ? 'SUCCESS' : 'FALSE'));
-        global $wpdb;
-        if ($result === false) {
-            error_log('WPDB ERROR: ' . $wpdb->last_error);
-            error_log('WPDB LAST QUERY: ' . $wpdb->last_query);
-        }
         
         if ($result !== false) {
             wp_send_json_success(array('message' => 'Enquiry updated successfully.'));
         } else {
+            global $wpdb;
             wp_send_json_error(array(
-                'message' => 'Failed to update enquiry. Check error log for details.',
+                'message' => 'Failed to update enquiry.',
                 'debug' => $wpdb->last_error
             ));
         }

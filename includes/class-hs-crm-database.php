@@ -46,11 +46,17 @@ class HS_CRM_Database {
             stairs_to varchar(50) DEFAULT '' NOT NULL,
             move_date date DEFAULT NULL,
             move_time time DEFAULT NULL,
+            alternate_date date DEFAULT NULL,
             booking_start_time time DEFAULT NULL,
             booking_end_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
             source_form_name varchar(255) DEFAULT '' NOT NULL,
             job_type varchar(100) DEFAULT '' NOT NULL,
+            move_type varchar(100) DEFAULT '' NOT NULL,
+            outdoor_plants varchar(50) DEFAULT '' NOT NULL,
+            oversize_items varchar(50) DEFAULT '' NOT NULL,
+            driveway_concerns varchar(50) DEFAULT '' NOT NULL,
+            assembly_help varchar(50) DEFAULT '' NOT NULL,
             status varchar(50) DEFAULT 'First Contact' NOT NULL,
             truck_id mediumint(9) DEFAULT NULL,
             email_sent tinyint(1) DEFAULT 0 NOT NULL,
@@ -153,7 +159,7 @@ class HS_CRM_Database {
             'from_suburb' => isset($data['from_suburb']) ? sanitize_text_field($data['from_suburb']) : '',
             'to_suburb' => isset($data['to_suburb']) ? sanitize_text_field($data['to_suburb']) : '',
             'suburb' => isset($data['suburb']) ? sanitize_text_field($data['suburb']) : '',
-            'house_size' => '',
+            'house_size' => isset($data['house_size']) ? sanitize_text_field($data['house_size']) : '',
             'number_of_bedrooms' => isset($data['number_of_bedrooms']) ? sanitize_text_field($data['number_of_bedrooms']) : '',
             'number_of_rooms' => isset($data['number_of_rooms']) ? sanitize_text_field($data['number_of_rooms']) : '',
             'total_rooms' => isset($data['total_rooms']) ? sanitize_text_field($data['total_rooms']) : '',
@@ -165,6 +171,11 @@ class HS_CRM_Database {
             'stairs_from' => isset($data['stairs_from']) ? sanitize_text_field($data['stairs_from']) : '',
             'stairs_to' => isset($data['stairs_to']) ? sanitize_text_field($data['stairs_to']) : '',
             'job_type' => isset($data['job_type']) ? sanitize_text_field($data['job_type']) : '',
+            'move_type' => isset($data['move_type']) ? sanitize_text_field($data['move_type']) : '',
+            'outdoor_plants' => isset($data['outdoor_plants']) ? sanitize_text_field($data['outdoor_plants']) : '',
+            'oversize_items' => isset($data['oversize_items']) ? sanitize_text_field($data['oversize_items']) : '',
+            'driveway_concerns' => isset($data['driveway_concerns']) ? sanitize_text_field($data['driveway_concerns']) : '',
+            'assembly_help' => isset($data['assembly_help']) ? sanitize_text_field($data['assembly_help']) : '',
             'status' => 'First Contact',
             'email_sent' => 0,
             'admin_notes' => '',
@@ -180,6 +191,11 @@ class HS_CRM_Database {
         // Add move_time if provided
         if (isset($data['move_time']) && !empty($data['move_time'])) {
             $insert_data['move_time'] = sanitize_text_field($data['move_time']);
+        }
+        
+        // Add alternate_date if provided
+        if (isset($data['alternate_date']) && !empty($data['alternate_date'])) {
+            $insert_data['alternate_date'] = sanitize_text_field($data['alternate_date']);
         }
         
         // Add booking times if provided
@@ -485,6 +501,41 @@ class HS_CRM_Database {
             $update_format[] = '%s';
         }
         
+        if (isset($data['job_type'])) {
+            $update_data['job_type'] = sanitize_text_field($data['job_type']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['move_type'])) {
+            $update_data['move_type'] = sanitize_text_field($data['move_type']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['house_size'])) {
+            $update_data['house_size'] = sanitize_text_field($data['house_size']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['outdoor_plants'])) {
+            $update_data['outdoor_plants'] = sanitize_text_field($data['outdoor_plants']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['oversize_items'])) {
+            $update_data['oversize_items'] = sanitize_text_field($data['oversize_items']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['driveway_concerns'])) {
+            $update_data['driveway_concerns'] = sanitize_text_field($data['driveway_concerns']);
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['assembly_help'])) {
+            $update_data['assembly_help'] = sanitize_text_field($data['assembly_help']);
+            $update_format[] = '%s';
+        }
+        
         if (isset($data['move_date'])) {
             $update_data['move_date'] = !empty($data['move_date']) ? sanitize_text_field($data['move_date']) : null;
             $update_format[] = '%s';
@@ -492,6 +543,11 @@ class HS_CRM_Database {
         
         if (isset($data['move_time'])) {
             $update_data['move_time'] = !empty($data['move_time']) ? sanitize_text_field($data['move_time']) : null;
+            $update_format[] = '%s';
+        }
+        
+        if (isset($data['alternate_date'])) {
+            $update_data['alternate_date'] = !empty($data['alternate_date']) ? sanitize_text_field($data['alternate_date']) : null;
             $update_format[] = '%s';
         }
         
