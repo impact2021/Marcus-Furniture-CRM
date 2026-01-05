@@ -67,7 +67,7 @@ jQuery(document).ready(function($) {
             var $radioGroup = $radio.closest('.hs-crm-status-radio-group');
             var enquiryId = $radioGroup.data('enquiry-id');
             var newStatus = $radio.val();
-            var oldStatus = $radioGroup.data('current-status');
+            var oldStatus = $radioGroup.attr('data-current-status'); // Use attr() to get the actual HTML attribute value
             
             // Don't process if already at this status
             if (newStatus === oldStatus) {
@@ -110,6 +110,8 @@ jQuery(document).ready(function($) {
                             .text(finalStatus);
                         
                         // Update current status data attribute (Issue #5 fix - save status)
+                        // Update both jQuery cache and HTML attribute to ensure consistency
+                        $radioGroup.attr('data-current-status', finalStatus);
                         $radioGroup.data('current-status', finalStatus);
                         
                         // If should archive, update to Archived status
