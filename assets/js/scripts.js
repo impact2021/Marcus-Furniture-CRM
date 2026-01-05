@@ -213,23 +213,6 @@ jQuery(document).ready(function($) {
                         $('#enquiry-id').val(enquiry.id);
                         $('#enquiry-first-name').val(enquiry.first_name);
                         $('#enquiry-last-name').val(enquiry.last_name);
-                        $('#enquiry-email').val(enquiry.email);
-                        $('#enquiry-phone').val(enquiry.phone);
-                        $('#enquiry-delivery-from-address').val(enquiry.delivery_from_address || '');
-                        $('#enquiry-delivery-to-address').val(enquiry.delivery_to_address || '');
-                        $('#enquiry-suburb').val(enquiry.suburb || '');
-                        $('#enquiry-number-of-bedrooms').val(enquiry.number_of_bedrooms || '');
-                        $('#enquiry-number-of-rooms').val(enquiry.number_of_rooms || '');
-                        $('#enquiry-total-rooms').val(enquiry.total_rooms || '');
-                        $('#enquiry-property-notes').val(enquiry.property_notes || '');
-                        $('#enquiry-stairs-from').val(enquiry.stairs_from || '');
-                        $('#enquiry-stairs-to').val(enquiry.stairs_to || '');
-                        $('#enquiry-move-date').val(enquiry.move_date || '');
-                        $('#enquiry-move-time').val(enquiry.move_time || '');
-                        $('#enquiry-booking-start-time').val(enquiry.booking_start_time || '');
-                        $('#enquiry-booking-end-time').val(enquiry.booking_end_time || '');
-                        $('#enquiry-contact-source').val(enquiry.contact_source);
-                        $('#enquiry-status').val(enquiry.status);
                         $('#hs-crm-enquiry-modal').fadeIn();
                     }
                 },

@@ -291,152 +291,6 @@ class HS_CRM_Admin {
                         <input type="text" id="enquiry-last-name" name="last_name" required>
                     </div>
                     
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-email">Email *</label>
-                        <input type="email" id="enquiry-email" name="email" required>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-phone">Phone *</label>
-                        <input type="tel" id="enquiry-phone" name="phone" required>
-                    </div>
-                    
-                    <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-delivery-from-address">From Address *</label>
-                        <textarea id="enquiry-delivery-from-address" name="delivery_from_address" rows="3" placeholder="Pick-up location" required></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-delivery-to-address">To Address *</label>
-                        <textarea id="enquiry-delivery-to-address" name="delivery_to_address" rows="3" placeholder="Drop-off location" required></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-suburb">Suburb</label>
-                        <input type="text" id="enquiry-suburb" name="suburb">
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-number-of-bedrooms">Number of Bedrooms</label>
-                        <select id="enquiry-number-of-bedrooms" name="number_of_bedrooms">
-                            <option value="">Select...</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-number-of-rooms">Number of Rooms</label>
-                        <select id="enquiry-number-of-rooms" name="number_of_rooms">
-                            <option value="">Select...</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-total-rooms">Total Number of Rooms</label>
-                        <select id="enquiry-total-rooms" name="total_rooms">
-                            <option value="">Select...</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group hs-crm-form-group-full">
-                        <label for="enquiry-property-notes">Property Notes</label>
-                        <textarea id="enquiry-property-notes" name="property_notes" rows="3" placeholder="Additional notes about the property"></textarea>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-stairs-from">Stairs Involved (From Address)</label>
-                        <select id="enquiry-stairs-from" name="stairs_from">
-                            <option value="">Select...</option>
-                            <option value="No">No</option>
-                            <option value="Yes - 1 floor">Yes - 1 floor</option>
-                            <option value="Yes - 2+ floors">Yes - 2+ floors</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-stairs-to">Stairs Involved (To Address)</label>
-                        <select id="enquiry-stairs-to" name="stairs_to">
-                            <option value="">Select...</option>
-                            <option value="No">No</option>
-                            <option value="Yes - 1 floor">Yes - 1 floor</option>
-                            <option value="Yes - 2+ floors">Yes - 2+ floors</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-move-date">Requested Move Date</label>
-                        <input type="date" id="enquiry-move-date" name="move_date">
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-move-time">Requested Move Time</label>
-                        <input type="time" id="enquiry-move-time" name="move_time">
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-booking-start-time">Booking Start Time</label>
-                        <input type="time" id="enquiry-booking-start-time" name="booking_start_time">
-                        <small>Actual start time of the booking (admin use)</small>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-booking-end-time">Booking End Time</label>
-                        <input type="time" id="enquiry-booking-end-time" name="booking_end_time">
-                        <small>Actual finish time of the booking (admin use)</small>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-contact-source">Contact Source *</label>
-                        <select id="enquiry-contact-source" name="contact_source" required>
-                            <option value="form">Website Form</option>
-                            <option value="whatsapp">WhatsApp</option>
-                            <option value="phone">Phone Call</option>
-                            <option value="email">Direct Email</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    
-                    <div class="hs-crm-form-group">
-                        <label for="enquiry-status">Status</label>
-                        <select id="enquiry-status" name="status">
-                            <option value="First Contact">First Contact</option>
-                            <option value="Quote Sent">Quote Sent</option>
-                            <option value="Booking Confirmed">Booking Confirmed</option>
-                            <option value="Deposit Paid">Deposit Paid</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Archived">Archived</option>
-                        </select>
-                    </div>
-                    
                     <div class="hs-crm-form-group hs-crm-form-buttons">
                         <button type="submit" class="button button-primary">Save Enquiry</button>
                         <button type="button" class="button hs-crm-modal-close">Cancel</button>
@@ -545,59 +399,15 @@ class HS_CRM_Admin {
         $data = array(
             'first_name' => isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '',
             'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
-            'email' => isset($_POST['email']) ? sanitize_email($_POST['email']) : '',
-            'phone' => isset($_POST['phone']) ? sanitize_text_field($_POST['phone']) : '',
-            'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : '',
-            'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : '',
-            'contact_source' => isset($_POST['contact_source']) ? sanitize_text_field($_POST['contact_source']) : 'form',
+            'email' => 'placeholder@example.com', // Placeholder required field
+            'phone' => '000-000-0000', // Placeholder required field
+            'delivery_from_address' => 'TBD', // Placeholder required field
+            'delivery_to_address' => 'TBD', // Placeholder required field
+            'contact_source' => 'form',
         );
         
-        if (!empty($_POST['suburb'])) {
-            $data['suburb'] = sanitize_text_field($_POST['suburb']);
-        }
-        
-        if (!empty($_POST['move_date'])) {
-            $data['move_date'] = sanitize_text_field($_POST['move_date']);
-        }
-        
-        if (!empty($_POST['move_time'])) {
-            $data['move_time'] = sanitize_text_field($_POST['move_time']);
-        }
-        
-        if (!empty($_POST['booking_start_time'])) {
-            $data['booking_start_time'] = sanitize_text_field($_POST['booking_start_time']);
-        }
-        
-        if (!empty($_POST['booking_end_time'])) {
-            $data['booking_end_time'] = sanitize_text_field($_POST['booking_end_time']);
-        }
-        
-        if (!empty($_POST['number_of_bedrooms'])) {
-            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
-        }
-        
-        if (!empty($_POST['number_of_rooms'])) {
-            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
-        }
-        
-        if (!empty($_POST['total_rooms'])) {
-            $data['total_rooms'] = sanitize_text_field($_POST['total_rooms']);
-        }
-        
-        if (!empty($_POST['property_notes'])) {
-            $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
-        }
-        
-        if (!empty($_POST['stairs_from'])) {
-            $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);
-        }
-        
-        if (!empty($_POST['stairs_to'])) {
-            $data['stairs_to'] = sanitize_text_field($_POST['stairs_to']);
-        }
-        
         // Validate required fields
-        if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['phone']) || empty($data['delivery_from_address']) || empty($data['delivery_to_address'])) {
+        if (empty($data['first_name']) || empty($data['last_name'])) {
             wp_send_json_error(array('message' => 'Please fill in all required fields.'));
         }
         
@@ -605,8 +415,7 @@ class HS_CRM_Admin {
         
         if ($enquiry_id) {
             // Add note about manual creation
-            $source_label = ucfirst($data['contact_source']);
-            HS_CRM_Database::add_note($enquiry_id, "Enquiry manually created from {$source_label}");
+            HS_CRM_Database::add_note($enquiry_id, "Enquiry manually created - placeholder data used");
             
             wp_send_json_success(array(
                 'message' => 'Enquiry created successfully.',
@@ -640,57 +449,6 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['last_name'])) {
             $data['last_name'] = sanitize_text_field($_POST['last_name']);
-        }
-        if (isset($_POST['email'])) {
-            $data['email'] = sanitize_email($_POST['email']);
-        }
-        if (isset($_POST['phone'])) {
-            $data['phone'] = sanitize_text_field($_POST['phone']);
-        }
-        if (isset($_POST['delivery_from_address'])) {
-            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
-        }
-        if (isset($_POST['delivery_to_address'])) {
-            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
-        }
-        if (isset($_POST['suburb'])) {
-            $data['suburb'] = sanitize_text_field($_POST['suburb']);
-        }
-        if (isset($_POST['move_date'])) {
-            $data['move_date'] = sanitize_text_field($_POST['move_date']);
-        }
-        if (isset($_POST['move_time'])) {
-            $data['move_time'] = sanitize_text_field($_POST['move_time']);
-        }
-        if (isset($_POST['booking_start_time'])) {
-            $data['booking_start_time'] = sanitize_text_field($_POST['booking_start_time']);
-        }
-        if (isset($_POST['booking_end_time'])) {
-            $data['booking_end_time'] = sanitize_text_field($_POST['booking_end_time']);
-        }
-        if (isset($_POST['number_of_bedrooms'])) {
-            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
-        }
-        if (isset($_POST['number_of_rooms'])) {
-            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
-        }
-        if (isset($_POST['total_rooms'])) {
-            $data['total_rooms'] = sanitize_text_field($_POST['total_rooms']);
-        }
-        if (isset($_POST['property_notes'])) {
-            $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
-        }
-        if (isset($_POST['stairs_from'])) {
-            $data['stairs_from'] = sanitize_text_field($_POST['stairs_from']);
-        }
-        if (isset($_POST['stairs_to'])) {
-            $data['stairs_to'] = sanitize_text_field($_POST['stairs_to']);
-        }
-        if (isset($_POST['contact_source'])) {
-            $data['contact_source'] = sanitize_text_field($_POST['contact_source']);
-        }
-        if (isset($_POST['status'])) {
-            $data['status'] = sanitize_text_field($_POST['status']);
         }
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);
