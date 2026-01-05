@@ -762,6 +762,7 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         }
         
         // For other field types, match by label
+        // Note: field_label is already lowercased at line 651, so exact match using === is effectively case-insensitive
         // Use exact matching first, then partial matching for better accuracy
         $matched = false;
         
@@ -769,22 +770,20 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             if ($matched) break;
             
             foreach ($possible_labels as $label) {
-                // Check for exact match first (case-insensitive)
+                // Check for exact match first
                 if ($field_label === $label) {
                     if ($field->type === 'date') {
                         $data[$crm_field] = sanitize_text_field($field_value);
                     } elseif ($field->type === 'time') {
                         $data[$crm_field] = sanitize_text_field($field_value);
                     } else {
-                        // Standard text field
+                        // Standard text field - sanitize based on field type
                         if ($crm_field === 'email') {
                             $data[$crm_field] = sanitize_email($field_value);
                         } elseif ($crm_field === 'address') {
                             $data[$crm_field] = sanitize_textarea_field($field_value);
-                        } elseif ($crm_field === 'name') {
-                            // Store in temporary 'name' field to be split later
-                            $data[$crm_field] = sanitize_text_field($field_value);
                         } else {
+                            // All other fields including 'name' which will be split later
                             $data[$crm_field] = sanitize_text_field($field_value);
                         }
                     }
@@ -806,15 +805,13 @@ function hs_crm_gravity_forms_integration($entry, $form) {
                         } elseif ($field->type === 'time') {
                             $data[$crm_field] = sanitize_text_field($field_value);
                         } else {
-                            // Standard text field
+                            // Standard text field - sanitize based on field type
                             if ($crm_field === 'email') {
                                 $data[$crm_field] = sanitize_email($field_value);
                             } elseif ($crm_field === 'address') {
                                 $data[$crm_field] = sanitize_textarea_field($field_value);
-                            } elseif ($crm_field === 'name') {
-                                // Store in temporary 'name' field to be split later
-                                $data[$crm_field] = sanitize_text_field($field_value);
                             } else {
+                                // All other fields including 'name' which will be split later
                                 $data[$crm_field] = sanitize_text_field($field_value);
                             }
                         }
@@ -827,15 +824,17 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     }
     
     // Handle single 'name' field - split into first_name and last_name if needed
-    if (!empty($data['name']) && (empty($data['first_name']) || empty($data['last_name']))) {
+    // Only process if we have a name field AND both first_name and last_name are missing
+    if (!empty($data['name']) && empty($data['first_name']) && empty($data['last_name'])) {
         $name_parts = explode(' ', trim($data['name']), 2);
-        if (empty($data['first_name']) && isset($name_parts[0])) {
+        if (isset($name_parts[0])) {
             $data['first_name'] = sanitize_text_field($name_parts[0]);
         }
-        if (empty($data['last_name']) && isset($name_parts[1])) {
+        if (isset($name_parts[1])) {
             $data['last_name'] = sanitize_text_field($name_parts[1]);
-        } elseif (empty($data['last_name']) && !isset($name_parts[1])) {
-            // If only one word, use it as last name to have something in the field
+        } else {
+            // If only one word provided, use it for both first and last name
+            // This ensures both required fields are populated and the contact can be created
             $data['last_name'] = sanitize_text_field($name_parts[0]);
         }
         // Remove the temporary 'name' field
