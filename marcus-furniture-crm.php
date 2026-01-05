@@ -656,8 +656,10 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             $field_value = $entry[$field->id];
         }
         
-        // Skip empty values
-        if (empty($field_value)) {
+        // Skip empty values, but NOT for name and address fields
+        // Name and address fields are compound fields that store data in subfields,
+        // so we need to check the subfields even if the combined value appears empty
+        if (empty($field_value) && $field->type !== 'name' && $field->type !== 'address') {
             continue;
         }
         
