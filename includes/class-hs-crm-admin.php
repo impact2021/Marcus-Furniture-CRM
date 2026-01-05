@@ -452,12 +452,24 @@ class HS_CRM_Admin {
             'contact_source' => 'form',
         );
         
+        // DEBUG: Log the data being sent
+        error_log('CREATE ENQUIRY DATA: ' . print_r($data, true));
+        error_log('POST bedrooms value: ' . (isset($_POST['number_of_bedrooms']) ? $_POST['number_of_bedrooms'] : 'NOT SET'));
+        
         // Validate required fields
         if (empty($data['first_name']) || empty($data['last_name'])) {
             wp_send_json_error(array('message' => 'Please fill in all required fields.'));
         }
         
         $enquiry_id = HS_CRM_Database::insert_enquiry($data);
+        
+        // DEBUG: Log result
+        error_log('INSERT RESULT: ' . ($enquiry_id ? 'ID=' . $enquiry_id : 'FALSE'));
+        global $wpdb;
+        if (!$enquiry_id) {
+            error_log('WPDB ERROR: ' . $wpdb->last_error);
+            error_log('WPDB LAST QUERY: ' . $wpdb->last_query);
+        }
         
         if ($enquiry_id) {
             // Add note about manual creation
@@ -468,7 +480,10 @@ class HS_CRM_Admin {
                 'enquiry_id' => $enquiry_id
             ));
         } else {
-            wp_send_json_error(array('message' => 'Failed to create enquiry.'));
+            wp_send_json_error(array(
+                'message' => 'Failed to create enquiry. Check error log for details.',
+                'debug' => $wpdb->last_error
+            ));
         }
     }
     
@@ -509,12 +524,28 @@ class HS_CRM_Admin {
             $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
         }
         
+        // DEBUG: Log the data being sent
+        error_log('UPDATE ENQUIRY ID: ' . $enquiry_id);
+        error_log('UPDATE DATA: ' . print_r($data, true));
+        error_log('POST bedrooms value: ' . (isset($_POST['number_of_bedrooms']) ? $_POST['number_of_bedrooms'] : 'NOT SET'));
+        
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);
+        
+        // DEBUG: Log result
+        error_log('UPDATE RESULT: ' . ($result !== false ? 'SUCCESS' : 'FALSE'));
+        global $wpdb;
+        if ($result === false) {
+            error_log('WPDB ERROR: ' . $wpdb->last_error);
+            error_log('WPDB LAST QUERY: ' . $wpdb->last_query);
+        }
         
         if ($result !== false) {
             wp_send_json_success(array('message' => 'Enquiry updated successfully.'));
         } else {
-            wp_send_json_error(array('message' => 'Failed to update enquiry.'));
+            wp_send_json_error(array(
+                'message' => 'Failed to update enquiry. Check error log for details.',
+                'debug' => $wpdb->last_error
+            ));
         }
     }
     
