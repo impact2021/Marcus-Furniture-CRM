@@ -633,6 +633,7 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     $field_mapping = array(
         'first_name' => array('first name', 'first', 'fname'),
         'last_name' => array('last name', 'last', 'surname', 'lname'),
+        'name' => array('name'), // Single name field to be split
         'email' => array('email', 'e-mail', 'email address'),
         'phone' => array('phone', 'telephone', 'mobile', 'phone number'),
         'address' => array('address', 'street address', 'location'),
@@ -687,11 +688,6 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             $state_key = $field->id . '.4';
             $zip_key = $field->id . '.5';
             
-            // Extract suburb/city if available
-            if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
-                $data['suburb'] = sanitize_text_field($entry[$city_key]);
-            }
-            
             // Combine address parts
             $address_parts = array();
             if (isset($entry[$street_key]) && !empty($entry[$street_key])) {
@@ -710,8 +706,47 @@ function hs_crm_gravity_forms_integration($entry, $form) {
                 $address_parts[] = $entry[$zip_key];
             }
             
+            $combined_address = '';
             if (!empty($address_parts)) {
-                $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
+                $combined_address = sanitize_textarea_field(implode(', ', $address_parts));
+            }
+            
+            // Determine which address field to populate based on label
+            if (stripos($field_label, 'from') !== false || stripos($field_label, 'pickup') !== false) {
+                $data['delivery_from_address'] = $combined_address;
+                // Extract suburb/city for from location
+                if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                    $data['from_suburb'] = sanitize_text_field($entry[$city_key]);
+                }
+                // Use first address as the main address field if not set
+                if (empty($data['address'])) {
+                    $data['address'] = $combined_address;
+                    // Also set suburb if not set
+                    if (empty($data['suburb']) && isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                        $data['suburb'] = sanitize_text_field($entry[$city_key]);
+                    }
+                }
+            } elseif (stripos($field_label, 'to') !== false || stripos($field_label, 'dropoff') !== false || stripos($field_label, 'delivery') !== false) {
+                $data['delivery_to_address'] = $combined_address;
+                // Extract suburb/city for to location
+                if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                    $data['to_suburb'] = sanitize_text_field($entry[$city_key]);
+                }
+                // Use as main address if no from address exists
+                if (empty($data['address'])) {
+                    $data['address'] = $combined_address;
+                    // Also set suburb if not set
+                    if (empty($data['suburb']) && isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                        $data['suburb'] = sanitize_text_field($entry[$city_key]);
+                    }
+                }
+            } else {
+                // Generic address field - use as main address
+                $data['address'] = $combined_address;
+                // Extract suburb/city if available
+                if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                    $data['suburb'] = sanitize_text_field($entry[$city_key]);
+                }
             }
             continue; // Move to next field
         }
@@ -727,27 +762,85 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         }
         
         // For other field types, match by label
+        // Note: field_label is already lowercased at line 651, so exact match using === is effectively case-insensitive
+        // Use exact matching first, then partial matching for better accuracy
+        $matched = false;
+        
         foreach ($field_mapping as $crm_field => $possible_labels) {
+            if ($matched) break;
+            
             foreach ($possible_labels as $label) {
-                if (strpos($field_label, $label) !== false) {
+                // Check for exact match first
+                if ($field_label === $label) {
                     if ($field->type === 'date') {
                         $data[$crm_field] = sanitize_text_field($field_value);
                     } elseif ($field->type === 'time') {
                         $data[$crm_field] = sanitize_text_field($field_value);
                     } else {
-                        // Standard text field
+                        // Standard text field - sanitize based on field type
                         if ($crm_field === 'email') {
                             $data[$crm_field] = sanitize_email($field_value);
                         } elseif ($crm_field === 'address') {
                             $data[$crm_field] = sanitize_textarea_field($field_value);
                         } else {
+                            // All other fields including 'name' which will be split later
                             $data[$crm_field] = sanitize_text_field($field_value);
                         }
                     }
-                    break 2; // Exit both loops once we find a match
+                    $matched = true;
+                    break;
                 }
             }
         }
+        
+        // If no exact match, try partial matching
+        if (!$matched) {
+            foreach ($field_mapping as $crm_field => $possible_labels) {
+                if ($matched) break;
+                
+                foreach ($possible_labels as $label) {
+                    if (strpos($field_label, $label) !== false) {
+                        if ($field->type === 'date') {
+                            $data[$crm_field] = sanitize_text_field($field_value);
+                        } elseif ($field->type === 'time') {
+                            $data[$crm_field] = sanitize_text_field($field_value);
+                        } else {
+                            // Standard text field - sanitize based on field type
+                            if ($crm_field === 'email') {
+                                $data[$crm_field] = sanitize_email($field_value);
+                            } elseif ($crm_field === 'address') {
+                                $data[$crm_field] = sanitize_textarea_field($field_value);
+                            } else {
+                                // All other fields including 'name' which will be split later
+                                $data[$crm_field] = sanitize_text_field($field_value);
+                            }
+                        }
+                        $matched = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    // Handle single 'name' field - split into first_name and last_name if needed
+    // Only process if we have a name field AND both first_name and last_name are missing
+    // Note: This assumes Western naming conventions (first name, then last name separated by space)
+    // For international names with different formats, users should use separate first/last name fields
+    if (!empty($data['name']) && empty($data['first_name']) && empty($data['last_name'])) {
+        $name_parts = explode(' ', trim($data['name']), 2);
+        if (isset($name_parts[0])) {
+            $data['first_name'] = sanitize_text_field($name_parts[0]);
+        }
+        if (isset($name_parts[1])) {
+            $data['last_name'] = sanitize_text_field($name_parts[1]);
+        } else {
+            // If only one word provided, use it for both first and last name
+            // This ensures both required fields are populated and the contact can be created
+            $data['last_name'] = sanitize_text_field($name_parts[0]);
+        }
+        // Remove the temporary 'name' field
+        unset($data['name']);
     }
     
     // Validate required fields
