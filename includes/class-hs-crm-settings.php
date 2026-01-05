@@ -313,74 +313,130 @@ class HS_CRM_Settings {
                             },
                             success: function(response) {
                                 if (response.success) {
-                                    var html = '<div class="notice notice-success"><p>' + response.data.message + '</p></div>';
+                                    var $successDiv = $('<div>').addClass('notice notice-success');
+                                    $successDiv.append($('<p>').text(response.data.message));
                                     
                                     // Display debug information if available
                                     if (response.data.debug && response.data.debug.length > 0) {
-                                        html += '<div style="margin-top: 20px;"><h3>Debug Information</h3>';
-                                        html += '<div style="background: #f5f5f5; padding: 15px; border: 1px solid #ddd; max-height: 600px; overflow-y: auto;">';
+                                        var $debugContainer = $('<div>').css('margin-top', '20px');
+                                        $debugContainer.append($('<h3>').text('Debug Information'));
+                                        
+                                        var $debugContent = $('<div>').css({
+                                            'background': '#f5f5f5',
+                                            'padding': '15px',
+                                            'border': '1px solid #ddd',
+                                            'max-height': '600px',
+                                            'overflow-y': 'auto'
+                                        });
                                         
                                         response.data.debug.forEach(function(entry, index) {
-                                            var statusClass = entry.skip_reason.indexOf('SUCCESS') !== -1 ? 'success' : 'error';
-                                            html += '<div style="margin-bottom: 20px; padding: 10px; background: white; border-left: 4px solid ' + (statusClass === 'success' ? '#46b450' : '#dc3232') + ';">';
-                                            html += '<h4 style="margin-top: 0;">Entry #' + (index + 1) + ' (ID: ' + entry.entry_id + ') - ' + entry.date_created + '</h4>';
-                                            html += '<p><strong>Status:</strong> ' + entry.skip_reason + '</p>';
+                                            var statusClass = entry.status === 'success' ? 'success' : 'error';
+                                            var borderColor = statusClass === 'success' ? '#46b450' : '#dc3232';
+                                            
+                                            var $entryDiv = $('<div>').css({
+                                                'margin-bottom': '20px',
+                                                'padding': '10px',
+                                                'background': 'white',
+                                                'border-left': '4px solid ' + borderColor
+                                            });
+                                            
+                                            $entryDiv.append(
+                                                $('<h4>').css('margin-top', '0').text(
+                                                    'Entry #' + (index + 1) + ' (ID: ' + entry.entry_id + ') - ' + entry.date_created
+                                                )
+                                            );
+                                            
+                                            $entryDiv.append(
+                                                $('<p>').append(
+                                                    $('<strong>').text('Status: '),
+                                                    document.createTextNode(entry.skip_reason)
+                                                )
+                                            );
                                             
                                             if (entry.fields_found && entry.fields_found.length > 0) {
-                                                html += '<p><strong>Form Fields Found:</strong></p><ul>';
+                                                var $fieldsP = $('<p>').append($('<strong>').text('Form Fields Found:'));
+                                                var $fieldsList = $('<ul>');
                                                 entry.fields_found.forEach(function(field) {
-                                                    html += '<li>ID: ' + field.id + ', Label: "' + field.label + '", Type: ' + field.type + '</li>';
+                                                    $fieldsList.append(
+                                                        $('<li>').text('ID: ' + field.id + ', Label: "' + field.label + '", Type: ' + field.type)
+                                                    );
                                                 });
-                                                html += '</ul>';
+                                                $entryDiv.append($fieldsP, $fieldsList);
                                             }
                                             
                                             if (entry.name_field_debug) {
-                                                html += '<details style="margin-top: 10px;"><summary style="cursor: pointer; font-weight: bold;">Name Field Debug</summary>';
-                                                html += '<pre style="background: #f9f9f9; padding: 10px; overflow-x: auto;">' + JSON.stringify(entry.name_field_debug, null, 2) + '</pre>';
-                                                html += '</details>';
+                                                var $nameDetails = $('<details>').css('margin-top', '10px');
+                                                $nameDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('Name Field Debug'));
+                                                $nameDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.name_field_debug, null, 2))
+                                                );
+                                                $entryDiv.append($nameDetails);
                                             }
                                             
                                             if (entry.address_field_debug) {
-                                                html += '<details style="margin-top: 10px;"><summary style="cursor: pointer; font-weight: bold;">Address Field Debug</summary>';
-                                                html += '<pre style="background: #f9f9f9; padding: 10px; overflow-x: auto;">' + JSON.stringify(entry.address_field_debug, null, 2) + '</pre>';
-                                                html += '</details>';
+                                                var $addrDetails = $('<details>').css('margin-top', '10px');
+                                                $addrDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('Address Field Debug'));
+                                                $addrDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.address_field_debug, null, 2))
+                                                );
+                                                $entryDiv.append($addrDetails);
                                             }
                                             
                                             if (entry.data_extracted) {
-                                                html += '<details style="margin-top: 10px;"><summary style="cursor: pointer; font-weight: bold;">Data Extracted</summary>';
-                                                html += '<pre style="background: #f9f9f9; padding: 10px; overflow-x: auto;">' + JSON.stringify(entry.data_extracted, null, 2) + '</pre>';
-                                                html += '</details>';
+                                                var $dataDetails = $('<details>').css('margin-top', '10px');
+                                                $dataDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('Data Extracted'));
+                                                $dataDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.data_extracted, null, 2))
+                                                );
+                                                $entryDiv.append($dataDetails);
                                             }
                                             
                                             if (entry.missing_required && entry.missing_required.length > 0) {
-                                                html += '<p style="color: #dc3232;"><strong>Missing Required Fields:</strong> ' + entry.missing_required.join(', ') + '</p>';
+                                                $entryDiv.append(
+                                                    $('<p>').css('color', '#dc3232').append(
+                                                        $('<strong>').text('Missing Required Fields: '),
+                                                        document.createTextNode(entry.missing_required.join(', '))
+                                                    )
+                                                );
                                             }
                                             
                                             if (entry.all_entry_keys && entry.all_entry_keys.length > 0) {
-                                                html += '<details style="margin-top: 10px;"><summary style="cursor: pointer; font-weight: bold;">All Entry Keys Available</summary>';
-                                                html += '<pre style="background: #f9f9f9; padding: 10px; overflow-x: auto;">' + JSON.stringify(entry.all_entry_keys, null, 2) + '</pre>';
-                                                html += '</details>';
+                                                var $keysDetails = $('<details>').css('margin-top', '10px');
+                                                $keysDetails.append($('<summary>').css({'cursor': 'pointer', 'font-weight': 'bold'}).text('All Entry Keys Available'));
+                                                $keysDetails.append(
+                                                    $('<pre>').css({'background': '#f9f9f9', 'padding': '10px', 'overflow-x': 'auto'})
+                                                        .text(JSON.stringify(entry.all_entry_keys, null, 2))
+                                                );
+                                                $entryDiv.append($keysDetails);
                                             }
                                             
-                                            html += '</div>';
+                                            $debugContent.append($entryDiv);
                                         });
                                         
-                                        html += '</div></div>';
+                                        $debugContainer.append($debugContent);
+                                        $result.empty().append($successDiv, $debugContainer);
+                                    } else {
+                                        $result.empty().append($successDiv);
                                     }
-                                    
-                                    $result.html(html);
                                 } else {
-                                    $result.html('<div class="notice notice-error"><p>' + response.data.message + '</p></div>');
+                                    var $errorDiv = $('<div>').addClass('notice notice-error');
+                                    $errorDiv.append($('<p>').text(response.data.message));
+                                    $result.empty().append($errorDiv);
                                 }
                             },
                             error: function(xhr, status, error) {
+                                var $errorDiv = $('<div>').addClass('notice notice-error');
                                 var errorMsg = 'An error occurred during import. ';
                                 if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
                                     errorMsg += xhr.responseJSON.data.message;
                                 } else {
                                     errorMsg += 'Status: ' + status + ', Error: ' + error;
                                 }
-                                $result.html('<div class="notice notice-error"><p>' + errorMsg + '</p></div>');
+                                $errorDiv.append($('<p>').text(errorMsg));
+                                $result.empty().append($errorDiv);
                             },
                             complete: function() {
                                 $button.prop('disabled', false).text('Import Entries');
@@ -488,6 +544,7 @@ class HS_CRM_Settings {
         $entry_debug = array(
             'entry_id' => $entry['id'],
             'date_created' => $entry['date_created'],
+            'status' => 'processing', // Will be updated: 'success', 'missing_fields', 'duplicate', or 'error'
             'fields_found' => array(),
             'data_extracted' => array(),
             'missing_required' => array(),
@@ -662,6 +719,7 @@ class HS_CRM_Settings {
         }
         
         if (!empty($entry_debug['missing_required'])) {
+            $entry_debug['status'] = 'missing_fields';
             $entry_debug['skip_reason'] = 'Missing required fields: ' . implode(', ', $entry_debug['missing_required']);
             if ($debug_mode) {
                 $debug_log[] = $entry_debug;
@@ -679,6 +737,7 @@ class HS_CRM_Settings {
         ));
         
         if ($existing) {
+            $entry_debug['status'] = 'duplicate';
             $entry_debug['skip_reason'] = 'Duplicate entry (email and phone already exist in database)';
             if ($debug_mode) {
                 $debug_log[] = $entry_debug;
@@ -705,6 +764,7 @@ class HS_CRM_Settings {
                 ),
                 array('%d', '%s')
             );
+            $entry_debug['status'] = 'success';
             $entry_debug['skip_reason'] = 'SUCCESS - Imported as enquiry ID: ' . $enquiry_id;
             if ($debug_mode) {
                 $debug_log[] = $entry_debug;
@@ -712,6 +772,7 @@ class HS_CRM_Settings {
             return true;
         }
         
+        $entry_debug['status'] = 'error';
         $entry_debug['skip_reason'] = 'Failed to insert into database';
         if ($debug_mode) {
             $debug_log[] = $entry_debug;
