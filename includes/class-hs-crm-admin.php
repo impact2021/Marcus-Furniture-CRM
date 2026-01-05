@@ -31,7 +31,7 @@ class HS_CRM_Admin {
         add_menu_page(
             'Marcus Furniture Enquiries',
             'MF Enquiries',
-            'manage_options',
+            'view_crm_dashboard', // Changed from 'manage_options' to custom capability
             'hs-crm-enquiries',
             array($this, 'render_admin_page'),
             'dashicons-move',
@@ -43,7 +43,7 @@ class HS_CRM_Admin {
      * Render admin page
      */
     public function render_admin_page() {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('view_crm_dashboard')) { // Changed from 'manage_options'
             return;
         }
         
@@ -171,17 +171,11 @@ class HS_CRM_Admin {
                                     if (!empty($enquiry->number_of_bedrooms)) {
                                         $house_details[] = esc_html($enquiry->number_of_bedrooms) . ' bedrooms';
                                     }
-                                    if (!empty($enquiry->total_rooms)) {
-                                        $house_details[] = esc_html($enquiry->total_rooms) . ' total rooms';
-                                    }
-                                    if (!empty($enquiry->stairs_from)) {
-                                        $house_details[] = 'Stairs (From): ' . esc_html($enquiry->stairs_from);
-                                    }
-                                    if (!empty($enquiry->stairs_to)) {
-                                        $house_details[] = 'Stairs (To): ' . esc_html($enquiry->stairs_to);
+                                    if (!empty($enquiry->number_of_rooms)) {
+                                        $house_details[] = esc_html($enquiry->number_of_rooms) . ' total rooms';
                                     }
                                     if (!empty($enquiry->property_notes)) {
-                                        $house_details[] = 'Notes: ' . esc_html($enquiry->property_notes);
+                                        $house_details[] = 'Notes: ' . esc_html(wp_trim_words($enquiry->property_notes, 10));
                                     }
                                     if (empty($house_details)) {
                                         echo '<em style="color: #999;">Not set</em>';
@@ -291,6 +285,65 @@ class HS_CRM_Admin {
                         <input type="text" id="enquiry-last-name" name="last_name" required>
                     </div>
                     
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-from-address">From Address</label>
+                        <textarea id="enquiry-from-address" name="delivery_from_address" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-from-suburb">From Suburb</label>
+                        <input type="text" id="enquiry-from-suburb" name="from_suburb">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-to-address">To Address</label>
+                        <textarea id="enquiry-to-address" name="delivery_to_address" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-to-suburb">To Suburb</label>
+                        <input type="text" id="enquiry-to-suburb" name="to_suburb">
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-bedrooms">Number of Bedrooms</label>
+                        <select id="enquiry-bedrooms" name="number_of_bedrooms">
+                            <option value="">Select...</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-total-rooms">Total Number of Rooms</label>
+                        <select id="enquiry-total-rooms" name="number_of_rooms">
+                            <option value="">Select...</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-property-notes">Property Notes</label>
+                        <textarea id="enquiry-property-notes" name="property_notes" rows="3" placeholder="Any additional notes about the property..."></textarea>
+                    </div>
+                    
                     <div class="hs-crm-form-group hs-crm-form-buttons">
                         <button type="submit" class="button button-primary">Save Enquiry</button>
                         <button type="button" class="button hs-crm-modal-close">Cancel</button>
@@ -392,7 +445,7 @@ class HS_CRM_Admin {
     public function ajax_create_enquiry() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -401,10 +454,19 @@ class HS_CRM_Admin {
             'last_name' => isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '',
             'email' => 'TEMP_PLACEHOLDER@example.com', // Temporary placeholder for testing
             'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
-            'delivery_from_address' => 'TEMP_TBD', // Temporary placeholder for testing
-            'delivery_to_address' => 'TEMP_TBD', // Temporary placeholder for testing
+            'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
+            'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
+            'from_suburb' => isset($_POST['from_suburb']) ? sanitize_text_field($_POST['from_suburb']) : '',
+            'to_suburb' => isset($_POST['to_suburb']) ? sanitize_text_field($_POST['to_suburb']) : '',
+            'number_of_bedrooms' => isset($_POST['number_of_bedrooms']) ? sanitize_text_field($_POST['number_of_bedrooms']) : '',
+            'number_of_rooms' => isset($_POST['number_of_rooms']) ? sanitize_text_field($_POST['number_of_rooms']) : '',
+            'property_notes' => isset($_POST['property_notes']) ? sanitize_textarea_field($_POST['property_notes']) : '',
             'contact_source' => 'form',
         );
+        
+        // DEBUG: Log the data being sent
+        error_log('CREATE ENQUIRY DATA: ' . print_r($data, true));
+        error_log('POST bedrooms value: ' . (isset($_POST['number_of_bedrooms']) ? $_POST['number_of_bedrooms'] : 'NOT SET'));
         
         // Validate required fields
         if (empty($data['first_name']) || empty($data['last_name'])) {
@@ -412,6 +474,14 @@ class HS_CRM_Admin {
         }
         
         $enquiry_id = HS_CRM_Database::insert_enquiry($data);
+        
+        // DEBUG: Log result
+        error_log('INSERT RESULT: ' . ($enquiry_id ? 'ID=' . $enquiry_id : 'FALSE'));
+        global $wpdb;
+        if (!$enquiry_id) {
+            error_log('WPDB ERROR: ' . $wpdb->last_error);
+            error_log('WPDB LAST QUERY: ' . $wpdb->last_query);
+        }
         
         if ($enquiry_id) {
             // Add note about manual creation
@@ -422,7 +492,10 @@ class HS_CRM_Admin {
                 'enquiry_id' => $enquiry_id
             ));
         } else {
-            wp_send_json_error(array('message' => 'Failed to create enquiry.'));
+            wp_send_json_error(array(
+                'message' => 'Failed to create enquiry. Check error log for details.',
+                'debug' => $wpdb->last_error
+            ));
         }
     }
     
@@ -432,7 +505,7 @@ class HS_CRM_Admin {
     public function ajax_update_enquiry() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -450,13 +523,50 @@ class HS_CRM_Admin {
         if (isset($_POST['last_name'])) {
             $data['last_name'] = sanitize_text_field($_POST['last_name']);
         }
+        if (isset($_POST['delivery_from_address'])) {
+            $data['delivery_from_address'] = sanitize_textarea_field($_POST['delivery_from_address']);
+        }
+        if (isset($_POST['delivery_to_address'])) {
+            $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
+        }
+        if (isset($_POST['from_suburb'])) {
+            $data['from_suburb'] = sanitize_text_field($_POST['from_suburb']);
+        }
+        if (isset($_POST['to_suburb'])) {
+            $data['to_suburb'] = sanitize_text_field($_POST['to_suburb']);
+        }
+        if (isset($_POST['number_of_bedrooms'])) {
+            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+        }
+        if (isset($_POST['number_of_rooms'])) {
+            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+        }
+        if (isset($_POST['property_notes'])) {
+            $data['property_notes'] = sanitize_textarea_field($_POST['property_notes']);
+        }
+        
+        // DEBUG: Log the data being sent
+        error_log('UPDATE ENQUIRY ID: ' . $enquiry_id);
+        error_log('UPDATE DATA: ' . print_r($data, true));
+        error_log('POST bedrooms value: ' . (isset($_POST['number_of_bedrooms']) ? $_POST['number_of_bedrooms'] : 'NOT SET'));
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);
+        
+        // DEBUG: Log result
+        error_log('UPDATE RESULT: ' . ($result !== false ? 'SUCCESS' : 'FALSE'));
+        global $wpdb;
+        if ($result === false) {
+            error_log('WPDB ERROR: ' . $wpdb->last_error);
+            error_log('WPDB LAST QUERY: ' . $wpdb->last_query);
+        }
         
         if ($result !== false) {
             wp_send_json_success(array('message' => 'Enquiry updated successfully.'));
         } else {
-            wp_send_json_error(array('message' => 'Failed to update enquiry.'));
+            wp_send_json_error(array(
+                'message' => 'Failed to update enquiry. Check error log for details.',
+                'debug' => $wpdb->last_error
+            ));
         }
     }
     
@@ -466,7 +576,7 @@ class HS_CRM_Admin {
     public function ajax_update_status() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -513,7 +623,7 @@ class HS_CRM_Admin {
     public function ajax_save_notes() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -539,7 +649,7 @@ class HS_CRM_Admin {
     public function ajax_get_enquiry() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -564,7 +674,7 @@ class HS_CRM_Admin {
     public function ajax_add_note() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -598,7 +708,7 @@ class HS_CRM_Admin {
     public function ajax_delete_note() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         
@@ -632,7 +742,7 @@ class HS_CRM_Admin {
     public function ajax_update_truck_assignment() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }
         

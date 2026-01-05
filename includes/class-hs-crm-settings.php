@@ -25,7 +25,7 @@ class HS_CRM_Settings {
             'hs-crm-enquiries',
             'Settings',
             'Settings',
-            'manage_options',
+            'manage_crm_settings',
             'hs-crm-settings',
             array($this, 'render_settings_page')
         );
@@ -107,7 +107,7 @@ class HS_CRM_Settings {
      * Render settings page
      */
     public function render_settings_page() {
-        if (!current_user_can('manage_options')) {
+        if (!current_user_can('manage_crm_settings')) {
             return;
         }
         
