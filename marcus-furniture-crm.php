@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 2.4
+ * Version: 2.5
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '2.4');
+define('HS_CRM_VERSION', '2.5');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
@@ -342,6 +342,12 @@ function hs_crm_check_db_version() {
         hs_crm_migrate_to_2_3_0();
         update_option('hs_crm_db_version', '2.3.0');
     }
+    
+    if (version_compare($db_version, '2.5.0', '<')) {
+        // Run migration for version 2.5.0 - Add source_form_name column
+        hs_crm_migrate_to_2_5_0();
+        update_option('hs_crm_db_version', '2.5.0');
+    }
 }
 
 /**
@@ -618,6 +624,24 @@ function hs_crm_migrate_to_2_3_0() {
 }
 
 /**
+ * Migrate database to version 2.5.0
+ * Adds source_form_name column to track which Gravity Form created the enquiry
+ */
+function hs_crm_migrate_to_2_5_0() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'hs_enquiries';
+    
+    // Check if columns exist before adding them
+    $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
+    $column_names = array_column($columns, 'Field');
+    
+    // Add source_form_name column if it doesn't exist
+    if (!in_array('source_form_name', $column_names)) {
+        $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN source_form_name varchar(255) DEFAULT '' NOT NULL AFTER contact_source");
+    }
+}
+
+/**
  * Enqueue styles and scripts
  */
 function hs_crm_enqueue_assets() {
@@ -705,7 +729,8 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     );
     
     $data = array(
-        'contact_source' => 'form'
+        'contact_source' => 'form',
+        'source_form_name' => $form['title']
     );
     
     // Determine job type based on form title

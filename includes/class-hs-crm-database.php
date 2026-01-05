@@ -49,6 +49,7 @@ class HS_CRM_Database {
             booking_start_time time DEFAULT NULL,
             booking_end_time time DEFAULT NULL,
             contact_source varchar(50) DEFAULT 'form' NOT NULL,
+            source_form_name varchar(255) DEFAULT '' NOT NULL,
             job_type varchar(100) DEFAULT '' NOT NULL,
             status varchar(50) DEFAULT 'First Contact' NOT NULL,
             truck_id mediumint(9) DEFAULT NULL,
@@ -167,7 +168,8 @@ class HS_CRM_Database {
             'status' => 'First Contact',
             'email_sent' => 0,
             'admin_notes' => '',
-            'contact_source' => isset($data['contact_source']) ? sanitize_text_field($data['contact_source']) : 'form'
+            'contact_source' => isset($data['contact_source']) ? sanitize_text_field($data['contact_source']) : 'form',
+            'source_form_name' => isset($data['source_form_name']) ? sanitize_text_field($data['source_form_name']) : ''
         );
         
         // Add move_date if provided

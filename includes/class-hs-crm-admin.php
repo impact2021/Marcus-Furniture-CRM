@@ -119,6 +119,7 @@ class HS_CRM_Admin {
                     // Determine form type - prioritize job_type field if set, otherwise infer from fields
                     $is_pickup_delivery = false;
                     $form_type_label = 'Moving House'; // Default
+                    $form_source_label = ''; // The actual form name (for Gravity Forms)
                     
                     if (!empty($enquiry->job_type)) {
                         // Use the job_type field if it's set (from Gravity Forms integration)
@@ -130,6 +131,11 @@ class HS_CRM_Admin {
                             $is_pickup_delivery = true;
                             $form_type_label = 'Pickup/Delivery';
                         }
+                    }
+                    
+                    // Get the actual form name if available (from Gravity Forms)
+                    if (!empty($enquiry->source_form_name)) {
+                        $form_source_label = $enquiry->source_form_name;
                     }
                     
                     // Set header color based on type
@@ -156,14 +162,18 @@ class HS_CRM_Admin {
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                 <td>
                                     <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span><br>
+                                    <?php if (!empty($form_source_label)): ?>
+                                        <small style="color: #0073aa;"><strong><?php echo esc_html($form_source_label); ?></strong></small><br>
+                                    <?php endif; ?>
                                     <small style="color: #666;"><strong><?php echo esc_html($form_type_label); ?></strong></small><br>
                                     <small style="color: #666;">Contact: <?php echo esc_html(hs_crm_format_date($enquiry->created_at, 'd/m/Y')); ?></small><br>
                                     <?php if (!empty($enquiry->move_date)): ?>
-                                        <small style="color: #666;">Move: <strong><?php echo esc_html(date('d/m/Y', strtotime($enquiry->move_date))); ?></strong>
-                                        <?php if (!empty($enquiry->move_time)): ?>
-                                            <?php echo esc_html(date('g:iA', strtotime($enquiry->move_time))); ?>
-                                        <?php endif; ?>
-                                        </small>
+                                        <div class="hs-crm-move-date">
+                                            <strong>Move:</strong> <span class="hs-crm-date-highlight"><?php echo esc_html(date('d/m/Y', strtotime($enquiry->move_date))); ?></span>
+                                            <?php if (!empty($enquiry->move_time)): ?>
+                                                <span class="hs-crm-time-highlight"><?php echo esc_html(date('g:iA', strtotime($enquiry->move_time))); ?></span>
+                                            <?php endif; ?>
+                                        </div>
                                     <?php else: ?>
                                         <small style="color: #999;">Move: Not set</small>
                                     <?php endif; ?>
