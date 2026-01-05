@@ -632,11 +632,16 @@ function hs_crm_migrate_to_2_5_0() {
     $table_name = $wpdb->prefix . 'hs_enquiries';
     
     // Check if columns exist before adding them
+    // Table name is safe: uses $wpdb->prefix (sanitized by WordPress) + hardcoded string
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $columns = $wpdb->get_results("SHOW COLUMNS FROM {$table_name}");
     $column_names = array_column($columns, 'Field');
     
     // Add source_form_name column if it doesn't exist
     if (!in_array('source_form_name', $column_names)) {
+        // Table name is safe: uses $wpdb->prefix (sanitized by WordPress) + hardcoded string
+        // Column definition uses only hardcoded SQL (no user input)
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN source_form_name varchar(255) DEFAULT '' NOT NULL AFTER contact_source");
     }
 }

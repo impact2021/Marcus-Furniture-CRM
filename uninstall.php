@@ -17,6 +17,8 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 global $wpdb;
 
 // Remove database tables
+// Note: $wpdb->prefix is sanitized by WordPress core, so these table names are safe
+// We're only using hardcoded table names that we created, not user input
 $tables = array(
     $wpdb->prefix . 'hs_enquiries',
     $wpdb->prefix . 'hs_enquiry_notes',
@@ -25,6 +27,8 @@ $tables = array(
 );
 
 foreach ($tables as $table) {
+    // Table names use $wpdb->prefix which is sanitized by WordPress
+    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     $wpdb->query("DROP TABLE IF EXISTS {$table}");
 }
 
