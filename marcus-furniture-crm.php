@@ -815,12 +815,22 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         'phone' => array('phone', 'telephone', 'mobile', 'phone number'),
         'address' => array('address', 'street address', 'location'),
         'suburb' => array('suburb', 'city', 'town'),
-        'move_date' => array('move date', 'moving date', 'preferred date', 'date'),
+        'move_date' => array('move date', 'moving date', 'preferred date', 'date', 'delivery date'),
         'move_time' => array('move time', 'moving time', 'preferred time', 'time'),
+        'alternate_date' => array('alternate date', 'alternate delivery date', 'alternative date'),
         'stairs' => array('stairs', 'stairs involved', 'are there stairs'),
+        'stairs_from' => array('stairs from', 'stairs involved? (from)', 'stairs (from)', 'stairs at pickup', 'stairs involved from'),
+        'stairs_to' => array('stairs to', 'stairs involved? (to)', 'stairs (to)', 'stairs at delivery', 'stairs involved to'),
         'items_being_collected' => array('items being delivered', 'items being collected', 'what items', 'items to collect', 'what item(s) are being collected'),
         'furniture_moved_question' => array('existing furniture moved', 'furniture moved', 'do you need any existing furniture moved'),
-        'special_instructions' => array('special instructions', 'additional instructions', 'instructions', 'special requests')
+        'special_instructions' => array('special instructions', 'additional instructions', 'instructions', 'special requests', 'any special instructions'),
+        'move_type' => array('move type', 'type of move', 'what\'s the type of your move'),
+        'house_size' => array('house size', 'size of move', 'what\'s the size of your move', 'move size'),
+        'property_notes' => array('property notes', 'additional info', 'additional information', 'notes'),
+        'outdoor_plants' => array('outdoor plants', 'any outdoor plants', 'plants'),
+        'oversize_items' => array('oversize items', 'any oversize items', 'piano', 'spa', 'large items'),
+        'driveway_concerns' => array('driveway concerns', 'driveway', 'anything that could be a concern with the driveway'),
+        'assembly_help' => array('assembly help', 'help assembling', 'do you need help assembling', 'assembly')
     );
     
     $data = array(
