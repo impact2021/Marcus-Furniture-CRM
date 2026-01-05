@@ -1,0 +1,30 @@
+name: Deploy WordPress Plugin
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy Plugin to WordPress
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clone the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Zip the plugin files
+      - name: Zip plugin for deployment
+        run: zip -r plugin.zip .
+
+      # 3. Deploy via FTP
+      - name: Deploy plugin to site
+        uses: sebastianpopp/ftp-action@v1
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          localDir: plugin.zip
+          remoteDir: ${{ secrets.FTP_PATH }}/wp-content/plugins/your-plugin-folder
