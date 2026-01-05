@@ -711,8 +711,7 @@ function hs_crm_gravity_forms_integration($entry, $form) {
     // Determine job type based on form title
     // Check for moving keywords FIRST (higher priority) since "delivery" often appears in moving forms
     // Use word boundaries to avoid false positives (e.g., "remove" shouldn't match "move")
-    if (preg_match('/\b(moving\s+house|move\s+house)\b/i', $form_title) || 
-        preg_match('/\b(moving|move)\b/i', $form_title)) {
+    if (preg_match('/\b(moving(\s+house)?|move(\s+house)?)\b/i', $form_title)) {
         $data['job_type'] = 'Moving House';
     } elseif (preg_match('/\b(pickup|pick\s+up|delivery)\b/i', $form_title)) {
         $data['job_type'] = 'Pickup/Delivery';
