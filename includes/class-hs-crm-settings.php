@@ -434,36 +434,58 @@ class HS_CRM_Settings {
             
             // Handle special field types FIRST (name, address, email, phone)
             // This ensures we catch fields regardless of their label
-            if ($field->type === 'name' && is_array($field_value)) {
-                // Gravity Forms name field indices: 3 = First Name, 6 = Last Name
-                if (isset($field_value[3]) && !empty($field_value[3])) {
-                    $data['first_name'] = sanitize_text_field($field_value[3]);
+            if ($field->type === 'name') {
+                // Gravity Forms name field uses subfield keys: field_id.3 = First Name, field_id.6 = Last Name
+                $first_name_key = $field->id . '.3';
+                $last_name_key = $field->id . '.6';
+                
+                if (isset($entry[$first_name_key]) && !empty($entry[$first_name_key])) {
+                    $data['first_name'] = sanitize_text_field($entry[$first_name_key]);
                 }
-                if (isset($field_value[6]) && !empty($field_value[6])) {
-                    $data['last_name'] = sanitize_text_field($field_value[6]);
+                if (isset($entry[$last_name_key]) && !empty($entry[$last_name_key])) {
+                    $data['last_name'] = sanitize_text_field($entry[$last_name_key]);
                 }
                 continue; // Move to next field
             }
             
-            if ($field->type === 'address' && is_array($field_value)) {
-                // Gravity Forms address field indices:
-                // 1 = Street Address, 2 = Address Line 2, 3 = City/Suburb
-                // 4 = State/Province, 5 = ZIP/Postal Code
+            if ($field->type === 'address') {
+                // Gravity Forms address field uses subfield keys:
+                // field_id.1 = Street Address, field_id.2 = Address Line 2, field_id.3 = City/Suburb
+                // field_id.4 = State/Province, field_id.5 = ZIP/Postal Code, field_id.6 = Country
+                
+                $street_key = $field->id . '.1';
+                $street2_key = $field->id . '.2';
+                $city_key = $field->id . '.3';
+                $state_key = $field->id . '.4';
+                $zip_key = $field->id . '.5';
+                $country_key = $field->id . '.6';
                 
                 // Extract suburb/city if available
-                if (!empty($field_value[3])) {
-                    $data['suburb'] = sanitize_text_field($field_value[3]);
+                if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                    $data['suburb'] = sanitize_text_field($entry[$city_key]);
                 }
                 
                 // Combine address parts
                 $address_parts = array();
-                if (!empty($field_value[1])) $address_parts[] = $field_value[1];
-                if (!empty($field_value[2])) $address_parts[] = $field_value[2];
-                if (!empty($field_value[3])) $address_parts[] = $field_value[3];
-                if (!empty($field_value[4])) $address_parts[] = $field_value[4];
-                if (!empty($field_value[5])) $address_parts[] = $field_value[5];
+                if (isset($entry[$street_key]) && !empty($entry[$street_key])) {
+                    $address_parts[] = $entry[$street_key];
+                }
+                if (isset($entry[$street2_key]) && !empty($entry[$street2_key])) {
+                    $address_parts[] = $entry[$street2_key];
+                }
+                if (isset($entry[$city_key]) && !empty($entry[$city_key])) {
+                    $address_parts[] = $entry[$city_key];
+                }
+                if (isset($entry[$state_key]) && !empty($entry[$state_key])) {
+                    $address_parts[] = $entry[$state_key];
+                }
+                if (isset($entry[$zip_key]) && !empty($entry[$zip_key])) {
+                    $address_parts[] = $entry[$zip_key];
+                }
                 
-                $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
+                if (!empty($address_parts)) {
+                    $data['address'] = sanitize_textarea_field(implode(', ', $address_parts));
+                }
                 continue; // Move to next field
             }
             
