@@ -171,10 +171,15 @@ function hs_crm_restrict_admin_menu() {
 
 /**
  * Redirect CRM Managers to enquiries page on login
+ * 
+ * @param string $redirect_to The redirect destination URL
+ * @param string $request The requested redirect destination URL passed as a parameter
+ * @param WP_User|WP_Error $user The user object or WP_Error on login failure
+ * @return string The redirect URL
  */
 function hs_crm_login_redirect($redirect_to, $request, $user) {
-    // Check if user is a CRM Manager (and not an administrator)
-    if (isset($user->roles) && is_array($user->roles)) {
+    // Check if user is valid and is a CRM Manager (and not an administrator)
+    if (is_a($user, 'WP_User') && isset($user->roles) && is_array($user->roles)) {
         if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
             return admin_url('admin.php?page=hs-crm-enquiries');
         }
@@ -184,12 +189,13 @@ function hs_crm_login_redirect($redirect_to, $request, $user) {
 }
 
 /**
- * Redirect CRM Managers to CRM dashboard after login
+ * Redirect CRM Managers to enquiries page after admin navigation (fallback)
+ * This handles cases where CRM Managers navigate to non-CRM admin pages
  */
 function hs_crm_redirect_crm_manager() {
     $user = wp_get_current_user();
     
-    // Only redirect CRM Managers on their first admin page load
+    // Only redirect CRM Managers on non-CRM admin pages
     if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
         // Check if we're on a non-CRM admin page
         global $pagenow;
