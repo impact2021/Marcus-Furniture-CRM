@@ -30,11 +30,11 @@ class HS_CRM_Admin {
     public function add_admin_menu() {
         add_menu_page(
             'Marcus Furniture Enquiries',
-            'MF Enquiries',
+            'Enquiries',
             'view_crm_dashboard', // Changed from 'manage_options' to custom capability
             'hs-crm-enquiries',
             array($this, 'render_admin_page'),
-            'dashicons-move',
+            'dashicons-truck',
             26
         );
     }

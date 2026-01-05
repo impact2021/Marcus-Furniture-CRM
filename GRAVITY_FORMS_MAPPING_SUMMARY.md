@@ -67,16 +67,23 @@ Label: "Preferred Move Time"
 Form title contains any of these keywords:
 - moving
 - enquiry
-- contact
+- pickup
+- delivery
 - furniture
 - quote
 
 **Example:** "Moving Quote Request" → Auto-integrated ✅
+**Example:** "Pickup and Delivery" → Auto-integrated ✅
 
 ### Method 2: Manual (by CSS class)
 Add `crm-integration` to Form Settings → Advanced → CSS Class Name
 
 **Example:** Generic "Get Started" form → Add CSS class ✅
+
+### Method 3: Exclude (override automatic integration)
+Add `no-crm-integration` to Form Settings → Advanced → CSS Class Name
+
+**Example:** "General Contact" form that shouldn't be in CRM → Add CSS class ✅
 
 ## Example Form Setup
 
@@ -174,6 +181,9 @@ Example: Email not capturing
 
 ❌ **Wrong:** Form title "Book a Service" + No CSS class
 ✅ **Right:** Form title "Book a Service" + CSS class `crm-integration`
+
+❌ **Wrong:** Form title "General Contact" without exclusion
+✅ **Right:** Form title "General Contact" + CSS class `no-crm-integration` to prevent CRM integration
 
 ❌ **Wrong:** Name field labeled "Name"
 ✅ **Right:** Use Gravity Forms Name field type OR separate fields labeled "First Name" and "Last Name"
