@@ -447,10 +447,24 @@ class HS_CRM_Admin {
             'phone' => 'TEMP_000-000-0000', // Temporary placeholder for testing
             'delivery_from_address' => isset($_POST['delivery_from_address']) ? sanitize_textarea_field($_POST['delivery_from_address']) : 'TEMP_TBD',
             'delivery_to_address' => isset($_POST['delivery_to_address']) ? sanitize_textarea_field($_POST['delivery_to_address']) : 'TEMP_TBD',
-            'number_of_bedrooms' => isset($_POST['number_of_bedrooms']) ? sanitize_text_field($_POST['number_of_bedrooms']) : '',
-            'number_of_rooms' => isset($_POST['number_of_rooms']) ? sanitize_text_field($_POST['number_of_rooms']) : '',
             'contact_source' => 'form',
         );
+        
+        // Validate and add number of bedrooms (1-8)
+        if (isset($_POST['number_of_bedrooms']) && $_POST['number_of_bedrooms'] !== '') {
+            $bedrooms = intval($_POST['number_of_bedrooms']);
+            if ($bedrooms >= 1 && $bedrooms <= 8) {
+                $data['number_of_bedrooms'] = strval($bedrooms);
+            }
+        }
+        
+        // Validate and add number of rooms (1-12)
+        if (isset($_POST['number_of_rooms']) && $_POST['number_of_rooms'] !== '') {
+            $rooms = intval($_POST['number_of_rooms']);
+            if ($rooms >= 1 && $rooms <= 12) {
+                $data['number_of_rooms'] = strval($rooms);
+            }
+        }
         
         // Validate required fields
         if (empty($data['first_name']) || empty($data['last_name'])) {
@@ -502,11 +516,29 @@ class HS_CRM_Admin {
         if (isset($_POST['delivery_to_address'])) {
             $data['delivery_to_address'] = sanitize_textarea_field($_POST['delivery_to_address']);
         }
+        
+        // Validate and add number of bedrooms (1-8)
         if (isset($_POST['number_of_bedrooms'])) {
-            $data['number_of_bedrooms'] = sanitize_text_field($_POST['number_of_bedrooms']);
+            if ($_POST['number_of_bedrooms'] === '') {
+                $data['number_of_bedrooms'] = '';
+            } else {
+                $bedrooms = intval($_POST['number_of_bedrooms']);
+                if ($bedrooms >= 1 && $bedrooms <= 8) {
+                    $data['number_of_bedrooms'] = strval($bedrooms);
+                }
+            }
         }
+        
+        // Validate and add number of rooms (1-12)
         if (isset($_POST['number_of_rooms'])) {
-            $data['number_of_rooms'] = sanitize_text_field($_POST['number_of_rooms']);
+            if ($_POST['number_of_rooms'] === '') {
+                $data['number_of_rooms'] = '';
+            } else {
+                $rooms = intval($_POST['number_of_rooms']);
+                if ($rooms >= 1 && $rooms <= 12) {
+                    $data['number_of_rooms'] = strval($rooms);
+                }
+            }
         }
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);
