@@ -130,6 +130,9 @@ function hs_crm_init() {
         add_action('wp_before_admin_bar_render', 'hs_crm_customize_admin_bar');
     }
     
+    // Add login redirect filter for CRM Managers (outside is_admin check)
+    add_filter('login_redirect', 'hs_crm_login_redirect', 10, 3);
+    
     // Initialize email handler
     $email = new HS_CRM_Email();
 }
@@ -167,6 +170,20 @@ function hs_crm_restrict_admin_menu() {
 }
 
 /**
+ * Redirect CRM Managers to enquiries page on login
+ */
+function hs_crm_login_redirect($redirect_to, $request, $user) {
+    // Check if user is a CRM Manager (and not an administrator)
+    if (isset($user->roles) && is_array($user->roles)) {
+        if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
+            return admin_url('admin.php?page=hs-crm-enquiries');
+        }
+    }
+    
+    return $redirect_to;
+}
+
+/**
  * Redirect CRM Managers to CRM dashboard after login
  */
 function hs_crm_redirect_crm_manager() {
@@ -176,7 +193,7 @@ function hs_crm_redirect_crm_manager() {
     if (in_array('crm_manager', $user->roles) && !in_array('administrator', $user->roles)) {
         // Check if we're on a non-CRM admin page
         global $pagenow;
-        if ($pagenow === 'index.php' || ($pagenow === 'admin.php' && !isset($_GET['page']))) {
+        if ($pagenow === 'index.php' || $pagenow === 'profile.php' || ($pagenow === 'admin.php' && !isset($_GET['page']))) {
             wp_safe_redirect(admin_url('admin.php?page=hs-crm-enquiries'));
             exit;
         }
