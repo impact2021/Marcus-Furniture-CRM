@@ -82,13 +82,11 @@ function hs_crm_create_custom_role() {
 function hs_crm_make_role_editable($roles) {
     // Ensure CRM Manager role is available for assignment
     // This makes the role visible in the user creation/editing interface
+    // WordPress editable_roles filter expects array('role_slug' => 'Display Name')
     if (!isset($roles['crm_manager'])) {
         $crm_role = get_role('crm_manager');
         if ($crm_role) {
-            $roles['crm_manager'] = array(
-                'name' => 'CRM Manager',
-                'capabilities' => $crm_role->capabilities
-            );
+            $roles['crm_manager'] = translate_user_role('CRM Manager');
         }
     }
     return $roles;

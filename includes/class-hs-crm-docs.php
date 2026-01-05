@@ -24,7 +24,7 @@ class HS_CRM_Docs {
             'hs-crm-enquiries',
             'Documentation',
             'Docs',
-            'manage_options',
+            'view_crm_dashboard', // Changed from 'manage_options' to match render_docs_page() check
             'hs-crm-docs',
             array($this, 'render_docs_page')
         );
