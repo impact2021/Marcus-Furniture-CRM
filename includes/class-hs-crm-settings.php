@@ -293,7 +293,7 @@ class HS_CRM_Settings {
                                 action: 'hs_crm_import_gravity_forms',
                                 form_id: formId,
                                 limit: limit,
-                                nonce: '<?php echo wp_create_nonce('hs_crm_import_gf'); ?>'
+                                nonce: <?php echo wp_json_encode(wp_create_nonce('hs_crm_import_gf')); ?>
                             },
                             success: function(response) {
                                 if (response.success) {
@@ -438,13 +438,18 @@ class HS_CRM_Settings {
                     if (strpos($field_label, $label) !== false) {
                         // Handle name fields specially if using a single "Name" field
                         if ($field->type === 'name' && is_array($field_value)) {
-                            if (isset($field_value[3])) { // First name
+                            // Gravity Forms name field indices: 3 = First Name, 6 = Last Name
+                            if (isset($field_value[3])) {
                                 $data['first_name'] = sanitize_text_field($field_value[3]);
                             }
-                            if (isset($field_value[6])) { // Last name
+                            if (isset($field_value[6])) {
                                 $data['last_name'] = sanitize_text_field($field_value[6]);
                             }
                         } elseif ($field->type === 'address' && is_array($field_value)) {
+                            // Gravity Forms address field indices:
+                            // 1 = Street Address, 2 = Address Line 2, 3 = City/Suburb
+                            // 4 = State/Province, 5 = ZIP/Postal Code
+                            
                             // Extract suburb/city if available
                             if (!empty($field_value[3])) {
                                 $data['suburb'] = sanitize_text_field($field_value[3]);
@@ -510,7 +515,12 @@ class HS_CRM_Settings {
                 $notes_table,
                 array(
                     'enquiry_id' => $enquiry_id,
-                    'note' => 'Imported from Gravity Forms: ' . esc_html($form['title']) . ' (Entry ID: ' . $entry['id'] . ', Submitted: ' . $entry['date_created'] . ')'
+                    'note' => sprintf(
+                        'Imported from Gravity Forms: %s (Entry ID: %d, Submitted: %s)',
+                        esc_html($form['title']),
+                        intval($entry['id']),
+                        sanitize_text_field($entry['date_created'])
+                    )
                 ),
                 array('%d', '%s')
             );
