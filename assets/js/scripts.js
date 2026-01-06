@@ -1054,5 +1054,87 @@ jQuery(document).ready(function($) {
                 }
             });
         });
+        
+        // Mobile booking card click handler
+        $(document).on('click', '.hs-crm-mobile-booking-card', function() {
+            var bookingData = $(this).data('booking-data');
+            
+            if (!bookingData) {
+                return;
+            }
+            
+            // Build the detail content
+            var html = '';
+            
+            if (bookingData.customer_name) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Customer Name</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.customer_name).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.job_type) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Job Type</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.job_type).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.date) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Date</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.date).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.time) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Time</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.time).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.from_address) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">From Address</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.from_address).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.to_address) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">To Address</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.to_address).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.truck_name) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Truck</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.truck_name).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (bookingData.notes) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Notes</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(bookingData.notes).html() + '</div>';
+                html += '</div>';
+            }
+            
+            $('#mobile-detail-content').html(html);
+            $('#hs-crm-mobile-detail-modal').fadeIn();
+        });
+        
+        // Close mobile detail modal
+        $('#hs-crm-mobile-detail-modal .hs-crm-modal-close').on('click', function() {
+            $('#hs-crm-mobile-detail-modal').fadeOut();
+        });
+        
+        $(window).on('click', function(e) {
+            if ($(e.target).is('#hs-crm-mobile-detail-modal')) {
+                $('#hs-crm-mobile-detail-modal').fadeOut();
+            }
+        });
     }
 });
