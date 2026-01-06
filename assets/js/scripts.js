@@ -1136,5 +1136,201 @@ jQuery(document).ready(function($) {
                 $('#hs-crm-mobile-detail-modal').fadeOut();
             }
         });
+        
+        // Mobile Enquiry Cards
+        $(document).on('click', '.hs-crm-mobile-enquiry-card', function() {
+            var enquiryData = $(this).data('enquiry-data');
+            
+            if (!enquiryData) {
+                return;
+            }
+            
+            // Build the detail content
+            var html = '';
+            
+            if (enquiryData.customer_name) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Customer Name</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.customer_name).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.phone) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Phone</div>';
+                html += '<div class="hs-crm-detail-value"><a href="tel:' + $('<div>').text(enquiryData.phone).html() + '">' + $('<div>').text(enquiryData.phone).html() + '</a></div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.email) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Email</div>';
+                html += '<div class="hs-crm-detail-value"><a href="mailto:' + $('<div>').text(enquiryData.email).html() + '">' + $('<div>').text(enquiryData.email).html() + '</a></div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.job_type) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Job Type</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.job_type).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.status) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Status</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.status).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.move_date) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Move Date</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.move_date).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.move_time) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Move Time</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.move_time).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.from_address) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">From Address</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.from_address).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.to_address) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">To Address</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.to_address).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.suburb) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Suburb</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.suburb).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.stairs_from) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Stairs (From)</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.stairs_from).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.stairs_to) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Stairs (To)</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.stairs_to).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.stairs && !enquiryData.stairs_from && !enquiryData.stairs_to) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Stairs</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.stairs).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.number_of_bedrooms) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Number of Bedrooms</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.number_of_bedrooms).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.number_of_rooms) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Number of Rooms</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.number_of_rooms).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.items_being_collected) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Items Being Collected</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.items_being_collected).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.furniture_moved_question) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Furniture Moved?</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.furniture_moved_question).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.special_instructions) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Special Instructions</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.special_instructions).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.property_notes) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Property Notes</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.property_notes).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.contact_source) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Contact Source</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.contact_source).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.source_form_name) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Source Form</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.source_form_name).html() + '</div>';
+                html += '</div>';
+            }
+            
+            if (enquiryData.created_at) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Contact Date</div>';
+                html += '<div class="hs-crm-detail-value">' + $('<div>').text(enquiryData.created_at).html() + '</div>';
+                html += '</div>';
+            }
+            
+            // Add notes if available
+            if (enquiryData.notes && enquiryData.notes.length > 0) {
+                html += '<div class="hs-crm-detail-row">';
+                html += '<div class="hs-crm-detail-label">Notes (' + enquiryData.notes.length + ')</div>';
+                html += '<div class="hs-crm-detail-value">';
+                for (var i = 0; i < enquiryData.notes.length; i++) {
+                    var note = enquiryData.notes[i];
+                    html += '<div class="hs-crm-detail-note">';
+                    html += '<small class="hs-crm-detail-note-date">' + $('<div>').text(note.created_at).html() + '</small>';
+                    html += $('<div>').text(note.note).html();
+                    html += '</div>';
+                }
+                html += '</div>';
+                html += '</div>';
+            }
+            
+            $('#mobile-enquiry-detail-content').html(html);
+            $('#hs-crm-mobile-enquiry-detail-modal').fadeIn();
+        });
+        
+        // Close mobile enquiry detail modal
+        $('#hs-crm-mobile-enquiry-detail-modal .hs-crm-modal-close').on('click', function() {
+            $('#hs-crm-mobile-enquiry-detail-modal').fadeOut();
+        });
+        
+        $(window).on('click', function(e) {
+            if ($(e.target).is('#hs-crm-mobile-enquiry-detail-modal')) {
+                $('#hs-crm-mobile-enquiry-detail-modal').fadeOut();
+            }
+        });
     }
 });
