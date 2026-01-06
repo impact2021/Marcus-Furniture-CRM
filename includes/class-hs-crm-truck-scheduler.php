@@ -330,10 +330,14 @@ class HS_CRM_Truck_Scheduler {
                 $job_types_map = array();
                 if (!empty($enquiry_ids)) {
                     global $wpdb;
-                    $enquiry_ids_str = implode(',', array_unique($enquiry_ids));
-                    $job_types_result = $wpdb->get_results(
-                        "SELECT id, job_type FROM {$wpdb->prefix}hs_enquiries WHERE id IN ($enquiry_ids_str)"
+                    // Since we already cast to intval, the IDs are safe integers
+                    // Create placeholders for prepare statement
+                    $placeholders = implode(',', array_fill(0, count($enquiry_ids), '%d'));
+                    $query = $wpdb->prepare(
+                        "SELECT id, job_type FROM {$wpdb->prefix}hs_enquiries WHERE id IN ($placeholders)",
+                        $enquiry_ids
                     );
+                    $job_types_result = $wpdb->get_results($query);
                     foreach ($job_types_result as $row) {
                         $job_types_map[$row->id] = $row->job_type;
                     }
