@@ -93,12 +93,14 @@ jQuery(document).ready(function($) {
             $.ajax({
                 url: hsCrmAjax.ajaxurl,
                 type: 'POST',
+                cache: false, // Disable caching for this request
                 data: {
                     action: 'hs_crm_update_status',
                     nonce: hsCrmAjax.nonce,
                     enquiry_id: enquiryId,
                     status: finalStatus,
-                    old_status: oldStatus
+                    old_status: oldStatus,
+                    _: new Date().getTime() // Cache buster
                 },
                 success: function(response) {
                     if (response.success) {
@@ -143,6 +145,8 @@ jQuery(document).ready(function($) {
                         } else {
                             // Issue #5 fix - show alert for all status changes
                             alert(response.data.message || 'Status updated successfully.');
+                            // Reload page to show fresh data from server
+                            location.reload();
                         }
                     } else {
                         alert('Error: ' + response.data.message);
@@ -322,6 +326,10 @@ jQuery(document).ready(function($) {
                         $('#enquiry-email').val(enquiry.email || '');
                         $('#enquiry-move-date').val(enquiry.move_date || '');
                         $('#enquiry-move-time').val(enquiry.move_time || '');
+                        
+                        // Common address fields
+                        $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
+                        $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
                         
                         // Determine job type and show appropriate fields
                         var isMovingHouse = enquiry.job_type === 'Moving House';
@@ -735,21 +743,13 @@ jQuery(document).ready(function($) {
             $('#enquiry-type-moving').prop('checked', false);
             $('#enquiry-job-type').val('Pickup/Delivery');
             
-            // Show Gravity Forms container for new enquiries
-            $('#gravity-forms-container').show();
+            // Hide Gravity Forms for new enquiries - use manual form
+            $('#gravity-forms-container').hide();
             
-            // Show/hide Gravity Forms
-            $('#gf-moving-house').hide();
-            $('#gf-pickup-delivery').show();
+            // Always show manual form for new enquiries
+            $('#hs-crm-enquiry-form').show();
             
-            // Hide manual form when adding new (show Gravity Forms instead)
-            // Only show manual form if Gravity Forms is not available
-            // Check both: (1) gravity-forms-container has content AND (2) actual Gravity Forms are loaded
-            if ($('#gravity-forms-container').children().length > 0 && $('.gform_wrapper').length > 0) {
-                $('#hs-crm-enquiry-form').hide();
-            }
-            
-            // Show/hide manual form sections (for fallback when Gravity Forms not available)
+            // Show/hide manual form sections based on default selection
             $('#moving-house-fields').hide();
             $('#pickup-delivery-fields').show();
             

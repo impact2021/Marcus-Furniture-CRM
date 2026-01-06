@@ -407,18 +407,18 @@ class HS_CRM_Admin {
                 </div>
                 
                 <!-- Fallback Manual Entry Form (shown if Gravity Forms not available or for editing) -->
-                <form id="hs-crm-enquiry-form" style="<?php echo class_exists('GFForms') ? 'display: none;' : ''; ?>">
+                <form id="hs-crm-enquiry-form">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
                     <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">
                     
                     <!-- Common Fields -->
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-first-name">Name *</label>
+                        <label for="enquiry-first-name">First Name *</label>
                         <input type="text" id="enquiry-first-name" name="first_name" placeholder="First Name" required>
                     </div>
                     
                     <div class="hs-crm-form-group">
-                        <label for="enquiry-last-name">Last Name</label>
+                        <label for="enquiry-last-name">Last Name *</label>
                         <input type="text" id="enquiry-last-name" name="last_name" placeholder="Last Name" required>
                     </div>
                     
@@ -440,6 +440,17 @@ class HS_CRM_Admin {
                     <div class="hs-crm-form-group">
                         <label for="enquiry-move-time">Preferred Time</label>
                         <input type="time" id="enquiry-move-time" name="move_time">
+                    </div>
+                    
+                    <!-- Address Fields - shown for both types -->
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-from-address">From Address *</label>
+                        <input type="text" id="enquiry-from-address" name="delivery_from_address" placeholder="Street Address" required>
+                    </div>
+                    
+                    <div class="hs-crm-form-group">
+                        <label for="enquiry-to-address">To Address *</label>
+                        <input type="text" id="enquiry-to-address" name="delivery_to_address" placeholder="Street Address" required>
                     </div>
                     
                     <!-- Moving House Fields -->
@@ -869,6 +880,11 @@ class HS_CRM_Admin {
      */
     public function ajax_update_status() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
+        
+        // Prevent caching of AJAX responses
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
         
         if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
