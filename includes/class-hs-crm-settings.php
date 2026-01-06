@@ -842,20 +842,21 @@ class HS_CRM_Settings {
             // This helps identify when dropdown field labels don't match the expected mappings
             if (!$matched && ($field->type === 'select' || $field->type === 'radio')) {
                 // Log unmatched dropdown/select fields to WordPress error log for debugging
+                // Sanitize all values to prevent log injection attacks
                 error_log(sprintf(
                     'Marcus Furniture CRM: Unmatched dropdown field in Gravity Forms manual import - Label: "%s", Type: %s, Value: "%s", Form: "%s" (ID: %d)',
-                    $field->label,
-                    $field->type,
-                    $field_value,
-                    isset($form['title']) ? $form['title'] : 'Unknown',
-                    isset($form['id']) ? $form['id'] : 0
+                    esc_html($field->label),
+                    esc_html($field->type),
+                    esc_html($field_value),
+                    isset($form['title']) ? esc_html($form['title']) : 'Unknown',
+                    isset($form['id']) ? intval($form['id']) : 0
                 ));
                 
                 if ($debug_mode) {
                     $entry_debug['unmatched_dropdowns'][] = array(
-                        'label' => $field->label,
-                        'type' => $field->type,
-                        'value' => $field_value
+                        'label' => sanitize_text_field($field->label),
+                        'type' => sanitize_text_field($field->type),
+                        'value' => sanitize_text_field($field_value)
                     );
                 }
             }
