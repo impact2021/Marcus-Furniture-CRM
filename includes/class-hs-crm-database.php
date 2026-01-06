@@ -761,7 +761,9 @@ class HS_CRM_Database {
         // Use DateTime objects for reliable date comparison
         try {
             $move_datetime = new DateTime($move_date);
-            $current_datetime = new DateTime(current_time('Y-m-d'));
+            // Get current date in the local timezone
+            $current_date_str = current_time('Y-m-d');
+            $current_datetime = new DateTime($current_date_str);
             
             // Compare dates - archive if move date is before current date
             if ($move_datetime < $current_datetime) {
