@@ -403,6 +403,21 @@ class HS_CRM_Admin {
                 <span class="hs-crm-modal-close">&times;</span>
                 <h2 id="enquiry-modal-title">Add New Enquiry</h2>
                 
+                <!-- Lead Source Selector - Moved to top -->
+                <div class="hs-crm-form-group" style="border: 2px solid #FF8C00; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
+                        Where did the lead come from? *
+                    </label>
+                    <select id="enquiry-contact-source" name="contact_source" required style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Select source...</option>
+                        <option value="form">Contact form</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="phone">Phone call</option>
+                        <option value="email">Direct email</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
                 <!-- Job Type Selector with Radio Buttons -->
                 <div class="hs-crm-form-group" style="border: 2px solid #0073aa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                     <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
@@ -424,20 +439,6 @@ class HS_CRM_Admin {
                 <form id="hs-crm-enquiry-form">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
                     <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">
-                    
-                    <!-- Lead Source Selector -->
-                    <div class="hs-crm-form-group" style="border: 2px solid #FF8C00; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                        <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
-                            Where did the lead come from? *
-                        </label>
-                        <select id="enquiry-contact-source" name="contact_source" required style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
-                            <option value="">Select source...</option>
-                            <option value="whatsapp">WhatsApp</option>
-                            <option value="phone">Phone call</option>
-                            <option value="email">Direct email</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
                     
                     <!-- Common Fields -->
                     <div class="hs-crm-form-group">
