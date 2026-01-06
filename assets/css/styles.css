@@ -243,7 +243,6 @@
 
 /* Customer header row styling */
 .hs-crm-customer-header-row th {
-    /* Background color is set inline in PHP based on job type */
     font-weight: 600 !important;
     font-size: 11px !important;
     text-transform: uppercase !important;
@@ -253,6 +252,15 @@
     border-right: 1px solid #ddd !important;
     border-top: 1px solid #ddd !important;
     border-bottom: none !important;
+}
+
+/* Header colors based on job type */
+.hs-crm-header-pickup-delivery {
+    background: #FF8C00 !important; /* Orange for Pickup/Delivery */
+}
+
+.hs-crm-header-moving-house {
+    background: #061257 !important; /* Dark blue for Moving House */
 }
 
 .hs-crm-customer-header-row th:first-child {
