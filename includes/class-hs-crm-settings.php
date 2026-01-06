@@ -660,9 +660,13 @@ class HS_CRM_Settings {
             }
             
             // If no exact match, try partial matching for flexibility
+            // Use stricter matching to avoid false positives
             if (!$matched) {
                 foreach ($size_mapping as $pattern => $exact_value) {
-                    if (strpos($value, $pattern) !== false) {
+                    // Use word boundary matching to avoid partial matches
+                    // For example, "1 bedroom apartment" shouldn't match "1 bedroom" alone
+                    $pattern_regex = '/\b' . preg_quote($pattern, '/') . '\b/i';
+                    if (preg_match($pattern_regex, $value)) {
                         $normalized_values['house_size'] = array('original' => $data['house_size'], 'normalized' => $exact_value);
                         $data['house_size'] = $exact_value;
                         $matched = true;

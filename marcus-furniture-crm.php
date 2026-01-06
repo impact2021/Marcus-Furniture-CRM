@@ -854,10 +854,12 @@ function hs_crm_normalize_dropdown_values($data) {
             }
         }
         
-        // If no exact match, try partial matching for flexibility
+        // If no exact match, try word-boundary matching for flexibility
+        // This avoids false positives like "1 bedroom apartment" matching "1 bedroom"
         if (!$matched) {
             foreach ($size_mapping as $pattern => $exact_value) {
-                if (strpos($value, $pattern) !== false) {
+                $pattern_regex = '/\b' . preg_quote($pattern, '/') . '\b/i';
+                if (preg_match($pattern_regex, $value)) {
                     $data['house_size'] = $exact_value;
                     break;
                 }
