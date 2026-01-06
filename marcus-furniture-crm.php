@@ -3,7 +3,7 @@
  * Plugin Name: Marcus Furniture CRM
  * Plugin URI: https://github.com/impact2021/Marcus-Furniture-CRM
  * Description: A CRM system for managing furniture moving enquiries with contact form and admin dashboard
- * Version: 2.10
+ * Version: 2.11
  * Author: Impact Websites
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,7 +18,7 @@ if (!defined('ABSPATH')) {
 // Define plugin constants
 // Note: Using HS_CRM prefix for backward compatibility with existing database tables
 // and class structure from the original Home Shield CRM plugin
-define('HS_CRM_VERSION', '2.10');
+define('HS_CRM_VERSION', '2.11');
 define('HS_CRM_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('HS_CRM_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('HS_CRM_DEFAULT_BOOKING_DURATION', 3); // Default booking duration in hours
@@ -63,6 +63,7 @@ function hs_crm_create_custom_role() {
             'read' => true, // Required for backend access
             'manage_crm_enquiries' => true,
             'view_crm_dashboard' => true,
+            'gravityforms_view_entries' => true, // Allow viewing Gravity Forms entries
         )
     );
     
@@ -161,7 +162,8 @@ function hs_crm_restrict_admin_menu() {
         
         // Remove other common plugin menu items
         remove_menu_page('wpcf7');                      // Contact Form 7
-        remove_menu_page('gf_edit_forms');              // Gravity Forms
+        // Note: Gravity Forms is intentionally NOT removed so CRM Managers can view entries
+        // remove_menu_page('gf_edit_forms');           // Gravity Forms
         remove_menu_page('jetpack');                    // Jetpack
         remove_menu_page('wpseo_dashboard');            // Yoast SEO
         

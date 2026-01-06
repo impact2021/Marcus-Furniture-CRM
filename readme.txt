@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 2.10
+Stable tag: 2.11
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,15 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 2.11 =
+* Improved modal layout: Changed form sections after address fields to two-column layout for better space utilization
+* Removed duplicate address fields from Moving House and Pickup/Delivery sections (already displayed above)
+* Added 'Enquiry received' as new first status option and set as default for new enquiries
+* Added lead source dropdown to 'Add New Enquiry' form (WhatsApp, Phone call, Direct email, Other)
+* Changed 'Form' display to 'Contact form' for better clarity
+* Added Gravity Forms entry viewing permission for CRM Manager role
+* Updated plugin version to 2.11
 
 = 2.10 =
 * Fixed preferred time field not displaying in edit modal when editing enquiries from Gravity Forms
