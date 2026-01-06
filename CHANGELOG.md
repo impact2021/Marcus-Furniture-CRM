@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 2.7 - 2026-01-06
+
+### Updated
+- **Version Update**: Updated plugin version to 2.7
+  - Updated plugin header version in main plugin file from 2.6 to 2.7
+  - Updated HS_CRM_VERSION constant from 2.6 to 2.7
+  - Updated stable tag in readme.txt from 2.6 to 2.7
+  - Ensures consistency across all version references
+
+- **WordPress Compatibility**: Updated WordPress compatibility to version 6.8
+  - Updated "Tested up to" field in readme.txt
+  - Plugin tested and verified compatible with WordPress 6.8
+
 ## Version 2.5 - 2026-01-05
 
 ### Added
