@@ -816,7 +816,7 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         'address' => array('address', 'street address', 'location'),
         'suburb' => array('suburb', 'city', 'town'),
         'move_date' => array('move date', 'moving date', 'preferred date', 'date', 'delivery date'),
-        'move_time' => array('move time', 'moving time', 'preferred time', 'time'),
+        'move_time' => array('move time', 'moving time', 'preferred time', 'preferred delivery time', 'time'),
         'alternate_date' => array('alternate date', 'alternate delivery date', 'alternative date'),
         'stairs' => array('stairs', 'stairs involved', 'are there stairs'),
         'stairs_from' => array('stairs from', 'stairs involved? (from)', 'stairs (from)', 'stairs at pickup', 'stairs involved from'),
