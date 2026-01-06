@@ -349,8 +349,10 @@ jQuery(document).ready(function($) {
                             // Moving house fields
                             $('#enquiry-moving-from').val(enquiry.delivery_from_address || '');
                             $('#enquiry-moving-to').val(enquiry.delivery_to_address || '');
-                            $('#enquiry-stairs-from').val(enquiry.stairs_from || '');
-                            $('#enquiry-stairs-to').val(enquiry.stairs_to || '');
+                            // Fallback to legacy 'stairs' field if stairs_from is empty
+                            $('#enquiry-stairs-from').val(enquiry.stairs_from || enquiry.stairs || '');
+                            // Fallback to legacy 'stairs' field if stairs_to is empty
+                            $('#enquiry-stairs-to').val(enquiry.stairs_to || enquiry.stairs || '');
                             $('#enquiry-move-type').val(enquiry.move_type || '');
                             $('#enquiry-move-size').val(enquiry.house_size || '');
                             $('#enquiry-additional-info').val(enquiry.property_notes || '');
@@ -364,8 +366,10 @@ jQuery(document).ready(function($) {
                             // Pickup/delivery fields
                             $('#enquiry-pickup-from').val(enquiry.delivery_from_address || '');
                             $('#enquiry-deliver-to').val(enquiry.delivery_to_address || '');
-                            $('#enquiry-stairs-pickup').val(enquiry.stairs_from || '');
-                            $('#enquiry-stairs-delivery').val(enquiry.stairs_to || '');
+                            // Fallback to legacy 'stairs' field if stairs_from is empty
+                            $('#enquiry-stairs-pickup').val(enquiry.stairs_from || enquiry.stairs || '');
+                            // Fallback to legacy 'stairs' field if stairs_to is empty
+                            $('#enquiry-stairs-delivery').val(enquiry.stairs_to || enquiry.stairs || '');
                             $('#enquiry-items-collected').val(enquiry.items_being_collected || '');
                             $('#enquiry-special-instructions').val(enquiry.special_instructions || '');
                             $('#enquiry-assembly-help').val(enquiry.assembly_help || '');

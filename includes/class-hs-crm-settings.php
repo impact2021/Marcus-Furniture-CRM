@@ -586,7 +586,7 @@ class HS_CRM_Settings {
             'move_date' => array('move date', 'moving date', 'preferred date', 'date', 'delivery date'),
             'move_time' => array('move time', 'moving time', 'preferred time', 'preferred delivery time', 'time'),
             'alternate_date' => array('alternate date', 'alternate delivery date', 'alternative date'),
-            'stairs' => array('stairs', 'stairs involved', 'are there stairs'),
+            'stairs' => array('stairs', 'stairs involved', 'are stairs involved', 'are there stairs'),
             'stairs_from' => array('stairs from', 'stairs involved? (from)', 'stairs (from)', 'stairs at pickup', 'stairs involved from', 'stairs involved? (pickup)'),
             'stairs_to' => array('stairs to', 'stairs involved? (to)', 'stairs (to)', 'stairs at delivery', 'stairs involved to', 'stairs involved? (delivery)'),
             'items_being_collected' => array('items being delivered', 'items being collected', 'what items', 'items to collect', 'what item(s) are being collected', 'what item(s)'),
