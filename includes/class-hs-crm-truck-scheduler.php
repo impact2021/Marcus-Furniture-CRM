@@ -291,6 +291,12 @@ class HS_CRM_Truck_Scheduler {
             <div class="hs-crm-mobile-schedule">
                 <h3>Schedule</h3>
                 <?php
+                // Create truck ID to name mapping for O(1) lookup
+                $truck_names = array();
+                foreach ($trucks as $truck) {
+                    $truck_names[$truck->id] = $truck->name;
+                }
+                
                 // Collect all bookings for mobile view
                 $mobile_bookings = array();
                 $days_in_month = date('t', $month_timestamp);
@@ -301,13 +307,8 @@ class HS_CRM_Truck_Scheduler {
                         foreach ($bookings_by_date[$current_date] as $truck_id => $truck_bookings) {
                             foreach ($truck_bookings as $booking) {
                                 $booking->display_date = $current_date;
-                                // Find truck name
-                                foreach ($trucks as $truck) {
-                                    if ($truck->id == $truck_id) {
-                                        $booking->truck_name = $truck->name;
-                                        break;
-                                    }
-                                }
+                                // Get truck name from mapping
+                                $booking->truck_name = isset($truck_names[$truck_id]) ? $truck_names[$truck_id] : '';
                                 $mobile_bookings[] = $booking;
                             }
                         }
@@ -330,14 +331,13 @@ class HS_CRM_Truck_Scheduler {
                 $job_types_map = array();
                 if (!empty($enquiry_ids)) {
                     global $wpdb;
-                    // Since we already cast to intval, the IDs are safe integers
-                    // Create placeholders for prepare statement
-                    $placeholders = implode(',', array_fill(0, count($enquiry_ids), '%d'));
-                    $query = $wpdb->prepare(
-                        "SELECT id, job_type FROM {$wpdb->prefix}hs_enquiries WHERE id IN ($placeholders)",
-                        $enquiry_ids
+                    // Use array_map to ensure all IDs are integers (already done with intval above)
+                    // Then use implode to create a safe IN clause since all values are validated integers
+                    $safe_ids = implode(',', array_map('intval', $enquiry_ids));
+                    // Safe to use directly since all values are guaranteed integers
+                    $job_types_result = $wpdb->get_results(
+                        "SELECT id, job_type FROM {$wpdb->prefix}hs_enquiries WHERE id IN ($safe_ids)"
                     );
-                    $job_types_result = $wpdb->get_results($query);
                     foreach ($job_types_result as $row) {
                         $job_types_map[$row->id] = $row->job_type;
                     }
