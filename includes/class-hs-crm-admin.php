@@ -953,6 +953,22 @@ class HS_CRM_Admin {
         $enquiry = HS_CRM_Database::get_enquiry($enquiry_id);
         
         if ($enquiry) {
+            // Format move_time to HH:MM for HTML5 time input compatibility
+            if (!empty($enquiry->move_time)) {
+                // Convert time to HH:MM format (remove seconds if present)
+                $time_parts = explode(':', $enquiry->move_time);
+                if (count($time_parts) >= 2) {
+                    // Cast to integers and validate before formatting
+                    $hours = (int)$time_parts[0];
+                    $minutes = (int)$time_parts[1];
+                    
+                    // Validate time values are within valid ranges
+                    if ($hours >= 0 && $hours <= 23 && $minutes >= 0 && $minutes <= 59) {
+                        $enquiry->move_time = sprintf('%02d:%02d', $hours, $minutes);
+                    }
+                }
+            }
+            
             wp_send_json_success(array('enquiry' => $enquiry));
         } else {
             wp_send_json_error(array('message' => 'Enquiry not found.'));

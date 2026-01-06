@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 2.9
+Stable tag: 2.10
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,12 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 2.10 =
+* Fixed preferred time field not displaying in edit modal when editing enquiries from Gravity Forms
+* Improved time format compatibility with HTML5 time input fields
+* Time values now properly display in HH:MM format in the edit modal
+* Updated WordPress plugin version to 2.10
 
 = 2.7 =
 * Updated plugin version to 2.7
