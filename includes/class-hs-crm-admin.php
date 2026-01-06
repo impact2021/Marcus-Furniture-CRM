@@ -41,6 +41,31 @@ class HS_CRM_Admin {
     }
     
     /**
+     * Format contact source for display
+     * 
+     * @param string $source The contact source value
+     * @return string Formatted display text
+     */
+    private function format_contact_source($source) {
+        $source_map = array(
+            'form' => 'Contact form',
+            'whatsapp' => 'WhatsApp',
+            'phone' => 'Phone call',
+            'email' => 'Direct email',
+            'other' => 'Other',
+            'manual' => 'Manual'
+        );
+        
+        $source_lower = strtolower($source);
+        if (isset($source_map[$source_lower])) {
+            return $source_map[$source_lower];
+        }
+        
+        // Fallback to capitalized source
+        return ucfirst($source);
+    }
+    
+    /**
      * Render admin page
      */
     public function render_admin_page() {
@@ -76,6 +101,10 @@ class HS_CRM_Admin {
                 <a href="?page=hs-crm-enquiries&status=all" 
                    class="hs-crm-tab <?php echo $current_status === 'all' ? 'active' : ''; ?>">
                     All (<?php echo $counts['all']; ?>)
+                </a>
+                <a href="?page=hs-crm-enquiries&status=Enquiry received" 
+                   class="hs-crm-tab <?php echo $current_status === 'Enquiry received' ? 'active' : ''; ?>">
+                    Enquiry received (<?php echo $counts['Enquiry received']; ?>)
                 </a>
                 <a href="?page=hs-crm-enquiries&status=First Contact" 
                    class="hs-crm-tab <?php echo $current_status === 'First Contact' ? 'active' : ''; ?>">
@@ -161,7 +190,7 @@ class HS_CRM_Admin {
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                 <td>
-                                    <span class="hs-crm-source-badge"><?php echo esc_html(ucfirst($enquiry->contact_source)); ?></span><br>
+                                    <span class="hs-crm-source-badge"><?php echo esc_html($this->format_contact_source($enquiry->contact_source)); ?></span><br>
                                     <?php if (!empty($form_source_label)): ?>
                                         <small style="color: #0073aa;"><strong><?php echo esc_html($form_source_label); ?></strong></small><br>
                                     <?php endif; ?>
@@ -303,6 +332,10 @@ class HS_CRM_Admin {
                                     <!-- Status Update Radio Buttons -->
                                     <div class="hs-crm-status-radio-group" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>" data-current-status="<?php echo esc_attr($enquiry->status); ?>">
                                         <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
+                                            <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="Enquiry received" <?php checked($enquiry->status, 'Enquiry received'); ?>>
+                                            Enquiry received
+                                        </label>
+                                        <label style="display: block; margin: 4px 0; font-size: 12px; cursor: pointer;">
                                             <input type="radio" name="status-<?php echo esc_attr($enquiry->id); ?>" value="First Contact" <?php checked($enquiry->status, 'First Contact'); ?>>
                                             I've contacted them
                                         </label>
@@ -387,6 +420,20 @@ class HS_CRM_Admin {
                     </div>
                 </div>
                 
+                <!-- Lead Source Selector -->
+                <div class="hs-crm-form-group" style="border: 2px solid #FF8C00; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
+                        Where did the lead come from? *
+                    </label>
+                    <select id="enquiry-contact-source" name="contact_source" required style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
+                        <option value="">Select source...</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="phone">Phone call</option>
+                        <option value="email">Direct email</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
                 <!-- Manual Entry Form -->
                 <form id="hs-crm-enquiry-form">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
@@ -438,88 +485,90 @@ class HS_CRM_Admin {
                     <div id="moving-house-fields" style="display: none;">
                         <h3 style="margin: 20px 0 10px 0; border-top: 2px solid #0073aa; padding-top: 15px;">Moving House Details</h3>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-moving-from">Moving from: *</label>
-                            <input type="text" id="enquiry-moving-from" name="delivery_from_address" placeholder="Street Address">
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-stairs-from">Stairs involved? (From) *</label>
+                                <select id="enquiry-stairs-from" name="stairs_from">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-stairs-to">Stairs involved? (To) *</label>
+                                <select id="enquiry-stairs-to" name="stairs_to">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-stairs-from">Stairs involved? (From) *</label>
-                            <select id="enquiry-stairs-from" name="stairs_from">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-move-type">What's the type of your move? *</label>
+                                <select id="enquiry-move-type" name="move_type">
+                                    <option value="">Select...</option>
+                                    <option value="Residential">Residential</option>
+                                    <option value="Office">Office</option>
+                                </select>
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-move-size">What's the size of your move? *</label>
+                                <select id="enquiry-move-size" name="house_size">
+                                    <option value="">Select...</option>
+                                    <option value="1 Room Worth of Items Only">1 Room Worth of Items Only</option>
+                                    <option value="1 BR House - Big Items Only">1 BR House - Big Items Only</option>
+                                    <option value="1 BR House - Big Items and Boxes">1 BR House - Big Items and Boxes</option>
+                                    <option value="2 BR House - Big Items Only">2 BR House - Big Items Only</option>
+                                    <option value="2 BR House - Big Items and Boxes">2 BR House - Big Items and Boxes</option>
+                                    <option value="3 BR House - Big Items Only">3 BR House - Big Items Only</option>
+                                    <option value="3 BR House - Big Items and Boxes">3 BR House - Big Items and Boxes</option>
+                                    <option value="4 BR Houses or above">4 BR Houses or above</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-moving-to">Moving to: *</label>
-                            <input type="text" id="enquiry-moving-to" name="delivery_to_address" placeholder="Street Address">
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-outdoor-plants">Any outdoor plants? *</label>
+                                <select id="enquiry-outdoor-plants" name="outdoor_plants">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-oversize-items">Any oversize items such as piano, double-door fridge or spa? *</label>
+                                <select id="enquiry-oversize-items" name="oversize_items">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-stairs-to">Stairs involved? (To) *</label>
-                            <select id="enquiry-stairs-to" name="stairs_to">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-move-type">What's the type of your move? *</label>
-                            <select id="enquiry-move-type" name="move_type">
-                                <option value="">Select...</option>
-                                <option value="Residential">Residential</option>
-                                <option value="Office">Office</option>
-                            </select>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-move-size">What's the size of your move? *</label>
-                            <select id="enquiry-move-size" name="house_size">
-                                <option value="">Select...</option>
-                                <option value="1 Room Worth of Items Only">1 Room Worth of Items Only</option>
-                                <option value="1 BR House - Big Items Only">1 BR House - Big Items Only</option>
-                                <option value="1 BR House - Big Items and Boxes">1 BR House - Big Items and Boxes</option>
-                                <option value="2 BR House - Big Items Only">2 BR House - Big Items Only</option>
-                                <option value="2 BR House - Big Items and Boxes">2 BR House - Big Items and Boxes</option>
-                                <option value="3 BR House - Big Items Only">3 BR House - Big Items Only</option>
-                                <option value="3 BR House - Big Items and Boxes">3 BR House - Big Items and Boxes</option>
-                                <option value="4 BR Houses or above">4 BR Houses or above</option>
-                            </select>
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-driveway-concerns">Anything that could be a concern with the driveway? *</label>
+                                <select id="enquiry-driveway-concerns" name="driveway_concerns">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <!-- Empty half for layout balance -->
+                            </div>
                         </div>
                         
                         <div class="hs-crm-form-group">
                             <label for="enquiry-additional-info">Additional info</label>
                             <textarea id="enquiry-additional-info" name="property_notes" rows="3" placeholder="Any additional information..."></textarea>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-outdoor-plants">Any outdoor plants? *</label>
-                            <select id="enquiry-outdoor-plants" name="outdoor_plants">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-oversize-items">Any oversize items such as piano, double-door fridge or spa? *</label>
-                            <select id="enquiry-oversize-items" name="oversize_items">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-driveway-concerns">Anything that could be a concern with the driveway? *</label>
-                            <select id="enquiry-driveway-concerns" name="driveway_concerns">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
                         </div>
                     </div>
                     
@@ -527,37 +576,55 @@ class HS_CRM_Admin {
                     <div id="pickup-delivery-fields">
                         <h3 style="margin: 20px 0 10px 0; border-top: 2px solid #FF8C00; padding-top: 15px;">Pickup/Delivery Details</h3>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-alt-date">Alternate delivery date</label>
-                            <input type="date" id="enquiry-alt-date" name="alternate_date">
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-alt-date">Alternate delivery date</label>
+                                <input type="date" id="enquiry-alt-date" name="alternate_date">
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-furniture-moved">Do you need any existing furniture moved? *</label>
+                                <select id="enquiry-furniture-moved" name="furniture_moved_question">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-pickup-from">Where is the item(s) being collected from? *</label>
-                            <input type="text" id="enquiry-pickup-from" name="delivery_from_address" placeholder="Street Address">
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-stairs-pickup">Stairs involved? (Pickup) *</label>
+                                <select id="enquiry-stairs-pickup" name="stairs_from">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-stairs-delivery">Stairs involved? (Delivery) *</label>
+                                <select id="enquiry-stairs-delivery" name="stairs_to">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-stairs-pickup">Stairs involved? (Pickup) *</label>
-                            <select id="enquiry-stairs-pickup" name="stairs_from">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-deliver-to">Where is the item(s) being delivered to? *</label>
-                            <input type="text" id="enquiry-deliver-to" name="delivery_to_address" placeholder="Street Address">
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-stairs-delivery">Stairs involved? (Delivery) *</label>
-                            <select id="enquiry-stairs-delivery" name="stairs_to">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
+                        <div class="hs-crm-form-row">
+                            <div class="hs-crm-form-half">
+                                <label for="enquiry-assembly-help">Do you need help assembling the item we're collecting?</label>
+                                <select id="enquiry-assembly-help" name="assembly_help">
+                                    <option value="">Select...</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                            </div>
+                            
+                            <div class="hs-crm-form-half">
+                                <!-- Empty half for layout balance -->
+                            </div>
                         </div>
                         
                         <div class="hs-crm-form-group">
@@ -568,24 +635,6 @@ class HS_CRM_Admin {
                         <div class="hs-crm-form-group">
                             <label for="enquiry-special-instructions">Any special Instructions?</label>
                             <textarea id="enquiry-special-instructions" name="special_instructions" rows="2"></textarea>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-assembly-help">Do you need help assembling the item we're collecting?</label>
-                            <select id="enquiry-assembly-help" name="assembly_help">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </div>
-                        
-                        <div class="hs-crm-form-group">
-                            <label for="enquiry-furniture-moved">Do you need any existing furniture moved? *</label>
-                            <select id="enquiry-furniture-moved" name="furniture_moved_question">
-                                <option value="">Select...</option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
                         </div>
                     </div>
                     
@@ -720,7 +769,7 @@ class HS_CRM_Admin {
             'move_date' => isset($_POST['move_date']) ? sanitize_text_field($_POST['move_date']) : '',
             'move_time' => isset($_POST['move_time']) ? sanitize_text_field($_POST['move_time']) : '',
             'alternate_date' => isset($_POST['alternate_date']) ? sanitize_text_field($_POST['alternate_date']) : '',
-            'contact_source' => 'manual',
+            'contact_source' => isset($_POST['contact_source']) ? sanitize_text_field($_POST['contact_source']) : 'manual',
         );
         
         // Validate required fields

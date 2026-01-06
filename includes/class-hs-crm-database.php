@@ -59,7 +59,7 @@ class HS_CRM_Database {
             oversize_items varchar(50) DEFAULT '' NOT NULL,
             driveway_concerns varchar(50) DEFAULT '' NOT NULL,
             assembly_help varchar(50) DEFAULT '' NOT NULL,
-            status varchar(50) DEFAULT 'First Contact' NOT NULL,
+            status varchar(50) DEFAULT 'Enquiry received' NOT NULL,
             truck_id mediumint(9) DEFAULT NULL,
             email_sent tinyint(1) DEFAULT 0 NOT NULL,
             first_email_sent_at datetime DEFAULT NULL,
