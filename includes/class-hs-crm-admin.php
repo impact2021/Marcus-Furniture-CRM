@@ -958,7 +958,14 @@ class HS_CRM_Admin {
                 // Convert time to HH:MM format (remove seconds if present)
                 $time_parts = explode(':', $enquiry->move_time);
                 if (count($time_parts) >= 2) {
-                    $enquiry->move_time = sprintf('%02d:%02d', $time_parts[0], $time_parts[1]);
+                    // Cast to integers and validate before formatting
+                    $hours = (int)$time_parts[0];
+                    $minutes = (int)$time_parts[1];
+                    
+                    // Validate time values are within valid ranges
+                    if ($hours >= 0 && $hours <= 23 && $minutes >= 0 && $minutes <= 59) {
+                        $enquiry->move_time = sprintf('%02d:%02d', $hours, $minutes);
+                    }
                 }
             }
             
