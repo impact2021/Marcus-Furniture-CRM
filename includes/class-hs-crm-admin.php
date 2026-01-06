@@ -138,8 +138,8 @@ class HS_CRM_Admin {
                         $form_source_label = $enquiry->source_form_name;
                     }
                     
-                    // Set header color based on type
-                    $header_bg_color = $is_pickup_delivery ? '#FF8C00' : '#061257';
+                    // Set header color class based on type
+                    $header_class = $is_pickup_delivery ? 'hs-crm-header-pickup-delivery' : 'hs-crm-header-moving-house';
                     
                     $row_index++;
                 ?>
@@ -147,17 +147,17 @@ class HS_CRM_Admin {
                     <table class="wp-list-table widefat fixed hs-crm-enquiries-table hs-crm-single-enquiry-table">
                         <tbody>
                             <!-- Customer Header Row -->
-                            <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>" style="background: <?php echo $header_bg_color; ?> !important;">
-                                <th style="width: 12%;">
+                            <tr class="hs-crm-customer-header-row <?php echo $row_class; ?> <?php echo $header_class; ?>">
+                                <th style="width: 12%;" class="<?php echo $header_class; ?>">
                                     Source & Dates
                                 </th>
-                                <th style="width: 16%;">Contact & Address</th>
-                                <th style="width: 12%;">Moving From</th>
-                                <th style="width: 12%;">Moving To</th>
-                                <th style="width: 14%;">Items & Instructions</th>
-                                <th style="width: 8%;">Truck</th>
-                                <th style="width: 18%;">Status</th>
-                                <th style="width: 8%;">Edit / Delete</th>
+                                <th style="width: 16%;" class="<?php echo $header_class; ?>">Contact & Address</th>
+                                <th style="width: 12%;" class="<?php echo $header_class; ?>">Moving From</th>
+                                <th style="width: 12%;" class="<?php echo $header_class; ?>">Moving To</th>
+                                <th style="width: 14%;" class="<?php echo $header_class; ?>">Items & Instructions</th>
+                                <th style="width: 8%;" class="<?php echo $header_class; ?>">Truck</th>
+                                <th style="width: 18%;" class="<?php echo $header_class; ?>">Status</th>
+                                <th style="width: 8%;" class="<?php echo $header_class; ?>">Edit / Delete</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                 <td>
