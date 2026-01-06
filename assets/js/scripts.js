@@ -116,11 +116,6 @@ jQuery(document).ready(function($) {
                         $radioGroup.attr('data-current-status', finalStatus);
                         $radioGroup.data('current-status', finalStatus);
                         
-                        // CRITICAL FIX: Update radio button checked state to match new status
-                        // This prevents cache/state confusion where buttons appear unchecked
-                        $radioGroup.find('input[type="radio"]').prop('checked', false);
-                        $radioGroup.find('input[value="' + finalStatus + '"]').prop('checked', true);
-                        
                         // If should archive, update to Archived status
                         if (shouldArchive) {
                             setTimeout(function() {
@@ -150,6 +145,8 @@ jQuery(document).ready(function($) {
                         } else {
                             // Issue #5 fix - show alert for all status changes
                             alert(response.data.message || 'Status updated successfully.');
+                            // Reload page to show fresh data from server
+                            location.reload();
                         }
                     } else {
                         alert('Error: ' + response.data.message);
