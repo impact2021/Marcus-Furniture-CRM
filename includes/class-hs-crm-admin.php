@@ -731,6 +731,10 @@ class HS_CRM_Admin {
         $enquiry_id = HS_CRM_Database::insert_enquiry($data);
         
         if ($enquiry_id) {
+            // Auto-archive if the delivery/move date is in the past
+            // This ensures manually created enquiries with past dates don't appear in active leads
+            HS_CRM_Database::auto_archive_if_past_date($enquiry_id, isset($data['move_date']) ? $data['move_date'] : '');
+            
             // Add note about manual creation
             $job_type = !empty($data['job_type']) ? sanitize_text_field($data['job_type']) : 'Unknown';
             $note_text = sprintf('Enquiry manually created via admin panel - Job Type: %s', esc_html($job_type));

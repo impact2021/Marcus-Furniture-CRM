@@ -740,6 +740,47 @@ class HS_CRM_Database {
     }
     
     /**
+     * Auto-archive enquiry if move date is in the past
+     * 
+     * @param int $enquiry_id The enquiry ID
+     * @param string $move_date The move/delivery date (Y-m-d format)
+     * @return bool True if enquiry was archived, false otherwise
+     */
+    public static function auto_archive_if_past_date($enquiry_id, $move_date) {
+        // Validate enquiry ID
+        $enquiry_id = intval($enquiry_id);
+        if ($enquiry_id <= 0) {
+            return false;
+        }
+        
+        // Validate move date
+        if (empty($move_date)) {
+            return false;
+        }
+        
+        // Use DateTime objects for reliable date comparison
+        try {
+            $move_datetime = new DateTime($move_date);
+            // Get current date in the local timezone
+            $current_date_str = current_time('Y-m-d');
+            $current_datetime = new DateTime($current_date_str);
+            
+            // Compare dates - archive if move date is before current date
+            if ($move_datetime < $current_datetime) {
+                self::update_status($enquiry_id, 'Archived');
+                self::add_note($enquiry_id, 'Auto-archived: Move date (' . $move_date . ') is in the past');
+                return true;
+            }
+        } catch (Exception $e) {
+            // Invalid date format - log error and return false
+            error_log('Marcus Furniture CRM: Invalid date format in auto_archive_if_past_date: ' . $move_date);
+            return false;
+        }
+        
+        return false;
+    }
+    
+    /**
      * ========================================
      * TRUCK MANAGEMENT METHODS
      * ========================================
