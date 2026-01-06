@@ -148,16 +148,16 @@ class HS_CRM_Admin {
                         <tbody>
                             <!-- Customer Header Row -->
                             <tr class="hs-crm-customer-header-row <?php echo $row_class; ?>" style="background: <?php echo $header_bg_color; ?> !important;">
-                                <th style="width: 12%;">
+                                <th style="width: 12%; background: <?php echo $header_bg_color; ?> !important;">
                                     Source & Dates
                                 </th>
-                                <th style="width: 16%;">Contact & Address</th>
-                                <th style="width: 12%;">Moving From</th>
-                                <th style="width: 12%;">Moving To</th>
-                                <th style="width: 14%;">Items & Instructions</th>
-                                <th style="width: 8%;">Truck</th>
-                                <th style="width: 18%;">Status</th>
-                                <th style="width: 8%;">Edit / Delete</th>
+                                <th style="width: 16%; background: <?php echo $header_bg_color; ?> !important;">Contact & Address</th>
+                                <th style="width: 12%; background: <?php echo $header_bg_color; ?> !important;">Moving From</th>
+                                <th style="width: 12%; background: <?php echo $header_bg_color; ?> !important;">Moving To</th>
+                                <th style="width: 14%; background: <?php echo $header_bg_color; ?> !important;">Items & Instructions</th>
+                                <th style="width: 8%; background: <?php echo $header_bg_color; ?> !important;">Truck</th>
+                                <th style="width: 18%; background: <?php echo $header_bg_color; ?> !important;">Status</th>
+                                <th style="width: 8%; background: <?php echo $header_bg_color; ?> !important;">Edit / Delete</th>
                             </tr>
                             <tr class="hs-crm-enquiry-row <?php echo $row_class; ?>" data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>">
                                 <td>
