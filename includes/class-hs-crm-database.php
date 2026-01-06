@@ -248,30 +248,28 @@ class HS_CRM_Database {
         
         if ($status === 'active') {
             // Auto-archive enquiries with past move dates in Active tab
-            // Use transient to throttle this operation to once per hour to avoid performance impact
-            $last_auto_archive = get_transient('hs_crm_last_auto_archive');
+            // Get current date in local timezone
+            $current_date = current_time('Y-m-d');
             
-            if ($last_auto_archive === false) {
-                // Get current date in local timezone
-                $current_date = current_time('Y-m-d');
-                
-                // Archive enquiries with move_date in the past (excluding today)
-                $wpdb->query($wpdb->prepare(
-                    "UPDATE $table_name 
-                     SET status = 'Archived' 
-                     WHERE status IN ('First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid') 
-                     AND move_date IS NOT NULL 
-                     AND move_date < %s",
-                    $current_date
-                ));
-                
-                // Set transient to prevent running again for 1 hour (3600 seconds)
-                set_transient('hs_crm_last_auto_archive', time(), 3600);
-            }
+            // Archive enquiries with move_date in the past (excluding today)
+            $wpdb->query($wpdb->prepare(
+                "UPDATE $table_name 
+                 SET status = 'Archived' 
+                 WHERE status IN ('Enquiry received', 'First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid') 
+                 AND move_date IS NOT NULL 
+                 AND move_date < %s",
+                $current_date
+            ));
             
-            // Active leads: First Contact, Quote Sent, Booking Confirmed, Deposit Paid
-            // Only show those with future move dates or no move date
-            $sql = "SELECT * FROM $table_name WHERE status IN ('First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid') $order_clause";
+            // Active leads: Enquiry received, First Contact, Quote Sent, Booking Confirmed, Deposit Paid
+            // Filter out enquiries with past move dates
+            $sql = $wpdb->prepare(
+                "SELECT * FROM $table_name 
+                 WHERE status IN ('Enquiry received', 'First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid')
+                 AND (move_date IS NULL OR move_date >= %s)
+                 $order_clause",
+                $current_date
+            );
         } elseif ($status === 'Archived') {
             // Show both "Archived" and "Dead" (for backward compatibility)
             $sql = "SELECT * FROM $table_name WHERE status IN ('Archived', 'Dead') $order_clause";
@@ -592,6 +590,11 @@ class HS_CRM_Database {
             array('%d')
         );
         
+        // If move_date was updated, check if it should be auto-archived
+        if ($result !== false && isset($data['move_date'])) {
+            self::auto_archive_if_past_date($id, $data['move_date']);
+        }
+        
         return $result !== false;
     }
     
@@ -756,6 +759,17 @@ class HS_CRM_Database {
         
         // Validate move date
         if (empty($move_date)) {
+            return false;
+        }
+        
+        // Get the current enquiry to check its status
+        $enquiry = self::get_enquiry($enquiry_id);
+        if (!$enquiry) {
+            return false;
+        }
+        
+        // Don't process if already archived or completed
+        if (in_array($enquiry->status, array('Archived', 'Dead', 'Completed'))) {
             return false;
         }
         
