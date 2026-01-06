@@ -1224,9 +1224,6 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         
         // Add a note indicating this came from Gravity Forms
         if ($enquiry_id) {
-            global $wpdb;
-            $notes_table = $wpdb->prefix . 'hs_enquiry_notes';
-            
             // Auto-archive if the delivery/move date is in the past
             // This ensures Gravity Forms imports with past dates don't appear in active leads
             if (!empty($data['move_date'])) {
@@ -1235,37 +1232,16 @@ function hs_crm_gravity_forms_integration($entry, $form) {
                     HS_CRM_Database::update_status($enquiry_id, 'Archived');
                     
                     // Add note explaining why it was auto-archived
-                    $wpdb->insert(
-                        $notes_table,
-                        array(
-                            'enquiry_id' => $enquiry_id,
-                            'note' => 'Auto-archived: Move date (' . esc_html($data['move_date']) . ') is in the past'
-                        ),
-                        array('%d', '%s')
-                    );
+                    HS_CRM_Database::add_note($enquiry_id, 'Auto-archived: Move date (' . esc_html($data['move_date']) . ') is in the past');
                 }
             }
             
             // Add form source note
-            $wpdb->insert(
-                $notes_table,
-                array(
-                    'enquiry_id' => $enquiry_id,
-                    'note' => 'Enquiry created from Gravity Forms: ' . esc_html($form['title']) . ' (Form ID: ' . $form['id'] . ')'
-                ),
-                array('%d', '%s')
-            );
+            HS_CRM_Database::add_note($enquiry_id, 'Enquiry created from Gravity Forms: ' . esc_html($form['title']) . ' (Form ID: ' . $form['id'] . ')');
             
             // Add special instructions as a note if provided
             if (!empty($data['special_instructions'])) {
-                $wpdb->insert(
-                    $notes_table,
-                    array(
-                        'enquiry_id' => $enquiry_id,
-                        'note' => 'Special Instructions: ' . esc_html($data['special_instructions'])
-                    ),
-                    array('%d', '%s')
-                );
+                HS_CRM_Database::add_note($enquiry_id, 'Special Instructions: ' . esc_html($data['special_instructions']));
             }
             
             // Send admin notification (customer email already sent by Gravity Forms)
