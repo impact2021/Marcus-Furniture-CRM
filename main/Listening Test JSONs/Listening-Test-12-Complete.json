@@ -1,0 +1,102 @@
+[
+    {
+        "question": "How will the man travel to Munich?",
+        "no_answer_feedback": "No answer provided. In the transcript, the man says: *'I'm going to Munich, but **by train**, and then flying back to London.'* The correct answer is 'by train.'",
+        "incorrect_feedback": "✗ Incorrect. The man clearly states: *'I'm going to Munich, but **by train**, and then flying back to London.'* The correct answer is 'by train.'"
+    },
+    {
+        "question": "Which London airport will the man depart from?",
+        "no_answer_feedback": "No answer provided. The assistant explicitly mentions: *'Leaving from City Airport, London.'* The correct answer is 'City Airport.'",
+        "incorrect_feedback": "✗ Incorrect. The check-in assistant says: *'Leaving from City Airport, London.'* The correct answer is 'City Airport.'"
+    },
+    {
+        "question": "What time does the flight arrive in Paris?",
+        "no_answer_feedback": "No answer provided. In the transcript, the assistant confirms: *'Arriving 3 pm local time, with the one-hour time difference.'* The correct answer is '3 PM.'",
+        "incorrect_feedback": "✗ Incorrect. The assistant says: *'Arriving 3 pm local time, with the one-hour time difference.'* The correct answer is '3 PM.'"
+    },
+    {
+        "question": "Which seat does the man choose?",
+        "no_answer_feedback": "No answer provided. The man requests: *'The front of the plane, please, so, the first one.'* The assistant then assigns him seat '7A.'",
+        "incorrect_feedback": "✗ Incorrect. The man says: *'The front of the plane, please, so, the first one.'* The assistant confirms the seat as '7A.'"
+    },
+    {
+        "question": "What is the man's Frequent Flyer number?",
+        "no_answer_feedback": "No answer provided. The man states: *'It's 468319,'* when asked for his Frequent Flyer number.",
+        "incorrect_feedback": "✗ Incorrect. The man explicitly gives his Frequent Flyer number as: *'468319.'* The correct answer is '468319.'"
+    },
+    {
+        "question": "The man's passport...",
+        "no_answer_feedback": "No answer provided. The assistant says: *'You only have 7 months left,'* which matches the correct answer: 'has 7 more months on it.'",
+        "incorrect_feedback": "✗ Incorrect. The assistant mentions: *'You only have 7 months left.'* The correct answer is: 'has 7 more months on it.'"
+    },
+    {
+        "question": "The man will check in...",
+        "no_answer_feedback": "No answer provided. The man states: *'I will check in just this suitcase.'* The correct answer is: 'one suitcase.'",
+        "incorrect_feedback": "✗ Incorrect. The man explicitly says: *'I will check in just this suitcase.'* The correct answer is: 'one suitcase.'"
+    },
+    {
+        "question": "The maximum weight for check-in luggage is...",
+        "no_answer_feedback": "No answer provided. The assistant mentions: *'For your suitcase, it's 20 kilograms.'* The correct answer is: '20 kgs.'",
+        "incorrect_feedback": "✗ Incorrect. The assistant confirms: *'For your suitcase, it's 20 kilograms.'* The correct answer is '20 kgs.'"
+    },
+    {
+        "question": "The boarding time for the flight is...",
+        "no_answer_feedback": "No answer provided. The assistant specifies: *'Be at the gate 20 minutes before departure… so just after 1, 1:10 to be exact.'* The correct answer is '1:10 PM.'",
+        "incorrect_feedback": "✗ Incorrect. The assistant says: *'Be at the gate 20 minutes before departure… so just after 1, 1:10 to be exact.'* The correct answer is '1:10 PM.'"
+    },
+    {
+        "question": "The woman suggests that the man...",
+        "no_answer_feedback": "No answer provided. The assistant advises: *'I suggest that you get one of our brochures about all of our services.'* The correct answer is: 'get a brochure.'",
+        "incorrect_feedback": "✗ Incorrect. The assistant states: *'I suggest that you get one of our brochures about all of our services.'* The correct answer is: 'get a brochure.'"
+    },
+    {
+        "question": "Which TWO things does the manager say about the history of the hotel?",
+        "no_answer_feedback": "No answer provided. The manager highlights: *'The hotel was originally built during the last decade of the seventeenth century.'* Also, they mention: *'The Fairview Arms became a tourist hotel in the late 1880s.'* The correct answers are 'A' and 'D.'",
+        "incorrect_feedback": "✗ Incorrect. The manager states: *'The hotel was originally built during the last decade of the seventeenth century.'* They also say: *'The Fairview Arms became a tourist hotel in the late 1880s.'* The correct answers are 'A' and 'D.'"
+    },
+    {
+        "question": "Which TWO of the hotel facilities are currently unavailable for guests to use?",
+        "no_answer_feedback": "No answer provided. The manager explains: *'The squash courts are presently being upgraded.'* They also note: *'The hotel souvenir shop is currently undergoing an extensive upgrade.'* The correct answers are 'C' and 'E.'",
+        "incorrect_feedback": "✗ Incorrect. The manager mentions: *'The squash courts are presently being upgraded.'* Also, they say: *'The hotel souvenir shop is currently undergoing an extensive upgrade.'* The correct answers are 'C' and 'E.'"
+    },
+    {
+        "question": "Guests are required to wear some form of footwear inside the hotel when not in their rooms.",
+        "no_answer_feedback": "No answer provided. The manager requests: *'We would ask that you wear some type of footwear, be it shoes or sandals, at all times.'* The correct answer is 'footwear.'",
+        "incorrect_feedback": "✗ Incorrect. The manager says: *'We would ask that you wear some type of footwear, be it shoes or sandals, at all times.'* The correct answer is 'footwear.'"
+    },
+    {
+        "question": "The hotel reception is open...",
+        "no_answer_feedback": "No answer provided. The manager says: *'I am pleased to tell you that the reception is open twenty-four hours a day.'* The correct answer is '24 hours.'",
+        "incorrect_feedback": "✗ Incorrect. The manager mentions: *'The reception is open twenty-four hours a day.'* The correct answer is '24 hours.'"
+    },
+    {
+        "question": "Guests who would like to dance are recommended to go to the...",
+        "no_answer_feedback": "No answer provided. The manager says: *'Any keen dancers couldn't put a foot wrong by visiting the nightclub across the road.'* The correct answer is 'nightclub.'",
+        "incorrect_feedback": "✗ Incorrect. The manager suggests: *'Visiting the nightclub across the road.'* The correct answer is 'nightclub.'"
+    },
+    {
+        "question": "Diving is not permitted in the swimming pool.",
+        "no_answer_feedback": "No answer provided. The manager explicitly mentions: *'Be aware that diving is strictly prohibited.'* The correct answer is 'diving.'",
+        "incorrect_feedback": "✗ Incorrect. The manager says: *'Be aware that diving is strictly prohibited.'* The correct answer is 'diving.'"
+    },
+    {
+        "question": "Alcohol consumption is only permitted in the hotel bar and dining hall.",
+        "no_answer_feedback": "No answer provided. The manager says: *'Do so only in the bar or the dining hall.'* The correct answer is 'dining hall.'",
+        "incorrect_feedback": "✗ Incorrect. The manager states: *'Do so only in the bar or the dining hall.'* The correct answer is 'dining hall.'"
+    },
+    {
+        "question": "Guests are asked to be quiet from...",
+        "no_answer_feedback": "No answer provided. The manager says: *'All guests are asked to keep noise to a minimum after eleven p.m. at night.'* The correct answer is '11 PM.'",
+        "incorrect_feedback": "✗ Incorrect. The manager requests: *'All guests are asked to keep noise to a minimum after eleven p.m. at night.'* The correct answer is '11 PM.'"
+    },
+    {
+        "question": "What is the estimated population of Singbora?",
+        "no_answer_feedback": "No answer provided. Thomas mentions: *'The number of people living in the wider community where we stayed was twenty thousand.'* The correct answer is '20,000.'",
+        "incorrect_feedback": "✗ Incorrect. Thomas says: *'The number of people living in the wider community where we stayed was twenty thousand.'* The correct answer is '20,000.'"
+    },
+    {
+        "question": "What is Singbora located beside?",
+        "no_answer_feedback": "No answer provided. Thomas mentions: *'It is situated on the shores of Lake Victoria.'* The correct answer is 'Lake Victoria.'",
+        "incorrect_feedback": "✗ Incorrect. Thomas explicitly says: *'It is situated on the shores of Lake Victoria.'* The correct answer is 'Lake Victoria.'"
+    }
+]
