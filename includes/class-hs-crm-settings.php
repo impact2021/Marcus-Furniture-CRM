@@ -559,6 +559,137 @@ class HS_CRM_Settings {
     }
     
     /**
+     * Normalize dropdown values to match exact option values in HTML select elements
+     * This fixes the issue where Gravity Forms imports values with different casing or variations
+     */
+    private function normalize_dropdown_values($data, $debug_mode = false, &$entry_debug = array()) {
+        $normalized_values = array();
+        
+        // Define the exact dropdown values that match the HTML select options
+        // These must match EXACTLY what's in includes/class-hs-crm-admin.php dropdown options
+        
+        // Yes/No dropdowns - normalize variations to "Yes" or "No"
+        $yes_no_fields = array('stairs', 'stairs_from', 'stairs_to', 'furniture_moved_question', 
+                               'assembly_help', 'outdoor_plants', 'oversize_items', 'driveway_concerns');
+        
+        foreach ($yes_no_fields as $field) {
+            if (!empty($data[$field])) {
+                $value = strtolower(trim($data[$field]));
+                
+                // Normalize Yes variations
+                if (in_array($value, array('yes', 'y', 'true', '1', 'yeah', 'yep'))) {
+                    $normalized_values[$field] = array('original' => $data[$field], 'normalized' => 'Yes');
+                    $data[$field] = 'Yes';
+                }
+                // Normalize No variations
+                elseif (in_array($value, array('no', 'n', 'false', '0', 'nope', 'nah'))) {
+                    $normalized_values[$field] = array('original' => $data[$field], 'normalized' => 'No');
+                    $data[$field] = 'No';
+                }
+                // If value doesn't match known patterns, keep original but log it
+                elseif ($debug_mode) {
+                    $entry_debug['unknown_yes_no_values'][] = array('field' => $field, 'value' => $data[$field]);
+                }
+            }
+        }
+        
+        // Move type dropdown - normalize to "Residential" or "Office"
+        if (!empty($data['move_type'])) {
+            $value = strtolower(trim($data['move_type']));
+            
+            if (in_array($value, array('residential', 'home', 'house', 'residential move'))) {
+                $normalized_values['move_type'] = array('original' => $data['move_type'], 'normalized' => 'Residential');
+                $data['move_type'] = 'Residential';
+            } elseif (in_array($value, array('office', 'commercial', 'business', 'office move'))) {
+                $normalized_values['move_type'] = array('original' => $data['move_type'], 'normalized' => 'Office');
+                $data['move_type'] = 'Office';
+            } elseif ($debug_mode) {
+                $entry_debug['unknown_move_type_values'][] = $data['move_type'];
+            }
+        }
+        
+        // House size dropdown - normalize to exact option values
+        // Options: "1 Room Worth of Items Only", "1 BR House - Big Items Only", etc.
+        if (!empty($data['house_size'])) {
+            $value = strtolower(trim($data['house_size']));
+            
+            // Create a mapping of common variations to exact values
+            $size_mapping = array(
+                '1 room' => '1 Room Worth of Items Only',
+                '1 room worth' => '1 Room Worth of Items Only',
+                'one room' => '1 Room Worth of Items Only',
+                '1 br house - big items only' => '1 BR House - Big Items Only',
+                '1 bedroom - big items only' => '1 BR House - Big Items Only',
+                '1 bedroom big items' => '1 BR House - Big Items Only',
+                '1 br big items' => '1 BR House - Big Items Only',
+                '1 br house - big items and boxes' => '1 BR House - Big Items and Boxes',
+                '1 bedroom - big items and boxes' => '1 BR House - Big Items and Boxes',
+                '1 bedroom big items and boxes' => '1 BR House - Big Items and Boxes',
+                '1 br big items and boxes' => '1 BR House - Big Items and Boxes',
+                '2 br house - big items only' => '2 BR House - Big Items Only',
+                '2 bedroom - big items only' => '2 BR House - Big Items Only',
+                '2 bedroom big items' => '2 BR House - Big Items Only',
+                '2 br big items' => '2 BR House - Big Items Only',
+                '2 br house - big items and boxes' => '2 BR House - Big Items and Boxes',
+                '2 bedroom - big items and boxes' => '2 BR House - Big Items and Boxes',
+                '2 bedroom big items and boxes' => '2 BR House - Big Items and Boxes',
+                '2 br big items and boxes' => '2 BR House - Big Items and Boxes',
+                '3 br house - big items only' => '3 BR House - Big Items Only',
+                '3 bedroom - big items only' => '3 BR House - Big Items Only',
+                '3 bedroom big items' => '3 BR House - Big Items Only',
+                '3 br big items' => '3 BR House - Big Items Only',
+                '3 br house - big items and boxes' => '3 BR House - Big Items and Boxes',
+                '3 bedroom - big items and boxes' => '3 BR House - Big Items and Boxes',
+                '3 bedroom big items and boxes' => '3 BR House - Big Items and Boxes',
+                '3 br big items and boxes' => '3 BR House - Big Items and Boxes',
+                '4 br houses or above' => '4 BR Houses or above',
+                '4 bedroom or above' => '4 BR Houses or above',
+                '4+ bedrooms' => '4 BR Houses or above',
+                '4 or more bedrooms' => '4 BR Houses or above'
+            );
+            
+            // Check for exact match first (case-insensitive)
+            $matched = false;
+            foreach ($size_mapping as $pattern => $exact_value) {
+                if ($value === $pattern) {
+                    $normalized_values['house_size'] = array('original' => $data['house_size'], 'normalized' => $exact_value);
+                    $data['house_size'] = $exact_value;
+                    $matched = true;
+                    break;
+                }
+            }
+            
+            // If no exact match, try partial matching for flexibility
+            // Use stricter matching to avoid false positives
+            if (!$matched) {
+                foreach ($size_mapping as $pattern => $exact_value) {
+                    // Use word boundary matching to avoid partial matches
+                    // For example, "1 bedroom apartment" shouldn't match "1 bedroom" alone
+                    $pattern_regex = '/\b' . preg_quote($pattern, '/') . '\b/i';
+                    if (preg_match($pattern_regex, $value)) {
+                        $normalized_values['house_size'] = array('original' => $data['house_size'], 'normalized' => $exact_value);
+                        $data['house_size'] = $exact_value;
+                        $matched = true;
+                        break;
+                    }
+                }
+            }
+            
+            // Log unknown values for debugging
+            if (!$matched && $debug_mode) {
+                $entry_debug['unknown_house_size_values'][] = $data['house_size'];
+            }
+        }
+        
+        // Log all normalizations for debugging
+        if ($debug_mode && !empty($normalized_values)) {
+            $entry_debug['normalized_dropdown_values'] = $normalized_values;
+        }
+        
+        return $data;
+    }
+    
+    /**
      * Import a single Gravity Forms entry into the CRM
      * This uses the same logic as the live integration
      */
@@ -861,6 +992,10 @@ class HS_CRM_Settings {
                 }
             }
         }
+        
+        // Normalize dropdown values to match the exact option values in HTML select elements
+        // This fixes the issue where imported values don't match dropdown options due to case sensitivity
+        $data = $this->normalize_dropdown_values($data, $debug_mode, $entry_debug);
         
         // Handle single 'name' field - split into first_name and last_name if needed
         // Only process if we have a name field AND both first_name and last_name are missing
