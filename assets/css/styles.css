@@ -156,7 +156,7 @@
 
 /* Alternating row backgrounds with better delineation */
 .hs-crm-even-row {
-    background: #f9f9f9;
+    background-color: #f9f9f9;
 }
 
 .hs-crm-odd-row {
