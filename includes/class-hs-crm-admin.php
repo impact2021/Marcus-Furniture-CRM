@@ -137,6 +137,90 @@ class HS_CRM_Admin {
                     <p style="text-align: center; padding: 20px;">No enquiries found.</p>
                 </div>
             <?php else: ?>
+                <!-- Mobile Enquiries View -->
+                <div class="hs-crm-mobile-enquiries">
+                    <?php foreach ($enquiries as $enquiry): 
+                        $notes = HS_CRM_Database::get_notes($enquiry->id);
+                        
+                        // Determine form type - same logic as desktop
+                        $is_pickup_delivery = false;
+                        $form_type_label = 'Moving House';
+                        
+                        if (!empty($enquiry->job_type)) {
+                            $form_type_label = $enquiry->job_type;
+                            $is_pickup_delivery = ($enquiry->job_type === 'Pickup/Delivery');
+                        } else {
+                            if (!empty($enquiry->delivery_from_address) || !empty($enquiry->delivery_to_address) || !empty($enquiry->items_being_collected)) {
+                                $is_pickup_delivery = true;
+                                $form_type_label = 'Pickup/Delivery';
+                            }
+                        }
+                        
+                        // Set card color class based on type
+                        $card_class = $is_pickup_delivery ? 'pickup-delivery' : 'moving-house';
+                        
+                        // Format date
+                        $formatted_date = !empty($enquiry->move_date) ? date('d/m/Y', strtotime($enquiry->move_date)) : 'Not set';
+                        $formatted_time = !empty($enquiry->move_time) ? date('g:iA', strtotime($enquiry->move_time)) : '';
+                        
+                        // Get addresses
+                        $from_address = !empty($enquiry->delivery_from_address) ? $enquiry->delivery_from_address : 'Not set';
+                        $to_address = !empty($enquiry->delivery_to_address) ? $enquiry->delivery_to_address : 'Not set';
+                        
+                        // Prepare all data for the modal
+                        $enquiry_data = array(
+                            'id' => $enquiry->id,
+                            'customer_name' => $enquiry->first_name . ' ' . $enquiry->last_name,
+                            'phone' => $enquiry->phone,
+                            'email' => $enquiry->email,
+                            'move_date' => $formatted_date,
+                            'move_time' => $formatted_time,
+                            'from_address' => $from_address,
+                            'to_address' => $to_address,
+                            'job_type' => $form_type_label,
+                            'status' => $enquiry->status,
+                            'contact_source' => $this->format_contact_source($enquiry->contact_source),
+                            'created_at' => hs_crm_format_date($enquiry->created_at, 'd/m/Y'),
+                            'suburb' => !empty($enquiry->suburb) ? $enquiry->suburb : '',
+                            'stairs_from' => !empty($enquiry->stairs_from) ? $enquiry->stairs_from : '',
+                            'stairs_to' => !empty($enquiry->stairs_to) ? $enquiry->stairs_to : '',
+                            'stairs' => !empty($enquiry->stairs) ? $enquiry->stairs : '',
+                            'number_of_bedrooms' => !empty($enquiry->number_of_bedrooms) ? $enquiry->number_of_bedrooms : '',
+                            'number_of_rooms' => !empty($enquiry->number_of_rooms) ? $enquiry->number_of_rooms : '',
+                            'property_notes' => !empty($enquiry->property_notes) ? $enquiry->property_notes : '',
+                            'items_being_collected' => !empty($enquiry->items_being_collected) ? $enquiry->items_being_collected : '',
+                            'furniture_moved_question' => !empty($enquiry->furniture_moved_question) ? $enquiry->furniture_moved_question : '',
+                            'special_instructions' => !empty($enquiry->special_instructions) ? $enquiry->special_instructions : '',
+                            'source_form_name' => !empty($enquiry->source_form_name) ? $enquiry->source_form_name : '',
+                            'notes' => $notes
+                        );
+                    ?>
+                        <div class="hs-crm-mobile-enquiry-card <?php echo esc_attr($card_class); ?>" 
+                             data-enquiry-id="<?php echo esc_attr($enquiry->id); ?>"
+                             data-enquiry-data="<?php echo esc_attr(json_encode($enquiry_data)); ?>">
+                            <div class="hs-crm-mobile-card-header">
+                                <div class="hs-crm-mobile-card-name">
+                                    <?php echo esc_html($enquiry->first_name . ' ' . $enquiry->last_name); ?>
+                                </div>
+                                <div class="hs-crm-mobile-card-date">
+                                    <?php echo esc_html($formatted_date); ?>
+                                </div>
+                            </div>
+                            <?php if ($formatted_time): ?>
+                                <div style="margin-bottom: 8px; font-size: 15px;">
+                                    <strong>⏰ <?php echo esc_html($formatted_time); ?></strong>
+                                </div>
+                            <?php endif; ?>
+                            <div class="hs-crm-mobile-card-address">
+                                <div><strong>From:</strong> <?php echo esc_html($from_address); ?></div>
+                                <div><strong>To:</strong> <?php echo esc_html($to_address); ?></div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <!-- Desktop Enquiries View -->
+                <div class="hs-crm-desktop-enquiries">
                 <?php 
                 $row_index = 0;
                 foreach ($enquiries as $enquiry): 
@@ -394,7 +478,19 @@ class HS_CRM_Admin {
                         </tbody>
                     </table>
                 <?php endforeach; ?>
+                </div>
             <?php endif; ?>
+        </div>
+        
+        <!-- Mobile Enquiry Detail Modal -->
+        <div id="hs-crm-mobile-enquiry-detail-modal" class="hs-crm-modal hs-crm-mobile-detail-modal" style="display: none;">
+            <div class="hs-crm-modal-content">
+                <span class="hs-crm-modal-close">&times;</span>
+                <h2 id="mobile-enquiry-detail-title">Enquiry Details</h2>
+                <div id="mobile-enquiry-detail-content">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
         </div>
         
         <!-- Add/Edit Enquiry Modal -->

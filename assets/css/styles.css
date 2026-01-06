@@ -586,6 +586,35 @@
     margin-left: 4px;
 }
 
+/* Mobile Enquiries Cards */
+.hs-crm-mobile-enquiries {
+    display: none;
+}
+
+.hs-crm-mobile-enquiry-card {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hs-crm-mobile-enquiry-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.hs-crm-mobile-enquiry-card.pickup-delivery {
+    background: #FF8C00; /* Orange for Pickup/Delivery */
+    color: #fff;
+}
+
+.hs-crm-mobile-enquiry-card.moving-house {
+    background: #061257; /* Dark blue for Moving House */
+    color: #fff;
+}
+
 /* Mobile Schedule Cards */
 .hs-crm-mobile-schedule {
     display: none;
@@ -722,5 +751,15 @@
     /* Hide trucks list on mobile */
     .hs-crm-trucks-list {
         display: none;
+    }
+    
+    /* Hide desktop enquiries table on mobile */
+    .hs-crm-desktop-enquiries {
+        display: none;
+    }
+    
+    /* Show mobile enquiries on mobile */
+    .hs-crm-mobile-enquiries {
+        display: block;
     }
 }
