@@ -286,6 +286,143 @@ class HS_CRM_Truck_Scheduler {
                     </table>
                 </div>
             </div>
+            
+            <!-- Mobile Schedule View -->
+            <div class="hs-crm-mobile-schedule">
+                <h3>Schedule</h3>
+                <?php
+                // Create truck ID to name mapping for O(1) lookup
+                $truck_names = array();
+                foreach ($trucks as $truck) {
+                    $truck_names[$truck->id] = $truck->name;
+                }
+                
+                // Collect all bookings for mobile view
+                $mobile_bookings = array();
+                $days_in_month = date('t', $month_timestamp);
+                for ($day = 1; $day <= $days_in_month; $day++) {
+                    $current_date = date('Y-m-d', strtotime($current_month . '-' . sprintf('%02d', $day)));
+                    
+                    if (isset($bookings_by_date[$current_date])) {
+                        foreach ($bookings_by_date[$current_date] as $truck_id => $truck_bookings) {
+                            foreach ($truck_bookings as $booking) {
+                                $booking->display_date = $current_date;
+                                // Get truck name from mapping
+                                $booking->truck_name = isset($truck_names[$truck_id]) ? $truck_names[$truck_id] : '';
+                                $mobile_bookings[] = $booking;
+                            }
+                        }
+                    }
+                }
+                
+                // Sort by date
+                usort($mobile_bookings, function($a, $b) {
+                    return strcmp($a->display_date, $b->display_date);
+                });
+                
+                // Fetch job types for all bookings with enquiry_id in a single query
+                $enquiry_ids = array();
+                foreach ($mobile_bookings as $booking) {
+                    if ($booking->enquiry_id) {
+                        $enquiry_ids[] = intval($booking->enquiry_id);
+                    }
+                }
+                
+                $job_types_map = array();
+                if (!empty($enquiry_ids)) {
+                    global $wpdb;
+                    // Use array_map to ensure all IDs are integers (already done with intval above)
+                    // Then use implode to create a safe IN clause since all values are validated integers
+                    $safe_ids = implode(',', array_map('intval', $enquiry_ids));
+                    // Safe to use directly since all values are guaranteed integers
+                    $job_types_result = $wpdb->get_results(
+                        "SELECT id, job_type FROM {$wpdb->prefix}hs_enquiries WHERE id IN ($safe_ids)"
+                    );
+                    foreach ($job_types_result as $row) {
+                        $job_types_map[$row->id] = $row->job_type;
+                    }
+                }
+                
+                if (empty($mobile_bookings)):
+                ?>
+                    <p style="text-align: center; padding: 20px; color: #666;">No bookings for this month.</p>
+                <?php else: ?>
+                    <?php foreach ($mobile_bookings as $booking): 
+                        $customer_name = '';
+                        if ($booking->enquiry_id && isset($booking->first_name)) {
+                            $customer_name = $booking->first_name . ' ' . $booking->last_name;
+                        }
+                        
+                        $from_address = isset($booking->delivery_from_address) ? $booking->delivery_from_address : '';
+                        $to_address = isset($booking->delivery_to_address) ? $booking->delivery_to_address : '';
+                        
+                        // Get job type from the map
+                        $job_type = 'Pickup/Delivery'; // Default
+                        if ($booking->enquiry_id && isset($job_types_map[$booking->enquiry_id])) {
+                            $job_type = $job_types_map[$booking->enquiry_id];
+                        }
+                        
+                        $card_class = ($job_type === 'Moving House') ? 'moving-house' : 'pickup-delivery';
+                        $formatted_date = date('D, M j, Y', strtotime($booking->display_date));
+                        
+                        $time_display = '';
+                        if ($booking->start_time) {
+                            $time_display = date('g:ia', strtotime($booking->start_time));
+                            if ($booking->end_time) {
+                                $time_display .= '-' . date('g:ia', strtotime($booking->end_time));
+                            }
+                        }
+                    ?>
+                        <div class="hs-crm-mobile-booking-card <?php echo esc_attr($card_class); ?>" 
+                             data-booking-id="<?php echo esc_attr($booking->id); ?>"
+                             data-booking-data="<?php echo esc_attr(json_encode(array(
+                                 'customer_name' => $customer_name,
+                                 'date' => $formatted_date,
+                                 'time' => $time_display,
+                                 'from_address' => $from_address,
+                                 'to_address' => $to_address,
+                                 'truck_name' => isset($booking->truck_name) ? $booking->truck_name : '',
+                                 'notes' => isset($booking->notes) ? $booking->notes : '',
+                                 'job_type' => $job_type
+                             ))); ?>">
+                            <div class="hs-crm-mobile-card-header">
+                                <div class="hs-crm-mobile-card-name">
+                                    <?php echo esc_html($customer_name ? $customer_name : 'Booking'); ?>
+                                </div>
+                                <div class="hs-crm-mobile-card-date">
+                                    <?php echo esc_html($formatted_date); ?>
+                                </div>
+                            </div>
+                            <?php if ($time_display): ?>
+                                <div style="margin-bottom: 8px; font-size: 15px;">
+                                    <strong>⏰ <?php echo esc_html($time_display); ?></strong>
+                                </div>
+                            <?php endif; ?>
+                            <?php if ($from_address || $to_address): ?>
+                                <div class="hs-crm-mobile-card-address">
+                                    <?php if ($from_address): ?>
+                                        <div><strong>From:</strong> <?php echo esc_html($from_address); ?></div>
+                                    <?php endif; ?>
+                                    <?php if ($to_address): ?>
+                                        <div><strong>To:</strong> <?php echo esc_html($to_address); ?></div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+        
+        <!-- Mobile Booking Detail Modal -->
+        <div id="hs-crm-mobile-detail-modal" class="hs-crm-modal hs-crm-mobile-detail-modal" style="display: none;">
+            <div class="hs-crm-modal-content">
+                <span class="hs-crm-modal-close">&times;</span>
+                <h2 id="mobile-detail-title">Booking Details</h2>
+                <div id="mobile-detail-content">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
         </div>
         
         <!-- Add/Edit Truck Modal -->

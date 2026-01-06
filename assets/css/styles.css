@@ -586,6 +586,91 @@
     margin-left: 4px;
 }
 
+/* Mobile Schedule Cards */
+.hs-crm-mobile-schedule {
+    display: none;
+}
+
+.hs-crm-mobile-booking-card {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.hs-crm-mobile-booking-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.hs-crm-mobile-booking-card.pickup-delivery {
+    background: #D77A00;
+    color: #fff;
+}
+
+.hs-crm-mobile-booking-card.moving-house {
+    background: #061257;
+    color: #fff;
+}
+
+.hs-crm-mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.hs-crm-mobile-card-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.hs-crm-mobile-card-date {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.hs-crm-mobile-card-address {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.hs-crm-mobile-card-address strong {
+    display: inline-block;
+    width: 50px;
+}
+
+/* Mobile Booking Detail Modal */
+.hs-crm-mobile-detail-modal .hs-crm-modal-content {
+    max-width: 500px;
+}
+
+.hs-crm-detail-row {
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.hs-crm-detail-row:last-child {
+    border-bottom: none;
+}
+
+.hs-crm-detail-label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 5px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.hs-crm-detail-value {
+    color: #333;
+    font-size: 15px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hs-crm-form-container {
@@ -622,5 +707,20 @@
     .hs-crm-quote-table th,
     .hs-crm-quote-table td {
         padding: 6px;
+    }
+    
+    /* Hide desktop calendar table on mobile */
+    .hs-crm-schedule-calendar {
+        display: none;
+    }
+    
+    /* Show mobile schedule on mobile */
+    .hs-crm-mobile-schedule {
+        display: block;
+    }
+    
+    /* Hide trucks list on mobile */
+    .hs-crm-trucks-list {
+        display: none;
     }
 }
