@@ -583,12 +583,29 @@ class HS_CRM_Settings {
             'phone' => array('phone', 'telephone', 'mobile', 'phone number'),
             'address' => array('address', 'street address', 'location'),
             'suburb' => array('suburb', 'city', 'town'),
-            'move_date' => array('move date', 'moving date', 'preferred date', 'date'),
-            'move_time' => array('move time', 'moving time', 'preferred time', 'time')
+            'move_date' => array('move date', 'moving date', 'preferred date', 'date', 'delivery date'),
+            'move_time' => array('move time', 'moving time', 'preferred time', 'preferred delivery time', 'time'),
+            'alternate_date' => array('alternate date', 'alternate delivery date', 'alternative date'),
+            'stairs' => array('stairs', 'stairs involved', 'are there stairs'),
+            'stairs_from' => array('stairs from', 'stairs involved? (from)', 'stairs (from)', 'stairs at pickup', 'stairs involved from'),
+            'stairs_to' => array('stairs to', 'stairs involved? (to)', 'stairs (to)', 'stairs at delivery', 'stairs involved to'),
+            'items_being_collected' => array('items being delivered', 'items being collected', 'what items', 'items to collect', 'what item(s) are being collected'),
+            'furniture_moved_question' => array('existing furniture moved', 'furniture moved', 'do you need any existing furniture moved'),
+            'special_instructions' => array('special instructions', 'additional instructions', 'instructions', 'special requests', 'any special instructions'),
+            'move_type' => array('move type', 'type of move', 'what\'s the type of your move'),
+            'house_size' => array('house size', 'size of move', 'what\'s the size of your move', 'move size'),
+            'property_notes' => array('property notes', 'additional info', 'additional information', 'notes'),
+            'outdoor_plants' => array('outdoor plants', 'any outdoor plants', 'plants'),
+            'oversize_items' => array('oversize items', 'any oversize items', 'piano', 'spa', 'large items'),
+            'driveway_concerns' => array('driveway concerns', 'driveway', 'anything that could be a concern with the driveway'),
+            'assembly_help' => array('assembly help', 'help assembling', 'do you need help assembling', 'assembly')
         );
         
         $data = array(
-            'contact_source' => 'form'
+            'contact_source' => 'form',
+            'source_form_name' => isset($form['title']) ? $form['title'] : '',
+            'gravity_forms_entry_id' => intval($entry['id']),
+            'gravity_forms_form_id' => intval($form['id'])
         );
         
         // Determine job type based on form CSS class (highest priority), then form title
@@ -779,7 +796,7 @@ class HS_CRM_Settings {
                             // Standard text field - sanitize based on field type
                             if ($crm_field === 'email') {
                                 $data[$crm_field] = sanitize_email($field_value);
-                            } elseif ($crm_field === 'address') {
+                            } elseif (in_array($crm_field, array('address', 'items_being_collected', 'special_instructions', 'property_notes'))) {
                                 $data[$crm_field] = sanitize_textarea_field($field_value);
                             } else {
                                 // All other fields including 'name' which will be split later
@@ -807,7 +824,7 @@ class HS_CRM_Settings {
                                 // Standard text field - sanitize based on field type
                                 if ($crm_field === 'email') {
                                     $data[$crm_field] = sanitize_email($field_value);
-                                } elseif ($crm_field === 'address') {
+                                } elseif (in_array($crm_field, array('address', 'items_being_collected', 'special_instructions', 'property_notes'))) {
                                     $data[$crm_field] = sanitize_textarea_field($field_value);
                                 } else {
                                     // All other fields including 'name' which will be split later
@@ -848,6 +865,33 @@ class HS_CRM_Settings {
                     'last_name' => $data['last_name']
                 );
             }
+        }
+        
+        // Convert move_time to 24-hour format if it's in 12-hour format (e.g., "9:00am" -> "09:00:00")
+        // This is needed for SELECT fields that store time values in 12-hour format
+        // which need to be converted for the MySQL TIME column
+        if (!empty($data['move_time'])) {
+            $time_value = trim($data['move_time']);
+            
+            // Check if the time contains 'am' or 'pm' (case-insensitive)
+            // Handles both "9:00am" and "9am" formats
+            if (preg_match('/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i', $time_value, $matches)) {
+                $hour = intval($matches[1]);
+                $minute = isset($matches[2]) ? intval($matches[2]) : 0;
+                $meridiem = strtolower($matches[3]);
+                
+                // Convert to 24-hour format
+                if ($meridiem === 'pm' && $hour !== 12) {
+                    $hour += 12;
+                } elseif ($meridiem === 'am' && $hour === 12) {
+                    $hour = 0;
+                }
+                
+                // Format as HH:MM:SS for MySQL TIME column
+                $data['move_time'] = sprintf('%02d:%02d:00', $hour, $minute);
+            }
+            // If it's already in 24-hour format (HH:MM or HH:MM:SS), leave it as-is
+            // The database will handle it correctly
         }
         
         if ($debug_mode) {
