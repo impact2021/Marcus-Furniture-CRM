@@ -1,5 +1,21 @@
 # Changelog
 
+## Version 2.9 - 2026-01-06
+
+### Fixed
+- **Gravity Forms Import Job Type Detection**: Fixed issue where importing entries from Gravity Forms via the import tool was not correctly detecting job type
+  - Added job_type detection logic to `import_single_gravity_form_entry()` method in `class-hs-crm-settings.php`
+  - Import function now checks form CSS class and form title to determine "Moving House" vs "Pickup/Delivery" type
+  - Matches the same detection logic used in live Gravity Forms integration
+  - Ensures imported moving house entries are correctly categorized instead of being marked as pickup/delivery
+
+### Updated
+- **Version Update**: Updated plugin version to 2.9
+  - Updated plugin header version in main plugin file from 2.8 to 2.9
+  - Updated HS_CRM_VERSION constant from 2.8 to 2.9
+  - Updated stable tag in readme.txt from 2.7 to 2.9
+  - Ensures consistency across all version references
+
 ## Version 2.7 - 2026-01-06
 
 ### Updated

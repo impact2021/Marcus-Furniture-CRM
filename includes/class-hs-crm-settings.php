@@ -591,6 +591,26 @@ class HS_CRM_Settings {
             'contact_source' => 'form'
         );
         
+        // Determine job type based on form CSS class (highest priority), then form title
+        // Check CSS class first - allows users to explicitly set the form type
+        $form_title = isset($form['title']) ? $form['title'] : '';
+        $form_css_class = isset($form['cssClass']) ? strtolower($form['cssClass']) : '';
+        
+        if (strpos($form_css_class, 'moving-house') !== false || strpos($form_css_class, 'house-move') !== false) {
+            $data['job_type'] = 'Moving House';
+        } elseif (strpos($form_css_class, 'pickup-delivery') !== false || strpos($form_css_class, 'delivery') !== false) {
+            $data['job_type'] = 'Pickup/Delivery';
+        } elseif (preg_match('/\b(moving(\s+house)?|move(\s+house)?)\b/i', $form_title)) {
+            // Fallback to form title - Check for moving keywords FIRST (higher priority) since "delivery" often appears in moving forms
+            // Use word boundaries to avoid false positives (e.g., "remove" shouldn't match "move")
+            $data['job_type'] = 'Moving House';
+        } elseif (preg_match('/\b(pickup|pick\s+up|delivery)\b/i', $form_title)) {
+            $data['job_type'] = 'Pickup/Delivery';
+        } else {
+            // Default - try to determine from fields later
+            $data['job_type'] = '';
+        }
+        
         // Extract data from Gravity Forms entry
         foreach ($form['fields'] as $field) {
             $field_label = strtolower(trim($field->label));
