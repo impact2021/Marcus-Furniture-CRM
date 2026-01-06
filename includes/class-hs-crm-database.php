@@ -740,6 +740,28 @@ class HS_CRM_Database {
     }
     
     /**
+     * Auto-archive enquiry if move date is in the past
+     * 
+     * @param int $enquiry_id The enquiry ID
+     * @param string $move_date The move/delivery date (Y-m-d format)
+     * @return bool True if enquiry was archived, false otherwise
+     */
+    public static function auto_archive_if_past_date($enquiry_id, $move_date) {
+        if (empty($move_date)) {
+            return false;
+        }
+        
+        $current_date = current_time('Y-m-d');
+        if ($move_date < $current_date) {
+            self::update_status($enquiry_id, 'Archived');
+            self::add_note($enquiry_id, 'Auto-archived: Move date (' . esc_html($move_date) . ') is in the past');
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
      * ========================================
      * TRUCK MANAGEMENT METHODS
      * ========================================
