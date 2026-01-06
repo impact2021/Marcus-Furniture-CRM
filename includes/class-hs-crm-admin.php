@@ -387,26 +387,7 @@ class HS_CRM_Admin {
                     </div>
                 </div>
                 
-                <!-- Gravity Forms Embed Container -->
-                <div id="gravity-forms-container">
-                    <?php if (class_exists('GFForms')): ?>
-                        <!-- Moving House Form (ID 11) - Initially Hidden -->
-                        <div id="gf-moving-house" style="display: none;">
-                            <?php echo do_shortcode('[gravityform id="11" title="false" description="false" ajax="true"]'); ?>
-                        </div>
-                        
-                        <!-- Pickup/Delivery Form (ID 8) - Initially Visible -->
-                        <div id="gf-pickup-delivery">
-                            <?php echo do_shortcode('[gravityform id="8" title="false" description="false" ajax="true"]'); ?>
-                        </div>
-                    <?php else: ?>
-                        <p style="color: #d63638; background: #fcf0f1; padding: 10px; border-radius: 4px;">
-                            <strong>Note:</strong> Gravity Forms plugin is not active. Please activate Gravity Forms to use this feature, or manually enter enquiry details below.
-                        </p>
-                    <?php endif; ?>
-                </div>
-                
-                <!-- Fallback Manual Entry Form (shown if Gravity Forms not available or for editing) -->
+                <!-- Manual Entry Form -->
                 <form id="hs-crm-enquiry-form">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
                     <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">

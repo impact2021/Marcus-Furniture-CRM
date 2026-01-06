@@ -313,9 +313,6 @@ jQuery(document).ready(function($) {
                         $('#enquiry-modal-title').text('Edit Enquiry Details');
                         $('#enquiry-id').val(enquiry.id);
                         
-                        // Hide Gravity Forms container when editing (Issue #4)
-                        $('#gravity-forms-container').hide();
-                        
                         // Show manual entry form when editing
                         $('#hs-crm-enquiry-form').show();
                         
@@ -742,9 +739,6 @@ jQuery(document).ready(function($) {
             $('#enquiry-type-pickup').prop('checked', true);
             $('#enquiry-type-moving').prop('checked', false);
             $('#enquiry-job-type').val('Pickup/Delivery');
-            
-            // Hide Gravity Forms for new enquiries - use manual form
-            $('#gravity-forms-container').hide();
             
             // Always show manual form for new enquiries
             $('#hs-crm-enquiry-form').show();
