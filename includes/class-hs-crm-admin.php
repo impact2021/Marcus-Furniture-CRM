@@ -777,6 +777,11 @@ class HS_CRM_Admin {
             wp_send_json_error(array('message' => 'Please fill in all required fields (First Name, Last Name, Email, Phone).'));
         }
         
+        // Validate contact source is provided
+        if (empty($data['contact_source']) || $data['contact_source'] === 'manual') {
+            wp_send_json_error(array('message' => 'Please select where the lead came from.'));
+        }
+        
         $enquiry_id = HS_CRM_Database::insert_enquiry($data);
         
         if ($enquiry_id) {

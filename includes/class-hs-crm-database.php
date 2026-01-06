@@ -610,6 +610,7 @@ class HS_CRM_Database {
         $counts = array(
             'all' => 0,
             'active' => 0,
+            'Enquiry received' => 0,
             'First Contact' => 0,
             'Quote Sent' => 0,
             'Booking Confirmed' => 0,
@@ -630,8 +631,8 @@ class HS_CRM_Database {
             }
             $counts['all'] += $row->count;
             
-            // Count active leads
-            if (in_array($row->status, array('First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid'))) {
+            // Count active leads (including new "Enquiry received" status)
+            if (in_array($row->status, array('Enquiry received', 'First Contact', 'Quote Sent', 'Booking Confirmed', 'Deposit Paid'))) {
                 $counts['active'] += $row->count;
             }
         }
