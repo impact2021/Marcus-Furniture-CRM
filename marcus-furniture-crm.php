@@ -1065,9 +1065,10 @@ function hs_crm_gravity_forms_integration($entry, $form) {
         $time_value = trim($data['move_time']);
         
         // Check if the time contains 'am' or 'pm' (case-insensitive)
-        if (preg_match('/^(\d{1,2}):(\d{2})\s*(am|pm)$/i', $time_value, $matches)) {
+        // Handles both "9:00am" and "9am" formats
+        if (preg_match('/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i', $time_value, $matches)) {
             $hour = intval($matches[1]);
-            $minute = intval($matches[2]);
+            $minute = isset($matches[2]) ? intval($matches[2]) : 0;
             $meridiem = strtolower($matches[3]);
             
             // Convert to 24-hour format
