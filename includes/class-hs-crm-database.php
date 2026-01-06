@@ -762,6 +762,17 @@ class HS_CRM_Database {
             return false;
         }
         
+        // Get the current enquiry to check its status
+        $enquiry = self::get_enquiry($enquiry_id);
+        if (!$enquiry) {
+            return false;
+        }
+        
+        // Don't process if already archived or completed
+        if (in_array($enquiry->status, array('Archived', 'Dead', 'Completed'))) {
+            return false;
+        }
+        
         // Use DateTime objects for reliable date comparison
         try {
             $move_datetime = new DateTime($move_date);
