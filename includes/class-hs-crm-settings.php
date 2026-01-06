@@ -587,18 +587,18 @@ class HS_CRM_Settings {
             'move_time' => array('move time', 'moving time', 'preferred time', 'preferred delivery time', 'time'),
             'alternate_date' => array('alternate date', 'alternate delivery date', 'alternative date'),
             'stairs' => array('stairs', 'stairs involved', 'are there stairs'),
-            'stairs_from' => array('stairs from', 'stairs involved? (from)', 'stairs (from)', 'stairs at pickup', 'stairs involved from'),
-            'stairs_to' => array('stairs to', 'stairs involved? (to)', 'stairs (to)', 'stairs at delivery', 'stairs involved to'),
-            'items_being_collected' => array('items being delivered', 'items being collected', 'what items', 'items to collect', 'what item(s) are being collected'),
-            'furniture_moved_question' => array('existing furniture moved', 'furniture moved', 'do you need any existing furniture moved'),
+            'stairs_from' => array('stairs from', 'stairs involved? (from)', 'stairs (from)', 'stairs at pickup', 'stairs involved from', 'stairs involved? (pickup)'),
+            'stairs_to' => array('stairs to', 'stairs involved? (to)', 'stairs (to)', 'stairs at delivery', 'stairs involved to', 'stairs involved? (delivery)'),
+            'items_being_collected' => array('items being delivered', 'items being collected', 'what items', 'items to collect', 'what item(s) are being collected', 'what item(s)'),
+            'furniture_moved_question' => array('existing furniture moved', 'furniture moved', 'do you need any existing furniture moved', 'furniture', 'need any existing furniture'),
             'special_instructions' => array('special instructions', 'additional instructions', 'instructions', 'special requests', 'any special instructions'),
-            'move_type' => array('move type', 'type of move', 'what\'s the type of your move'),
-            'house_size' => array('house size', 'size of move', 'what\'s the size of your move', 'move size'),
+            'move_type' => array('move type', 'type of move', 'what\'s the type of your move', 'type of your move'),
+            'house_size' => array('house size', 'size of move', 'what\'s the size of your move', 'move size', 'size of your move'),
             'property_notes' => array('property notes', 'additional info', 'additional information', 'notes'),
-            'outdoor_plants' => array('outdoor plants', 'any outdoor plants', 'plants'),
-            'oversize_items' => array('oversize items', 'any oversize items', 'piano', 'spa', 'large items'),
-            'driveway_concerns' => array('driveway concerns', 'driveway', 'anything that could be a concern with the driveway'),
-            'assembly_help' => array('assembly help', 'help assembling', 'do you need help assembling', 'assembly')
+            'outdoor_plants' => array('outdoor plants', 'any outdoor plants', 'plants', 'outdoor'),
+            'oversize_items' => array('oversize items', 'any oversize items', 'piano', 'spa', 'large items', 'oversize'),
+            'driveway_concerns' => array('driveway concerns', 'driveway', 'anything that could be a concern with the driveway', 'concern with the driveway'),
+            'assembly_help' => array('assembly help', 'help assembling', 'do you need help assembling', 'assembly', 'assembling', 'help assembling the item')
         );
         
         $data = array(
@@ -835,6 +835,28 @@ class HS_CRM_Settings {
                             break;
                         }
                     }
+                }
+            }
+            
+            // Add debug logging for unmatched select/radio fields to help troubleshoot import issues
+            // This helps identify when dropdown field labels don't match the expected mappings
+            if (!$matched && ($field->type === 'select' || $field->type === 'radio')) {
+                // Log unmatched dropdown/select fields to WordPress error log for debugging
+                error_log(sprintf(
+                    'Marcus Furniture CRM: Unmatched dropdown field in Gravity Forms manual import - Label: "%s", Type: %s, Value: "%s", Form: "%s" (ID: %d)',
+                    $field->label,
+                    $field->type,
+                    $field_value,
+                    isset($form['title']) ? $form['title'] : 'Unknown',
+                    isset($form['id']) ? $form['id'] : 0
+                ));
+                
+                if ($debug_mode) {
+                    $entry_debug['unmatched_dropdowns'][] = array(
+                        'label' => $field->label,
+                        'type' => $field->type,
+                        'value' => $field_value
+                    );
                 }
             }
         }
