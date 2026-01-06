@@ -766,7 +766,7 @@ class HS_CRM_Database {
             // Compare dates - archive if move date is before current date
             if ($move_datetime < $current_datetime) {
                 self::update_status($enquiry_id, 'Archived');
-                self::add_note($enquiry_id, 'Auto-archived: Move date (' . sanitize_text_field($move_date) . ') is in the past');
+                self::add_note($enquiry_id, 'Auto-archived: Move date (' . $move_date . ') is in the past');
                 return true;
             }
         } catch (Exception $e) {

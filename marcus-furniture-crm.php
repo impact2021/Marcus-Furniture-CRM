@@ -1229,11 +1229,11 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             HS_CRM_Database::auto_archive_if_past_date($enquiry_id, isset($data['move_date']) ? $data['move_date'] : '');
             
             // Add form source note
-            HS_CRM_Database::add_note($enquiry_id, 'Enquiry created from Gravity Forms: ' . esc_html($form['title']) . ' (Form ID: ' . $form['id'] . ')');
+            HS_CRM_Database::add_note($enquiry_id, 'Enquiry created from Gravity Forms: ' . $form['title'] . ' (Form ID: ' . $form['id'] . ')');
             
             // Add special instructions as a note if provided
             if (!empty($data['special_instructions'])) {
-                HS_CRM_Database::add_note($enquiry_id, 'Special Instructions: ' . esc_html($data['special_instructions']));
+                HS_CRM_Database::add_note($enquiry_id, 'Special Instructions: ' . $data['special_instructions']);
             }
             
             // Send admin notification (customer email already sent by Gravity Forms)
