@@ -420,24 +420,24 @@ class HS_CRM_Admin {
                     </div>
                 </div>
                 
-                <!-- Lead Source Selector -->
-                <div class="hs-crm-form-group" style="border: 2px solid #FF8C00; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
-                        Where did the lead come from? *
-                    </label>
-                    <select id="enquiry-contact-source" name="contact_source" required style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
-                        <option value="">Select source...</option>
-                        <option value="whatsapp">WhatsApp</option>
-                        <option value="phone">Phone call</option>
-                        <option value="email">Direct email</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                
                 <!-- Manual Entry Form -->
                 <form id="hs-crm-enquiry-form">
                     <input type="hidden" id="enquiry-id" name="enquiry_id">
                     <input type="hidden" id="enquiry-job-type" name="job_type" value="Pickup/Delivery">
+                    
+                    <!-- Lead Source Selector -->
+                    <div class="hs-crm-form-group" style="border: 2px solid #FF8C00; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <label style="font-size: 16px; font-weight: 600; margin-bottom: 10px; display: block;">
+                            Where did the lead come from? *
+                        </label>
+                        <select id="enquiry-contact-source" name="contact_source" required style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="">Select source...</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="phone">Phone call</option>
+                            <option value="email">Direct email</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
                     
                     <!-- Common Fields -->
                     <div class="hs-crm-form-group">
@@ -894,6 +894,9 @@ class HS_CRM_Admin {
         }
         if (isset($_POST['alternate_date'])) {
             $data['alternate_date'] = sanitize_text_field($_POST['alternate_date']);
+        }
+        if (isset($_POST['contact_source'])) {
+            $data['contact_source'] = sanitize_text_field($_POST['contact_source']);
         }
         
         $result = HS_CRM_Database::update_enquiry($enquiry_id, $data);

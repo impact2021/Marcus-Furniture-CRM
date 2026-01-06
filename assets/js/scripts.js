@@ -328,6 +328,9 @@ jQuery(document).ready(function($) {
                         $('#enquiry-from-address').val(enquiry.delivery_from_address || '');
                         $('#enquiry-to-address').val(enquiry.delivery_to_address || '');
                         
+                        // Contact source field
+                        $('#enquiry-contact-source').val(enquiry.contact_source || '');
+                        
                         // Determine job type and show appropriate fields
                         var isMovingHouse = enquiry.job_type === 'Moving House';
                         
