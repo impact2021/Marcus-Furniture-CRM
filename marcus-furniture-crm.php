@@ -1227,6 +1227,25 @@ function hs_crm_gravity_forms_integration($entry, $form) {
             global $wpdb;
             $notes_table = $wpdb->prefix . 'hs_enquiry_notes';
             
+            // Auto-archive if the delivery/move date is in the past
+            // This ensures Gravity Forms imports with past dates don't appear in active leads
+            if (!empty($data['move_date'])) {
+                $current_date = current_time('Y-m-d');
+                if ($data['move_date'] < $current_date) {
+                    HS_CRM_Database::update_status($enquiry_id, 'Archived');
+                    
+                    // Add note explaining why it was auto-archived
+                    $wpdb->insert(
+                        $notes_table,
+                        array(
+                            'enquiry_id' => $enquiry_id,
+                            'note' => 'Auto-archived: Move date (' . esc_html($data['move_date']) . ') is in the past'
+                        ),
+                        array('%d', '%s')
+                    );
+                }
+            }
+            
             // Add form source note
             $wpdb->insert(
                 $notes_table,
