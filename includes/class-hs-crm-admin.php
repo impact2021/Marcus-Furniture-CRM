@@ -870,6 +870,11 @@ class HS_CRM_Admin {
     public function ajax_update_status() {
         check_ajax_referer('hs_crm_nonce', 'nonce');
         
+        // Prevent caching of AJAX responses
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        
         if (!current_user_can('manage_crm_enquiries')) {
             wp_send_json_error(array('message' => 'Permission denied.'));
         }

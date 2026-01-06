@@ -93,12 +93,14 @@ jQuery(document).ready(function($) {
             $.ajax({
                 url: hsCrmAjax.ajaxurl,
                 type: 'POST',
+                cache: false, // Disable caching for this request
                 data: {
                     action: 'hs_crm_update_status',
                     nonce: hsCrmAjax.nonce,
                     enquiry_id: enquiryId,
                     status: finalStatus,
-                    old_status: oldStatus
+                    old_status: oldStatus,
+                    _: new Date().getTime() // Cache buster
                 },
                 success: function(response) {
                     if (response.success) {
@@ -113,6 +115,11 @@ jQuery(document).ready(function($) {
                         // Update both jQuery cache and HTML attribute to ensure consistency
                         $radioGroup.attr('data-current-status', finalStatus);
                         $radioGroup.data('current-status', finalStatus);
+                        
+                        // CRITICAL FIX: Update radio button checked state to match new status
+                        // This prevents cache/state confusion where buttons appear unchecked
+                        $radioGroup.find('input[type="radio"]').prop('checked', false);
+                        $radioGroup.find('input[value="' + finalStatus + '"]').prop('checked', true);
                         
                         // If should archive, update to Archived status
                         if (shouldArchive) {
