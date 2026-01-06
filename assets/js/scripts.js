@@ -1309,8 +1309,8 @@ jQuery(document).ready(function($) {
                 html += '<div class="hs-crm-detail-value">';
                 for (var i = 0; i < enquiryData.notes.length; i++) {
                     var note = enquiryData.notes[i];
-                    html += '<div style="margin-bottom: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px;">';
-                    html += '<small style="color: #666; display: block; margin-bottom: 5px;">' + $('<div>').text(note.created_at).html() + '</small>';
+                    html += '<div class="hs-crm-detail-note">';
+                    html += '<small class="hs-crm-detail-note-date">' + $('<div>').text(note.created_at).html() + '</small>';
                     html += $('<div>').text(note.note).html();
                     html += '</div>';
                 }

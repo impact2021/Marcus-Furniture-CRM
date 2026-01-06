@@ -635,7 +635,7 @@
 }
 
 .hs-crm-mobile-booking-card.pickup-delivery {
-    background: #D77A00;
+    background: #FF8C00; /* Updated to match header color */
     color: #fff;
 }
 
@@ -670,6 +670,25 @@
 .hs-crm-mobile-card-address strong {
     display: inline-block;
     width: 50px;
+}
+
+.hs-crm-mobile-card-time {
+    margin-bottom: 8px;
+    font-size: 15px;
+}
+
+.hs-crm-detail-note {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.hs-crm-detail-note-date {
+    color: #666;
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
 }
 
 /* Mobile Booking Detail Modal */

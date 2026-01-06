@@ -207,7 +207,7 @@ class HS_CRM_Admin {
                                 </div>
                             </div>
                             <?php if ($formatted_time): ?>
-                                <div style="margin-bottom: 8px; font-size: 15px;">
+                                <div class="hs-crm-mobile-card-time">
                                     <strong>⏰ <?php echo esc_html($formatted_time); ?></strong>
                                 </div>
                             <?php endif; ?>
