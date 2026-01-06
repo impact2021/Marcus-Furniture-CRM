@@ -319,6 +319,26 @@ class HS_CRM_Truck_Scheduler {
                     return strcmp($a->display_date, $b->display_date);
                 });
                 
+                // Fetch job types for all bookings with enquiry_id in a single query
+                $enquiry_ids = array();
+                foreach ($mobile_bookings as $booking) {
+                    if ($booking->enquiry_id) {
+                        $enquiry_ids[] = intval($booking->enquiry_id);
+                    }
+                }
+                
+                $job_types_map = array();
+                if (!empty($enquiry_ids)) {
+                    global $wpdb;
+                    $enquiry_ids_str = implode(',', array_unique($enquiry_ids));
+                    $job_types_result = $wpdb->get_results(
+                        "SELECT id, job_type FROM {$wpdb->prefix}hs_enquiries WHERE id IN ($enquiry_ids_str)"
+                    );
+                    foreach ($job_types_result as $row) {
+                        $job_types_map[$row->id] = $row->job_type;
+                    }
+                }
+                
                 if (empty($mobile_bookings)):
                 ?>
                     <p style="text-align: center; padding: 20px; color: #666;">No bookings for this month.</p>
@@ -332,20 +352,10 @@ class HS_CRM_Truck_Scheduler {
                         $from_address = isset($booking->delivery_from_address) ? $booking->delivery_from_address : '';
                         $to_address = isset($booking->delivery_to_address) ? $booking->delivery_to_address : '';
                         
-                        $is_enquiry = isset($booking->is_enquiry) && $booking->is_enquiry;
-                        
-                        // Get job type if available - need to fetch from enquiry
+                        // Get job type from the map
                         $job_type = 'Pickup/Delivery'; // Default
-                        if ($booking->enquiry_id && $is_enquiry) {
-                            // Fetch job_type from enquiry
-                            global $wpdb;
-                            $enquiry_data = $wpdb->get_row($wpdb->prepare(
-                                "SELECT job_type FROM {$wpdb->prefix}hs_enquiries WHERE id = %d",
-                                $booking->enquiry_id
-                            ));
-                            if ($enquiry_data && isset($enquiry_data->job_type)) {
-                                $job_type = $enquiry_data->job_type;
-                            }
+                        if ($booking->enquiry_id && isset($job_types_map[$booking->enquiry_id])) {
+                            $job_type = $job_types_map[$booking->enquiry_id];
                         }
                         
                         $card_class = ($job_type === 'Moving House') ? 'moving-house' : 'pickup-delivery';
