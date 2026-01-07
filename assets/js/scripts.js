@@ -821,6 +821,16 @@ jQuery(document).ready(function($) {
     $(document).on('click', '.hs-crm-mobile-enquiry-card', function() {
         var enquiryData = $(this).data('enquiry-data');
         
+        // If data is a string, it means jQuery didn't auto-parse it - parse manually
+        if (typeof enquiryData === 'string') {
+            try {
+                enquiryData = JSON.parse(enquiryData);
+            } catch(e) {
+                console.error('Failed to parse enquiry data:', e);
+                return;
+            }
+        }
+        
         if (!enquiryData) {
             return;
         }
@@ -1254,6 +1264,16 @@ jQuery(document).ready(function($) {
         // Mobile booking card click handler
         $(document).on('click', '.hs-crm-mobile-booking-card', function() {
             var bookingData = $(this).data('booking-data');
+            
+            // If data is a string, it means jQuery didn't auto-parse it - parse manually
+            if (typeof bookingData === 'string') {
+                try {
+                    bookingData = JSON.parse(bookingData);
+                } catch(e) {
+                    console.error('Failed to parse booking data:', e);
+                    return;
+                }
+            }
             
             if (!bookingData) {
                 return;

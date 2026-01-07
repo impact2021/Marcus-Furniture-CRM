@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 2.13 - 2026-01-08
+
+### Fixed
+- **Mobile Enquiry Modal Fix**: Fixed mobile view enquiry boxes not opening modal with details
+  - Added JSON parsing fallback for enquiry data attributes in `assets/js/scripts.js`
+  - jQuery's `.data()` method wasn't auto-parsing JSON strings due to HTML entity escaping
+  - Added explicit JSON.parse() with error handling when data is returned as string
+  - Fixed same issue for mobile booking cards to ensure consistency
+  - Modal now properly displays all enquiry details when tapping on mobile cards
+
+### Updated
+- **Version Update**: Updated plugin version to 2.13
+  - Updated plugin header version in main plugin file from 2.12 to 2.13
+  - Updated HS_CRM_VERSION constant from 2.12 to 2.13
+  - Updated stable tag in readme.txt from 2.12 to 2.13
+  - Ensures consistency across all version references
+
 ## Version 2.9 - 2026-01-06
 
 ### Fixed
