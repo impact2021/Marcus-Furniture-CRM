@@ -1035,7 +1035,9 @@ jQuery(document).ready(function($) {
         $('#hs-crm-mobile-enquiry-detail-modal').fadeOut();
         
         // Trigger the existing edit enquiry functionality
-        // We create a temporary element with the enquiry ID and trigger a click
+        // Note: We create a temporary element to reuse existing edit handler (lines 298-390)
+        // This approach minimizes code changes and maintains compatibility
+        // Future enhancement: Extract edit logic into a shared function
         var $tempEditBtn = $('<a class="hs-crm-edit-enquiry" data-enquiry-id="' + enquiryId + '"></a>');
         $tempEditBtn.appendTo('body');
         $tempEditBtn.trigger('click');
