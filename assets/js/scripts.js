@@ -832,7 +832,6 @@ jQuery(document).ready(function($) {
         }
         
         if (!enquiryData) {
-            console.log('No enquiry data found');
             return;
         }
         
