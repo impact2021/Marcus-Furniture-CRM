@@ -1026,6 +1026,7 @@ jQuery(document).ready(function($) {
         var enquiryId = $('#hs-crm-mobile-enquiry-detail-modal').data('enquiry-id');
         
         if (!enquiryId) {
+            alert('Unable to load enquiry details for editing. Please try again.');
             console.error('No enquiry ID found for editing');
             return;
         }
