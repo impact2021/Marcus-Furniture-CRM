@@ -490,6 +490,12 @@ class HS_CRM_Admin {
                 <div id="mobile-enquiry-detail-content">
                     <!-- Content will be populated by JavaScript -->
                 </div>
+                <div class="hs-crm-mobile-modal-actions" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center;">
+                    <button id="hs-crm-mobile-edit-enquiry-btn" class="button button-primary" style="padding: 10px 20px; font-size: 16px;">
+                        <span class="dashicons dashicons-edit" style="vertical-align: middle; margin-right: 5px;"></span>
+                        Edit Details
+                    </button>
+                </div>
             </div>
         </div>
         
