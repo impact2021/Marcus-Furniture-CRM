@@ -3,7 +3,7 @@ Contributors: impactwebsites
 Tags: crm, enquiry management, contact form, truck scheduling, furniture moving
 Requires at least: 5.0
 Tested up to: 6.8
-Stable tag: 2.11
+Stable tag: 2.12
 Requires PHP: 7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -139,6 +139,12 @@ The plugin creates four tables:
 6. Settings page
 
 == Changelog ==
+
+= 2.12 =
+* Fixed mobile view enquiry cards (equity boxes) not responding to clicks
+* Mobile enquiry cards now properly open detail modal when clicked on mobile devices
+* Relocated mobile enquiry card click handlers to work on all admin pages, not just scheduler page
+* Improved mobile user experience with functional detail viewing
 
 = 2.11 =
 * Improved modal layout: Changed form sections after address fields to two-column layout for better space utilization
