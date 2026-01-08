@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 2.14 - 2026-01-08
+
+### Added
+- **Mobile Edit Button**: Added "Edit Details" button to mobile enquiry detail modal
+  - When viewing enquiry details on mobile, users can now tap "Edit Details" to modify information
+  - Button appears at the bottom of the mobile enquiry detail modal
+  - Seamlessly opens the existing edit enquiry modal with all fields pre-populated
+  - Improves mobile workflow by allowing users to edit enquiries without switching to desktop view
+  - Button styled with WordPress button-primary class and edit icon for consistency
+
+### Updated
+- **Version Update**: Updated plugin version to 2.14
+  - Updated plugin header version in main plugin file from 2.13 to 2.14
+  - Updated HS_CRM_VERSION constant from 2.13 to 2.14
+  - Updated stable tag in readme.txt from 2.13 to 2.14
+  - Ensures consistency across all version references
+
 ## Version 2.13 - 2026-01-08
 
 ### Fixed

@@ -1009,12 +1009,39 @@ jQuery(document).ready(function($) {
         }
         
         $('#mobile-enquiry-detail-content').html(html);
+        
+        // Store the enquiry ID in the modal for the Edit button
+        $('#hs-crm-mobile-enquiry-detail-modal').data('enquiry-id', enquiryData.id);
+        
         $('#hs-crm-mobile-enquiry-detail-modal').fadeIn();
     });
     
     // Close mobile enquiry detail modal
     $('#hs-crm-mobile-enquiry-detail-modal .hs-crm-modal-close').on('click', function() {
         $('#hs-crm-mobile-enquiry-detail-modal').fadeOut();
+    });
+    
+    // Handle Edit button in mobile enquiry detail modal
+    $(document).on('click', '#hs-crm-mobile-edit-enquiry-btn', function() {
+        var enquiryId = $('#hs-crm-mobile-enquiry-detail-modal').data('enquiry-id');
+        
+        if (!enquiryId) {
+            alert('Unable to load enquiry details for editing. Please try again.');
+            console.error('No enquiry ID found for editing');
+            return;
+        }
+        
+        // Close the mobile detail modal
+        $('#hs-crm-mobile-enquiry-detail-modal').fadeOut();
+        
+        // Trigger the existing edit enquiry functionality
+        // Note: We create a temporary element to reuse existing edit handler (lines 298-390)
+        // This approach minimizes code changes and maintains compatibility
+        // Future enhancement: Extract edit logic into a shared function
+        var $tempEditBtn = $('<a class="hs-crm-edit-enquiry" data-enquiry-id="' + enquiryId + '"></a>');
+        $tempEditBtn.appendTo('body');
+        $tempEditBtn.trigger('click');
+        $tempEditBtn.remove();
     });
     
     $(window).on('click', function(e) {
